@@ -265,6 +265,11 @@
     void goto(onboardingUrl(page.url.pathname + page.url.search));
   }
 
+  function signInFromGate() {
+    showSignInPrompt = false;
+    promptSignIn();
+  }
+
   function viewWithoutSignIn() {
     showSignInPrompt = false;
     window.open(job.url, '_blank', 'noopener,noreferrer');
@@ -449,6 +454,34 @@
   >
     {external.label} <ArrowRight class="size-4" />
   </Button>
+{/snippet}
+
+{#snippet applyFeedback()}
+  {#if showApplyPrompt && !applied}
+    <div
+      aria-live="polite"
+      class="flex flex-wrap items-center justify-between gap-3 rounded-md border border-border bg-secondary px-4 py-3"
+    >
+      <span class="text-sm">Did you apply to this job?</span>
+      <div class="flex flex-wrap items-center gap-2">
+        <Button variant="primary" size="sm" onclick={confirmApplied}>Yes, save</Button>
+        <Button variant="ghost" size="sm" onclick={dismissApplyPrompt}>No</Button>
+      </div>
+    </div>
+  {/if}
+  {#if showSignInPrompt}
+    <div
+      aria-live="polite"
+      class="flex flex-wrap items-center justify-between gap-3 rounded-md border border-border bg-secondary px-4 py-3"
+    >
+      <span class="text-sm">Sign in to keep track of the jobs you apply to.</span>
+      <div class="flex flex-wrap items-center gap-2">
+        <Button variant="primary" size="sm" onclick={signInFromGate}>Sign in</Button>
+        <Button variant="outline" size="sm" onclick={signUpFromGate}>Sign up</Button>
+        <Button variant="ghost" size="sm" onclick={viewWithoutSignIn}>Continue without signing in</Button>
+      </div>
+    </div>
+  {/if}
 {/snippet}
 
 <!-- The page's one primary call to action, and the only button on it carrying the brand
@@ -1050,25 +1083,10 @@
       {@render actionStrip('hidden border-b border-border pb-2 lg:flex')}
     </div>
 
-    <!-- The three states of one exchange. They sit at the top of the content column rather
-         than beside the CTA that raised them: the question follows a click that opened a
-         NEW TAB, so the reader meets it on returning to this one, and the first thing under
-         the tabs is what a returning eye lands on. It is also the widest slot on the page,
-         which a two-button question needs and the title row — already carrying the CTAs —
-         does not have. They share one slot so that answering "Yes, save" replaces the
-         question in place; split across the page, the confirmation would read as a second,
-         unrelated banner appearing somewhere the reader was not looking. -->
-    {#if showApplyPrompt && !applied}
-      <div
-        class="flex flex-wrap items-center justify-between gap-3 rounded-md border border-border bg-secondary px-4 py-3"
-      >
-        <span class="text-sm">Did you apply to this job?</span>
-        <div class="flex items-center gap-2">
-          <Button variant="primary" size="sm" onclick={confirmApplied}>Yes, save</Button>
-          <Button variant="ghost" size="sm" onclick={dismissApplyPrompt}>No</Button>
-        </div>
-      </div>
-    {/if}
+    <!-- Desktop feedback stays at the top of the content column. On phones it is repeated
+         in the sticky bar below, where the reader can see the response immediately after
+         Apply opens a new tab. -->
+    <div class="hidden lg:block">{@render applyFeedback()}</div>
 
     {#if justApplied}
       <div
@@ -1104,18 +1122,6 @@
     {/if}
     {#if autoApplyError}
       <p class="text-sm text-destructive">{autoApplyError}</p>
-    {/if}
-
-    {#if showSignInPrompt}
-      <div
-        class="flex flex-wrap items-center justify-between gap-3 rounded-md border border-border bg-secondary px-4 py-3"
-      >
-        <span class="text-sm">Sign in to keep track of the jobs you apply to.</span>
-        <div class="flex items-center gap-2">
-          <Button variant="primary" size="sm" onclick={signUpFromGate}>Sign up</Button>
-          <Button variant="ghost" size="sm" onclick={viewWithoutSignIn}>View without signing in</Button>
-        </div>
-      </div>
     {/if}
 
     {#if contentTabs.length > 1}
@@ -1162,18 +1168,17 @@
        everywhere else. The control that loses does not vanish — the quiet strip under the
        title picks the apply link up whenever auto-apply has taken this bar. -->
   <div
-    class="pointer-events-none sticky bottom-0 z-30 -mx-5 flex gap-2 border-t border-border/40 bg-background/15 px-5 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 backdrop-blur-lg sm:-mx-4 sm:px-4 lg:hidden"
+    class="pointer-events-none sticky bottom-0 z-30 -mx-5 flex flex-col gap-2 border-t border-border/40 bg-background/95 px-5 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 shadow-lg backdrop-blur-lg sm:-mx-4 sm:px-4 lg:hidden"
   >
-    {@render tailorCta('lg', 'pointer-events-auto flex-1 rounded-xl font-semibold shadow-lg')}
-    {#if cta.autoApply?.leads}
-      {@render autoApplyCta('lg', 'pointer-events-auto flex-1 rounded-xl font-semibold shadow-lg')}
-    {:else}
-      {@render applyCta(
-        'lg',
-        'pointer-events-auto flex-1 rounded-xl font-semibold shadow-lg',
-        cta.external,
-      )}
-    {/if}
+    <div class="pointer-events-auto lg:hidden">{@render applyFeedback()}</div>
+    <div class="pointer-events-auto flex gap-2">
+      {@render tailorCta('lg', 'flex-1 rounded-xl font-semibold shadow-lg')}
+      {#if cta.autoApply?.leads}
+        {@render autoApplyCta('lg', 'flex-1 rounded-xl font-semibold shadow-lg')}
+      {:else}
+        {@render applyCta('lg', 'flex-1 rounded-xl font-semibold shadow-lg', cta.external)}
+      {/if}
+    </div>
   </div>
 </article>
 
