@@ -26,7 +26,7 @@
     robots?: string;
   } = $props();
 
-  const previewImage = $derived(image ?? `${page.url.origin}/og.png`);
+  const previewImage = $derived(image ?? `${page.url.origin}/ph-jobs-preview-v2.png`);
 </script>
 
 <svelte:head>

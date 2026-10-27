@@ -8,14 +8,7 @@
   import { onMount } from 'svelte';
   import { resolve } from '$app/paths';
   import BrandMark from '#lib/components/BrandMark.svelte';
-  import GithubStars from '#lib/components/GithubStars.svelte';
-  import { SOCIAL_LINKS } from '#lib/socialLinks.js';
-  import { ProviderIcon } from '#lib/ui/index.js';
   import { tablist } from '#lib/actions/tablist.js';
-
-  // GithubStars already covers GitHub (icon + live star count); the rest render as
-  // plain icon links, same as the Footer's row.
-  const otherSocials = SOCIAL_LINKS.filter((s) => s.provider !== 'github');
 
   type Slide = { headline: string; bullets: string[] };
   // A fixed-length tuple (not just an array) so `SLIDES[0]` below type-checks as
@@ -163,28 +156,5 @@
     </div>
   </div>
 
-  <!-- Full-opacity brand-foreground (see the bullet list's comment above) with an
-       underline for hover affordance instead of a color fade — this pair has no
-       contrast headroom left to dim. -->
-  <div class="flex items-center gap-3 text-xs text-brand-foreground">
-    <span>Open source —</span>
-    <!-- The repeated `hover:text-brand-foreground` below is load-bearing, not a typo:
-         GithubStars' own base class has `hover:text-accent-foreground`, and cn()'s
-         twMerge only drops that when this className supplies a same-group replacement. -->
-    <GithubStars
-      variant="inline"
-      class="min-h-0 gap-1 px-0 text-xs text-brand-foreground hover:bg-transparent hover:text-brand-foreground hover:underline"
-    />
-    {#each otherSocials as social (social.provider)}
-      <!-- eslint-disable-next-line svelte/no-navigation-without-resolve -- external profile URL opened in a new tab; not an internal route -->
-      <a href={social.href}
-        target="_blank"
-        rel="noopener noreferrer"
-        aria-label={social.label}
-        class="text-brand-foreground underline-offset-4 hover:underline"
-      >
-        <ProviderIcon provider={social.provider} />
-      </a>
-    {/each}
-  </div>
+  <p class="text-xs text-brand-foreground">Built for the Programming Hero team.</p>
 </div>

@@ -31,12 +31,11 @@ describe('Footer compact mode', () => {
     expect(GUARD_END).toBeGreaterThan(SOURCE.indexOf('{#each popular as collection'));
   });
 
-  it('still renders the bottom bar (copyright, cookie settings, social, open-source note) unconditionally', () => {
+  it('still renders the bottom bar (copyright, cookie settings, team attribution) unconditionally', () => {
     const bottomBar = SOURCE.slice(GUARD_END);
     expect(bottomBar).toContain('©');
     expect(bottomBar).toContain('Cookie settings');
-    expect(bottomBar).toContain('SOCIAL_LINKS');
-    expect(bottomBar).toContain('View source on GitHub');
+    expect(bottomBar).toContain('Built for the Programming Hero team.');
   });
 
   it("only borders the bottom bar's own top when compact (no divider from a section that isn't rendered)", () => {

@@ -2,8 +2,6 @@
   import { resolve } from '$app/paths';
   import { reopen } from '#lib/consent.svelte.js';
   import { POPULAR_COLLECTIONS } from '#lib/popularCollections.js';
-  import { SOCIAL_LINKS } from '#lib/socialLinks.js';
-  import { ProviderIcon } from '#lib/ui/index.js';
 
   // Grouped navigation over existing routes only — kept deliberately small so the
   // footer stays uncluttered. Internal links go through resolve() (base-path safe),
@@ -66,10 +64,6 @@
       ],
     },
   ];
-
-  // External profiles: open in a new tab, each rendered with its ProviderIcon brand
-  // mark. All follow the muted text colour (so they match and hover works). Shared
-  // with the /signin brand panel — see #lib/socialLinks.
 
   // A strip below the four groups rather than a fifth column: the grid is
   // sm:grid-cols-4, and ten links would not fit one anyway. Kept out of `groups`
@@ -136,7 +130,7 @@
     </div>
   {/if}
 
-  <!-- Bottom bar: copyright + social links on the left, open-source note on the
+  <!-- Bottom bar: copyright and cookie settings on the left, team attribution on the
        right. Split off by its own top border only when it follows the link
        groups above — compact, the footer's own top border already does that job. -->
   <div class={compact ? undefined : 'border-t border-border'}>
@@ -154,31 +148,8 @@
         >
           Cookie settings
         </button>
-        <div class="flex items-center gap-3">
-          {#each SOCIAL_LINKS as social (social.provider)}
-            <!-- eslint-disable-next-line svelte/no-navigation-without-resolve -- external profile URL opened in a new tab; not an internal route -->
-            <a href={social.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={social.label}
-              class="text-muted-foreground transition-colors hover:text-foreground"
-            >
-              <ProviderIcon provider={social.provider} />
-            </a>
-          {/each}
-        </div>
       </div>
-      <p>
-        Built for the Programming Hero team.
-        <!-- eslint-disable-next-line svelte/no-navigation-without-resolve -- external repository URL opened in a new tab; not an internal route -->
-        <a href="https://github.com/anwarpro/freehire"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="font-medium text-foreground transition-colors hover:text-muted-foreground"
-        >
-          View source on GitHub
-        </a>.
-      </p>
+      <p>Built for the Programming Hero team.</p>
     </div>
   </div>
 </footer>

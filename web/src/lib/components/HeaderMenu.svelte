@@ -12,7 +12,6 @@
   import { cn } from '#lib/ui/index.js';
   import { menuNav } from '#lib/actions/menuNav.js';
   import BrandMark from './BrandMark.svelte';
-  import GithubStars from './GithubStars.svelte';
   import NotificationBell from './NotificationBell.svelte';
   import HeaderProfileMenu from './HeaderProfileMenu.svelte';
   import { ensureAccountSetupLoaded, setupOutstanding } from '#lib/accountSetup.svelte.js';
@@ -181,15 +180,6 @@
 {/snippet}
 
 <div class="relative flex items-center gap-1" bind:this={root}>
-  <!-- Desktop bar order: GitHub source, then the visitor's OWN two controls —
-       the bell and profile/sign-in — then the menu button pinned to the far right. The
-       bell used to sit ahead of the project's links, which put two icons about the site
-       between it and the account it notifies about. On mobile the two about the site
-       collapse into the drawer (below) and the two that are the visitor's stay: the
-       bell is how they learn something happened, and it cannot be a tap deeper than
-       the menu that would tell them. -->
-  <GithubStars class="hidden sm:inline-flex" />
-
   <NotificationBell />
 
   <!-- Desktop only: the profile menu (signed in) or a direct sign-in action
@@ -369,9 +359,8 @@
         </div>
       </div>
 
-      <!-- Mobile-only: GitHub + theme + auth pinned to the bottom of the drawer. -->
+      <!-- Mobile-only: Theme + auth pinned to the bottom of the drawer. -->
       <div class="shrink-0 border-t border-border p-2 sm:hidden">
-        <GithubStars variant="row" class={cn(rowBase, 'text-muted-foreground')} />
         {@render themeButton()}
         {@render authButton()}
       </div>

@@ -37,14 +37,14 @@ describe('HeaderMenu desktop/mobile split', () => {
 
   it('drops the desktop auth action but keeps the desktop theme toggle', () => {
     const start = SOURCE.indexOf('hidden sm:block');
-    const end = SOURCE.indexOf('Mobile-only: GitHub + theme + auth');
+    const end = SOURCE.indexOf('Mobile-only: Theme + auth');
     const desktopTailBlock = SOURCE.slice(start, end);
     expect(desktopTailBlock).toContain('{@render themeButton()}');
     expect(desktopTailBlock).not.toContain('{@render authButton()}');
   });
 
   it('still renders the auth action in the mobile pinned bottom bar', () => {
-    const mobileBar = SOURCE.slice(SOURCE.indexOf('Mobile-only: GitHub + theme + auth'));
+    const mobileBar = SOURCE.slice(SOURCE.indexOf('Mobile-only: Theme + auth'));
     expect(mobileBar).toContain('{@render authButton()}');
   });
 

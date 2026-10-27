@@ -17,8 +17,8 @@
 </script>
 
 <Seo
-  title="PH Jobs — tech jobs for the Programming Hero team"
-  description="Discover worldwide tech jobs from company career boards. Explore skills, technology stacks, seniority and locations with the Programming Hero team."
+  title="PH Jobs — Worldwide Tech Jobs"
+  description="Explore worldwide tech jobs, in-demand skills and technology stacks. PH Jobs is the Programming Hero team’s job research workspace."
   canonical="{origin}/"
 />
 

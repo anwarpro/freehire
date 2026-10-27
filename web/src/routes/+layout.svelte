@@ -27,7 +27,6 @@
   import Footer from '#lib/components/Footer.svelte';
   import CookieConsent from '#lib/components/CookieConsent.svelte';
   import CvRefreshDialog from '#lib/components/CvRefreshDialog.svelte';
-  import SupportToast from '#lib/components/SupportToast.svelte';
   import SkipLink from '#lib/components/SkipLink.svelte';
   import Announcer from '#lib/components/Announcer.svelte';
   import '../app.css';
@@ -268,11 +267,6 @@
 <!-- Consent banner: fixed-position, self-gating (renders only for a
      consent-required visitor with no choice, or when re-opened from the footer). -->
 <CookieConsent />
-
-<!-- Open-source support toast: fixed-position, so it belongs here rather than beside
-     <CliBanner /> up in the flow. Self-gating — it yields this same corner to the
-     consent banner above, and retires for good once answered. -->
-<SupportToast />
 
 <CvRefreshDialog />
 

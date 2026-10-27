@@ -1,4 +1,4 @@
-// Generates the static brand Open Graph image committed at web/static/og.png.
+// Generates the PH Jobs share preview and its legacy og.png URL.
 //
 // The brand card is essentially fixed (headline + baked-in catalogue figures), so
 // it is a committed static asset rather than an on-demand endpoint — zero runtime
@@ -17,10 +17,7 @@ import { createOgVite, isValidPng, loadFonts, webRoot } from './og-render.mjs';
 
 const outPath = resolve(webRoot, 'static/og.png');
 
-// Rounded DOWN from /api/v1/stats/catalog on 2026-10-19. The jobs figure is the
-// de-duplicated `unique_open_jobs` — what /jobs shows — not the raw `open_jobs`, which
-// counts a posting once per board and reads ~40% higher than anything a visitor can
-// browse.
+// Stable descriptions of this internal workspace; live catalogue counts change daily.
 const STATS = [
   { value: 'Worldwide', label: 'tech opportunities' },
   { value: 'Skills', label: 'market insights' },
@@ -42,6 +39,8 @@ async function main() {
     }
 
     await writeFile(outPath, png);
+    // A new URL lets clients fetch the PH Jobs artwork instead of a cached upstream card.
+    await writeFile(resolve(webRoot, 'static/ph-jobs-preview-v2.png'), png);
     console.log(`Wrote ${outPath} (${png.length} bytes)`);
   } finally {
     await vite.close();
