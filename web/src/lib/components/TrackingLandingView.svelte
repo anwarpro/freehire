@@ -114,7 +114,7 @@
       Every application, one board. Nothing falls through.
     </h1>
     <p class="mt-7 max-w-xl text-lg leading-relaxed text-muted-foreground">
-      Save what's worth a second look and freehire keeps it visible until it's resolved — through
+      Save what's worth a second look and PH Jobs keeps it visible until it's resolved — through
       four stages, from Preparing to Offer, with a day-counter when an employer goes quiet and a
       place for the notes only you need.
     </p>
@@ -235,7 +235,7 @@
     <div class="mt-6 max-w-2xl">
       <h2 class="text-3xl font-semibold tracking-tight sm:text-4xl">See where every application lands.</h2>
       <p class="mt-5 leading-relaxed text-muted-foreground">
-        As cards move through the board, freehire rolls them into one funnel — how many are still in
+        As cards move through the board, PH Jobs rolls them into one funnel — how many are still in
         Preparing, sitting in Applied, in an active Interview loop, or turned into an Offer. Whatever
         settled moves to Closed: out of the active board, never erased.
       </p>
@@ -293,14 +293,14 @@
           terminal
         </figcaption>
         <pre class="overflow-x-auto p-4 leading-relaxed"><span class="text-muted-foreground"># save or apply — either starts tracking it</span>
-freehire <span class="text-foreground">apply &lt;slug&gt;</span>
-freehire <span class="text-foreground">save &lt;slug&gt;</span>
+PH Jobs <span class="text-foreground">apply &lt;slug&gt;</span>
+PH Jobs <span class="text-foreground">save &lt;slug&gt;</span>
 
 <span class="text-muted-foreground"># move it yourself, or let the inbox do it</span>
-freehire <span class="text-foreground">stage &lt;slug&gt; --to interview</span>
+PH Jobs <span class="text-foreground">stage &lt;slug&gt; --to interview</span>
 
 <span class="text-muted-foreground"># a private note, attached to the card</span>
-freehire <span class="text-foreground">note &lt;slug&gt; "referred by a former teammate"</span></pre>
+PH Jobs <span class="text-foreground">note &lt;slug&gt; "referred by a former teammate"</span></pre>
       </figure>
     </div>
   </section>

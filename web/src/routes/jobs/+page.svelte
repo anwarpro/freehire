@@ -17,8 +17,8 @@
   // Page 2 onward says so, or every page competes for one SERP entry under one title.
   const title = $derived(
     data.pageNumber > 1
-      ? `Tech jobs — page ${data.pageNumber} · freehire`
-      : 'Tech jobs — search 3M+ openings · freehire',
+      ? `Tech jobs — page ${data.pageNumber} · PH Jobs`
+      : 'Tech jobs — worldwide opportunities · PH Jobs',
   );
   // Who publishes this. The site-level WebSite + SearchAction pair stays on the
   // homepage, which is the URL search engines treat as the site; the feed names only
@@ -29,7 +29,7 @@
 
 <Seo
   {title}
-  description="Search 3M+ tech jobs indexed straight from company career boards — deduplicated and tagged by stack, seniority and location. Free, open source, no walls."
+  description="Explore worldwide tech jobs by skills, technology stack, seniority and location. A job research workspace for the Programming Hero team."
   {canonical}
 />
 

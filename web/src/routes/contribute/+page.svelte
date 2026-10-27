@@ -7,8 +7,8 @@
 </script>
 
 <Seo
-  title="Contribute a board — help freehire cover the whole market"
-  description="freehire is an open, free search engine for tech jobs — and it's only as good as its coverage. Spot a company we don't track yet? Paste its link on freehire or send it to the bot: if the board is new, we crawl all its jobs and reward you with points."
+  title="Contribute a board — help PH Jobs cover the whole market"
+  description="PH Jobs is an open, free search engine for tech jobs — and it's only as good as its coverage. Spot a company we don't track yet? Paste its link on PH Jobs or send it to the bot: if the board is new, we crawl all its jobs and reward you with points."
   {canonical}
 />
 

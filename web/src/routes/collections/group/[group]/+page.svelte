@@ -13,7 +13,7 @@
   const canonical = $derived(`${origin}/collections/group/${data.section.slug}`);
   const heading = $derived(`${data.section.title} collections`);
   // A CollectionPage whose items are the collections themselves, plus the trail
-  // freehire → Collections → this section, mirroring a collection's own landing.
+  // PH Jobs → Collections → this section, mirroring a collection's own landing.
   const jsonLd = $derived(
     jsonLdScript([
       collectionPageJsonLd(
@@ -23,7 +23,7 @@
         data.section.rows.map((row) => ({ name: row.title, url: `${origin}/collections/${row.slug}` })),
       ),
       breadcrumbJsonLd([
-        { name: 'freehire', url: `${origin}/` },
+        { name: 'PH Jobs', url: `${origin}/` },
         { name: 'Collections', url: `${origin}/collections` },
         { name: data.section.title, url: canonical },
       ]),
@@ -31,7 +31,7 @@
   );
 </script>
 
-<Seo title="{heading} · freehire" description={data.section.description} {canonical} />
+<Seo title="{heading} · PH Jobs" description={data.section.description} {canonical} />
 
 <svelte:head>
   <!-- eslint-disable-next-line svelte/no-at-html-tags -- non-executable JSON-LD built by jsonLdScript, which escapes `<`; raw injection is the only way to emit a structured-data <script> -->

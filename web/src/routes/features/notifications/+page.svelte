@@ -12,7 +12,7 @@
 </script>
 
 <Seo
-  title="Notifications — job alerts and tracking nudges, on your channel | freehire"
+  title="Notifications — job alerts and tracking nudges, on your channel | PH Jobs"
   description="Save a search and get told about a new match instantly or as a daily digest, over email, Telegram or push. The same settings carry your tracking nudges — a saved job you haven't applied to, an application gone quiet, an interview coming up — with quiet hours to keep it out of your evening."
   {canonical}
 />

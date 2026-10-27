@@ -52,7 +52,7 @@
   import { locale } from '#lib/i18n/currentLocale.svelte.js';
   import { format, plural, t } from '#lib/i18n/t.js';
 
-  // The agent chat. The agent runs inside the freehire backend, so this is an
+  // The agent chat. The agent runs inside the PH Jobs backend, so this is an
   // ordinary authenticated API surface: the session list, one session's stored
   // transcript, and a turn that streams its events over SSE. There is no
   // connection to hold, nothing to install, and no separate agent login.

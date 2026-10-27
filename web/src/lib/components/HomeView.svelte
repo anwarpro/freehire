@@ -32,8 +32,8 @@
     { value: '100%', label: 'open source' },
   ]);
 
-  // "Straight from the source" — the value prop that separates freehire from an
-  // aggregator. Mirrors the README "Why freehire?" points.
+  // "Straight from the source" — the value prop that separates PH Jobs from an
+  // aggregator. Mirrors the README "Why PH Jobs?" points.
   const sourced = [
     {
       n: '01',
@@ -52,7 +52,7 @@
     },
   ];
 
-  const GITHUB = 'https://github.com/strelov1/freehire';
+  const GITHUB = 'https://github.com/anwarpro/freehire';
   const CLI = 'https://github.com/strelov1/freehire-cli';
   // Where a contributor opens a request to have a new source added.
   const ISSUES = `${GITHUB}/issues`;
@@ -102,7 +102,7 @@
     {
       href: resolve('/features/advanced-search'),
       title: 'Advanced search',
-      body: 'Twenty filters — role, stack, region, company, terms and posting trust — and almost every one can also mean "not this." Save the search and freehire keeps running it for you.',
+      body: 'Twenty filters — role, stack, region, company, terms and posting trust — and almost every one can also mean "not this." Save the search and PH Jobs keeps running it for you.',
       cta: 'How the filters work',
     },
     {
@@ -144,7 +144,7 @@
     {
       href: resolve('/features/ghost-jobs'),
       title: 'Ghost jobs',
-      body: 'Some postings are not being filled at all. freehire marks the ones whose behaviour and applicant outcomes say so, and shows you every fact behind the warning.',
+      body: 'Some postings are not being filled at all. PH Jobs marks the ones whose behaviour and applicant outcomes say so, and shows you every fact behind the warning.',
       cta: 'How the signal works',
     },
   ];
@@ -184,7 +184,7 @@
         </h1>
 
         <p class="reveal mt-7 max-w-xl text-lg leading-relaxed text-muted-foreground" style="--d:160ms">
-          Freehire pulls openings straight from company career boards, strips the duplicates, and tags each
+          PH Jobs pulls openings straight from company career boards, strips the duplicates, and tags each
           one with stack, seniority and location — so you search jobs, not job boards.
         </p>
 
@@ -248,7 +248,7 @@
     </dl>
   </section>
 
-  <!-- Straight from the source — what separates freehire from an aggregator. -->
+  <!-- Straight from the source — what separates PH Jobs from an aggregator. -->
   <section class="border-t border-border py-16 sm:py-20">
     <SectionLabel text="straight from the source" as="h2" />
     <NumberedGrid items={sourced} class="mt-10 sm:grid-cols-3" />
@@ -317,7 +317,7 @@
         See where every application lands.
       </h2>
       <p class="mt-5 leading-relaxed text-muted-foreground">
-        As jobs move through your board, freehire rolls them into a pipeline snapshot — how many
+        As jobs move through your board, PH Jobs rolls them into a pipeline snapshot — how many
         applications are still waiting on an answer, in progress, interviewing, or turned into an offer.
         One glance shows what's working and where things stall.
       </p>
@@ -367,7 +367,7 @@
       <h2 class="text-3xl font-semibold tracking-tight sm:text-4xl">New jobs, straight to Telegram.</h2>
       <p class="mt-5 leading-relaxed text-muted-foreground">
         Save a search — your stack, seniority, region, salary — and subscribe to it. When a matching job is
-        added, freehire sends it to you on Telegram as a tidy digest. No inbox clutter, no checking back:
+        added, PH Jobs sends it to you on Telegram as a tidy digest. No inbox clutter, no checking back:
         connect once from
         <a href={resolve('/my/notifications/searches')} class="font-medium text-foreground underline-offset-4 hover:underline">Saved searches &amp; alerts</a>
         and the openings come to you. Email and push work the same way — see how on the
@@ -391,7 +391,7 @@
           Use it from the terminal. Built for agents.
         </h2>
         <p class="mt-5 max-w-md leading-relaxed text-muted-foreground">
-          freehire is also a CLI, so an AI agent or a script can search, open and track jobs over the
+          PH Jobs is also a CLI, so an AI agent or a script can search, open and track jobs over the
           same API — no browser. Create an API key and it lives in
           <code class="font-mono text-foreground">~/.freehire/creds.json</code>; add
           <code class="font-mono text-foreground">--json</code> for machine-readable output.
@@ -414,12 +414,12 @@
           terminal
         </figcaption>
         <pre class="overflow-x-auto p-4 leading-relaxed"><span class="text-muted-foreground"># install — no Go needed</span>
-curl -fsSL <span class="text-foreground">https://freehire.me/install.sh</span> | sh
+curl -fsSL <span class="text-foreground">https://jobs.programming-hero.org/install.sh</span> | sh
 
 <span class="text-muted-foreground"># authenticate once, then search &amp; track</span>
 freehire auth login --token <span class="text-foreground">fhk_…</span>
 freehire search <span class="text-foreground">"golang"</span> --remote --region eu
-freehire save <span class="text-foreground">&lt;slug&gt;</span></pre>
+PH Jobs save <span class="text-foreground">&lt;slug&gt;</span></pre>
       </figure>
     </div>
   </section>

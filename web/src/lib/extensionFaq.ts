@@ -17,9 +17,9 @@ export const EXTENSION_FAQ: FaqItem[] = [
       'Chrome and the Chromium browsers that carry its side panel, and Firefox, where the panel opens as the sidebar. Firefox has no `chrome.debugger`, so attaching a tailored CV to the upload field is Chrome-only. Safari is not supported today.',
   },
   {
-    question: 'Do I need a freehire account?',
+    question: 'Do I need a PH Jobs account?',
     answer:
-      'Yes. The panel signs in with your freehire account and the agent works from your profile — the match card scores against your CV, and Autofill answers from what your profile already says. Signing up is free.',
+      'Yes. The panel signs in with your PH Jobs account and the agent works from your profile — the match card scores against your CV, and Autofill answers from what your profile already says. Signing up is free.',
   },
   {
     question: 'Can it read pages I have not asked it about?',
@@ -42,18 +42,18 @@ export const EXTENSION_FAQ: FaqItem[] = [
       'It will not. The filler only engages on a page carrying the marks of a real application, a CV upload among them, which is what stops a newsletter box or a job-alert signup from being written into. The checklist of questions is shown on a looser test, but nothing is ever typed on the strength of it.',
   },
   {
-    question: 'Does it work on jobs that are not in the freehire catalogue?',
+    question: 'Does it work on jobs that are not in the PH Jobs catalogue?',
     answer:
-      'Yes. Open the panel on any posting and the agent reads that page and scores it against your profile. The actions that need a catalogue entry — saving the job, running the full AI match analysis — are hidden for a page freehire does not know, rather than offered and then failing.',
+      'Yes. Open the panel on any posting and the agent reads that page and scores it against your profile. The actions that need a catalogue entry — saving the job, running the full AI match analysis — are hidden for a page PH Jobs does not know, rather than offered and then failing.',
   },
   {
     question: 'Where does what it reads end up?',
     answer:
-      'In the conversation, on freehire, under your account — one origin and nowhere else. You can read that conversation on the web and delete it; deleting it starts the panel on a fresh one.',
+      'In the conversation, on PH Jobs, under your account — one origin and nowhere else. You can read that conversation on the web and delete it; deleting it starts the panel on a fresh one.',
   },
   {
     question: 'What does it cost?',
     answer:
-      'The extension is free. The agent draws on the same daily allowances the rest of freehire runs on: every plan can do every AI feature, and how much of each you can do in a day is what differs. It starts over every night.',
+      'The extension is free. The agent draws on the same daily allowances the rest of PH Jobs runs on: every plan can do every AI feature, and how much of each you can do in a day is what differs. It starts over every night.',
   },
 ];

@@ -14,7 +14,7 @@
   );
 </script>
 
-<Seo title={`${mentor.name} · Mentors · freehire`} {description} {canonical} />
+<Seo title={`${mentor.name} · Mentors · PH Jobs`} {description} {canonical} />
 
 <div class="mx-auto flex w-full max-w-4xl flex-col gap-6 px-4 py-6">
   <header class="flex flex-col gap-2">

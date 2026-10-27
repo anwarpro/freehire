@@ -3,8 +3,8 @@
   import { FOR_COMPANIES_FAQ } from '#lib/forCompaniesFaq.js';
   import { Button } from '#lib/ui/index.js';
 
-  const repoUrl = 'https://github.com/strelov1/freehire';
-  const telegramUrl = 'https://t.me/freehiredev';
+  const repoUrl = 'https://github.com/anwarpro/freehire';
+  const telegramUrl = 'https://jobs.programming-hero.org/support';
 
   // Self-serve ATS platforms: the multi-tenant boards where a company maps to a
   // single board entry, so listing is one line in sources/<provider>.yml. This is
@@ -45,7 +45,7 @@
   const benefits = [
     {
       title: 'Free & open-source',
-      body: 'freehire is a non-commercial aggregator. Listing your board costs nothing — no fees, no paywall, no upsell.',
+      body: 'PH Jobs is a non-commercial aggregator. Listing your board costs nothing — no fees, no paywall, no upsell.',
     },
     {
       title: 'A developer audience',
@@ -69,7 +69,7 @@
     </h1>
     <p class="max-w-xl text-lg leading-relaxed text-muted-foreground">
       Want your openings here? If you use a supported ATS, add your board with one line — or
-      contribute an adapter for your own. freehire crawls it regularly and folds the roles into one
+      contribute an adapter for your own. PH Jobs crawls it regularly and folds the roles into one
       clean, searchable feed of tech jobs.
     </p>
     <div class="flex flex-wrap items-center gap-3">
@@ -115,7 +115,7 @@
           <h3 class="text-base font-semibold tracking-tight">Your ATS isn't on the list yet</h3>
         </div>
         <p class="text-sm leading-relaxed text-muted-foreground">
-          freehire is open source, so a new platform is one adapter in
+          PH Jobs is open source, so a new platform is one adapter in
           <code class="font-mono text-foreground">internal/sources</code> — a small reader over your
           public job API. Send it as a pull request, or open an issue asking for the platform and
           point us at your careers page.
@@ -138,7 +138,7 @@
           <a href={resolve('/my/api-keys')} class="font-medium text-foreground underline-offset-4 hover:underline"
             >API key</a
           >
-          and post roles straight to freehire — one call per vacancy, from your own systems or the
+          and post roles straight to PH Jobs — one call per vacancy, from your own systems or the
           <a href={resolve('/cli')} class="font-medium text-foreground underline-offset-4 hover:underline"
             >freehire CLI</a
           >. Submissions go through the same moderator review as everything else, then join the
@@ -159,7 +159,7 @@
       <pre
         class="overflow-x-auto rounded-lg border border-border bg-secondary/60 p-3 font-mono text-sm leading-relaxed"><span
           class="text-muted-foreground"># POST a vacancy — goes to moderation review</span>
-curl -X POST https://freehire.me/api/v1/submissions \
+curl -X POST https://jobs.programming-hero.org/api/v1/submissions \
   -H <span class="text-foreground">"Authorization: Bearer $FREEHIRE_API_KEY"</span> \
   -H <span class="text-foreground">"Content-Type: application/json"</span> \
   -d '&#123;"url": "https://acme.com/careers/go",

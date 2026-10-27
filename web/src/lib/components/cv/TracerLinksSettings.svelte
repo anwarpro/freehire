@@ -63,7 +63,7 @@
 <div class="space-y-3">
   <SettingRow
     label="Track link opens"
-    hint="Rewrites this CV's links through freehire so you can see if they were opened."
+    hint="Rewrites this CV's links through PH Jobs so you can see if they were opened."
   >
     {#snippet control()}
       <input

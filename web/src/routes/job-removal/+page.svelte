@@ -3,14 +3,14 @@
   import { page } from '$app/state';
   import Seo from '#lib/components/Seo.svelte';
 
-  const contactEmail = 'hello@freehire.me';
+  const contactUrl = 'https://jobs.programming-hero.org/support';
   const canonical = $derived(`${page.url.origin}/job-removal`);
   const link = 'font-medium text-foreground underline-offset-4 hover:underline';
 </script>
 
 <Seo
-  title="Job Posting Removal Requests — freehire"
-  description="Why freehire does not delete job postings on request, how a posting leaves the site on its own, and how to ask for a correction."
+  title="Job Posting Removal Requests — PH Jobs"
+  description="Why PH Jobs does not delete job postings on request, how a posting leaves the site on its own, and how to ask for a correction."
   {canonical}
 />
 
@@ -26,7 +26,7 @@
     <section class="flex flex-col gap-3">
       <h2 class="text-xl font-semibold tracking-tight">How your posting got here</h2>
       <p class="text-sm leading-relaxed text-muted-foreground">
-        freehire shows publicly available job postings. Many of them are added by our users, who
+        PH Jobs shows publicly available job postings. Many of them are added by our users, who
         save the vacancies they find, track their applications, and share them with each other.
         Every posting links back to its original source, where candidates apply.
       </p>
@@ -35,7 +35,7 @@
     <section class="flex flex-col gap-3">
       <h2 class="text-xl font-semibold tracking-tight">Why we don't delete postings</h2>
       <p class="text-sm leading-relaxed text-muted-foreground">
-        One of freehire's goals is to give job seekers honest information about a vacancy,
+        One of PH Jobs's goals is to give job seekers honest information about a vacancy,
         including its history: when it first appeared, how long it stayed open, and whether it was
         reposted. That history is how we flag
         <a href={resolve('/features/ghost-jobs')} class={link}>ghost jobs</a> — roles that stay
@@ -47,9 +47,9 @@
     <section class="flex flex-col gap-3">
       <h2 class="text-xl font-semibold tracking-tight">Postings close on their own</h2>
       <p class="text-sm leading-relaxed text-muted-foreground">
-        freehire updates postings automatically. When a vacancy is taken down at its source, we
+        PH Jobs updates postings automatically. When a vacancy is taken down at its source, we
         detect it and mark it as closed here too. If you no longer want your posting to appear as
-        open, unpublish it at the source — it will drop out of freehire's listings within a short
+        open, unpublish it at the source — it will drop out of PH Jobs's listings within a short
         time, with nothing else for you to do.
       </p>
     </section>
@@ -59,7 +59,7 @@
       <p class="text-sm leading-relaxed text-muted-foreground">
         If a posting shows information you don't want displayed — personal contact details, for
         example — email us at
-        <a href="mailto:{contactEmail}" class={link}>{contactEmail}</a>
+        <a href={contactUrl} class={link}>PH Jobs support</a>
         with a link to the posting and what should change. We review every request and edit the
         posting where it's warranted.
       </p>

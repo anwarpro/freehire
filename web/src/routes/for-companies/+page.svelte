@@ -13,7 +13,7 @@
     jsonLdScript([
       faqPageJsonLd(FOR_COMPANIES_FAQ),
       breadcrumbJsonLd([
-        { name: 'freehire', url: `${origin}/` },
+        { name: 'PH Jobs', url: `${origin}/` },
         { name: 'For companies', url: canonical },
       ]),
     ])
@@ -21,8 +21,8 @@
 </script>
 
 <Seo
-  title="List your job board — freehire for companies"
-  description="Get your company's whole ATS board indexed by freehire, the free, open-source IT job aggregator. Add a supported board with one line, or contribute an adapter — we crawl it regularly and close roles you take down."
+  title="List your job board — PH Jobs for companies"
+  description="Get your company's whole ATS board indexed by PH Jobs, the free, open-source IT job aggregator. Add a supported board with one line, or contribute an adapter — we crawl it regularly and close roles you take down."
   {canonical}
 />
 

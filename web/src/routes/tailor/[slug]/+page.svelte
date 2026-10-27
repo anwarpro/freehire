@@ -548,7 +548,7 @@
   }
 </script>
 
-<svelte:head><title>Tailor CV{job ? ` · ${job.title}` : ''} — freehire</title></svelte:head>
+<svelte:head><title>Tailor CV{job ? ` · ${job.title}` : ''} — PH Jobs</title></svelte:head>
 
 <!-- Full-width workspace loses the account shell nav; the same left-edge icon rail as
      the Agent page brings the account sections back. It stays put across every state. -->

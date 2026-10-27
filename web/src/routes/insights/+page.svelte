@@ -10,7 +10,7 @@
   const origin = $derived(page.url.origin);
   const canonical = $derived(`${origin}/insights`);
   const description =
-    'Aggregate job-market data from freehire: salaries, in-demand skills, and hiring demand for every tech category.';
+    'Aggregate job-market data from PH Jobs: salaries, in-demand skills, and hiring demand for every tech category.';
   // This hub exists so crawlers reach every category page from one indexable page
   // (see +page.server.ts), so the ItemList names all three pages per covered
   // category — the same links the cards render, in the same order.
@@ -31,14 +31,14 @@
     jsonLdScript([
       collectionPageJsonLd('Job Market Insights', description, canonical, items),
       breadcrumbJsonLd([
-        { name: 'freehire', url: `${origin}/` },
+        { name: 'PH Jobs', url: `${origin}/` },
         { name: 'Insights', url: canonical },
       ]),
     ]),
   );
 </script>
 
-<Seo title="Job Market Insights · freehire" {description} {canonical} />
+<Seo title="Job Market Insights · PH Jobs" {description} {canonical} />
 <svelte:head>
   <!-- eslint-disable-next-line svelte/no-at-html-tags -- non-executable JSON-LD from jsonLdScript, which escapes `<` -->
   {@html jsonLd}
@@ -48,7 +48,7 @@
   <h1 class="text-3xl font-bold tracking-tight text-foreground">Job Market Insights</h1>
   <p class="mt-3 text-lg text-muted-foreground">{description}</p>
   <p class="mt-1 text-sm text-muted-foreground">
-    Aggregated from open postings on freehire, refreshed through the day. All data is
+    Aggregated from open postings on PH Jobs, refreshed through the day. All data is
     also available on the <a href={resolve('/docs/api')} class="text-brand-strong hover:underline">open API</a>.
   </p>
 

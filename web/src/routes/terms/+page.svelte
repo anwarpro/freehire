@@ -3,9 +3,9 @@
   import { resolve } from '$app/paths';
   import Seo from '#lib/components/Seo.svelte';
 
-  const repoUrl = 'https://github.com/strelov1/freehire';
-  const telegramUrl = 'https://t.me/freehiredev';
-  const contactEmail = 'hello@freehire.me';
+  const repoUrl = 'https://github.com/anwarpro/freehire';
+  const telegramUrl = 'https://jobs.programming-hero.org/support';
+  const contactUrl = 'https://jobs.programming-hero.org/support';
 
   const canonical = $derived(`${page.url.origin}/terms`);
 
@@ -14,8 +14,8 @@
 </script>
 
 <Seo
-  title="Terms of Service — freehire"
-  description="The terms for using freehire, the open-source IT job aggregator: your account, acceptable use, job listings, AI features, and liability."
+  title="Terms of Service — PH Jobs"
+  description="The terms for using PH Jobs, the open-source IT job aggregator: your account, acceptable use, job listings, AI features, and liability."
   {canonical}
 />
 
@@ -30,16 +30,15 @@
     </header>
 
     <p class="text-base leading-relaxed text-muted-foreground">
-      freehire (<a
-        href="https://freehire.me"
-        class="font-medium text-foreground underline-offset-4 hover:underline">freehire.me</a
+      PH Jobs (<a
+        href="https://jobs.programming-hero.org"
+        class="font-medium text-foreground underline-offset-4 hover:underline">jobs.programming-hero.org</a
       >), including our mobile app, is a free, open-source IT job aggregator. By using it, you
       agree to these terms.
     </p>
 
     <p class="text-sm leading-relaxed text-muted-foreground">
-      freehire is operated by ILYA STRELOV TECNOLOGIA DA INFORMACAO LTDA (CNPJ
-      58.774.293/0001-44), Florianópolis, Brazil.
+      PH Jobs is maintained by the Programming Hero team for internal job research. Contact your internal administrator for questions about this installation.
     </p>
 
     <section class="flex flex-col gap-3">
@@ -142,8 +141,8 @@
       <p class="text-sm leading-relaxed text-muted-foreground">
         Questions about these terms? Reach us at
         <a
-          href="mailto:{contactEmail}"
-          class="font-medium text-foreground underline-offset-4 hover:underline">{contactEmail}</a
+          href={contactUrl}
+          class="font-medium text-foreground underline-offset-4 hover:underline">PH Jobs support</a
         >, on
         <a href={telegramUrl} class="font-medium text-foreground underline-offset-4 hover:underline"
           >Telegram</a

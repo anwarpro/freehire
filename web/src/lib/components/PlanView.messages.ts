@@ -6,7 +6,7 @@ import { defineMessages, plurals } from '#lib/i18n/t.js';
 // raw; PlanView.test.ts holds the map to every feature the backend declares.
 export const messages = defineMessages(
   {
-    headTitle: 'Your plan — freehire',
+    headTitle: 'Your plan — PH Jobs',
     signedOut: 'Sign in to view your plan.',
     title: 'Your plan',
     description:
@@ -84,7 +84,7 @@ export const messages = defineMessages(
   },
   {
     ru: {
-      headTitle: 'Тариф — freehire',
+      headTitle: 'Тариф — PH Jobs',
       signedOut: 'Войдите, чтобы посмотреть свой тариф.',
       title: 'Ваш тариф',
       description:

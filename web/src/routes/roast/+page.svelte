@@ -129,7 +129,7 @@
   // Deliberately not the shared "sign in to do X" gate helper from #lib/signin.ts: that
   // one opens the LOGIN form and returns the visitor to the page they came from, which is
   // right for an in-place gate on an existing account (Save, Follow, Vote) but wrong here
-  // — this page's audience has never heard of freehire, so there is no account to log
+  // — this page's audience has never heard of PH Jobs, so there is no account to log
   // into, and returning to /roast would show the same anonymous page with the upload
   // gone. Instead this opens the REGISTER form (no `mode`) and lands a fresh account
   // straight on the signed-in continuation the CTA promised.
@@ -143,7 +143,7 @@
 </script>
 
 <Seo
-  title="Free CV Roast — freehire"
+  title="Free CV Roast — PH Jobs"
   description="Upload your CV for a free, instant ATS-readiness score and see how many open roles your skills actually reach. No account needed."
   {canonical}
 />

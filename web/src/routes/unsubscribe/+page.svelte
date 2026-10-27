@@ -94,7 +94,7 @@
 </script>
 
 <svelte:head>
-  <title>Email settings — freehire</title>
+  <title>Email settings — PH Jobs</title>
   <meta name="robots" content="noindex" />
 </svelte:head>
 

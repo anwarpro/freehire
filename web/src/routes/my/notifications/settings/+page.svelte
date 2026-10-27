@@ -4,7 +4,7 @@
 </script>
 
 <svelte:head>
-  <title>Notification settings — freehire</title>
+  <title>Notification settings — PH Jobs</title>
 </svelte:head>
 
 <!-- The account shell (my/+layout) owns the container, auth gate, and noindex;

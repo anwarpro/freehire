@@ -77,8 +77,8 @@
 </script>
 
 <Seo
-  title="Help us recognize your role · freehire"
-  description="Every specialization and skill freehire recognizes in job posts. Can't find your role? Add it and help us recognize it."
+  title="Help us recognize your role · PH Jobs"
+  description="Every specialization and skill PH Jobs recognizes in job posts. Can't find your role? Add it and help us recognize it."
   canonical={`${page.url.origin}/dictionary`}
 />
 

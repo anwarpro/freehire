@@ -35,7 +35,7 @@
   target="_blank"
   rel="noreferrer"
   role={variant === 'row' ? 'menuitem' : undefined}
-  aria-label="freehire on GitHub"
+  aria-label="PH Jobs on GitHub"
   class={cn(
     variant === 'inline' &&
       'inline-flex min-h-9 items-center gap-1.5 rounded-md px-2 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground',

@@ -1,7 +1,6 @@
 <script lang="ts">
   import { resolve } from '$app/paths';
   import { reopen } from '#lib/consent.svelte.js';
-  import { EXTENSION_STORE_URL } from '#lib/extensionLinks.js';
   import { POPULAR_COLLECTIONS } from '#lib/popularCollections.js';
   import { SOCIAL_LINKS } from '#lib/socialLinks.js';
   import { ProviderIcon } from '#lib/ui/index.js';
@@ -18,7 +17,6 @@
         { label: 'Collections', href: resolve('/collections') },
         { label: 'Talent Network', href: resolve('/talent') },
         { label: 'Jobs by role', href: resolve('/roles') },
-        { label: 'Pricing', href: resolve('/pricing') },
         // The glossary's only link from the app — the chip's reveal opens on
         // interaction and the sitemap is for crawlers, so this is the one path a
         // reader browsing the site can follow to it.
@@ -31,7 +29,6 @@
       title: 'Features',
       links: [
         { label: 'Advanced search', href: resolve('/features/advanced-search') },
-        { label: 'Browser extension', href: resolve('/features/extension') },
         { label: 'Inbox', href: resolve('/features/inbox') },
         { label: 'CV tailoring', href: resolve('/features/tailor') },
         { label: 'Application tracking', href: resolve('/features/tracking') },
@@ -45,17 +42,10 @@
       links: [
         { label: 'How it works', href: resolve('/how-it-works') },
         { label: 'Discussions', href: resolve('/discussions') },
-        { label: 'Blog', href: resolve('/blog') },
         { label: 'Insights', href: resolve('/insights') },
         { label: 'Hiring signal', href: resolve('/insights/companies') },
         { label: 'Trends', href: resolve('/trends') },
-        { label: 'For AI agents', href: resolve('/agents') },
-        // Beside For AI agents: the page is where an agent's author learns that search
-        // can rank by meaning, and how much of the catalogue that covers.
         { label: 'Semantic search', href: resolve('/semantic-search') },
-        { label: 'MCP', href: resolve('/mcp') },
-        { label: 'CLI', href: resolve('/cli') },
-        { label: 'ChatGPT', href: resolve('/chatgpt') },
         { label: 'API docs', href: resolve('/docs/api') },
         { label: 'Jobs API', href: resolve('/jobs-api') },
       ],
@@ -64,18 +54,12 @@
       title: 'Company',
       links: [
         { label: 'About', href: resolve('/about') },
-        { label: 'Open', href: resolve('/open') },
         { label: 'For companies', href: resolve('/for-companies') },
-        { label: 'Contribute', href: resolve('/contribute') },
-        // Next to Contribute rather than under Resources: the two are one thought —
-        // here is how to help, and here is everyone who did.
-        { label: 'Contributors', href: resolve('/contributors') },
         { label: 'Submit a job', href: resolve('/submit') },
         // Next to Status rather than under Resources: the two answer neighbouring
         // questions — where the jobs come from, and whether we are still reading them.
         { label: 'Sources', href: resolve('/sources') },
         { label: 'Status', href: resolve('/status') },
-        { label: 'Support', href: resolve('/support') },
         { label: 'Privacy', href: resolve('/privacy') },
         { label: 'Terms', href: resolve('/terms') },
         { label: 'Job removal', href: resolve('/job-removal') },
@@ -95,59 +79,9 @@
 
   const year = new Date().getFullYear();
 
-  // Product Hunt "featured" badge. Two embed URLs — one per theme — swapped by the
-  // `dark` class variant rather than by reading themeStore, so the right one is
-  // already in the SSR markup (the anti-FOUC script in app.html sets `.dark` before
-  // paint). Both URLs are Product Hunt's own, copied verbatim including the `t=`
-  // cache-buster it stamps per variant.
-  const productHunt = {
-    href: 'https://www.producthunt.com/products/freehire?embed=true&utm_source=badge-featured&utm_medium=badge&utm_campaign=badge-freehire',
-    alt: 'freehire - The open-source job search that covers every board | Product Hunt',
-    light:
-      'https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1196233&theme=light&t=1785605037608',
-    dark: 'https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1196233&theme=dark&t=1785605357228',
-  };
-
-  // Where the product can be installed, beside the Product Hunt badge rather than in
-  // a link column: these are downloads, not navigation, and a store button among a
-  // list of page links reads as neither.
-  //
-  // Drawn from the design system's own marks and tokens instead of each store's
-  // official badge artwork — the two vendors' badges disagree about height, corner
-  // radius and dark-mode treatment, so side by side they look like two pasted
-  // screenshots. One shape in the site's own colours matches the footer around it
-  // and follows the theme without a second asset per mode; ProviderIcon already
-  // ships both marks, so this needs no image at all.
-  //
-  // The App Store URL carries NO country segment on purpose. The listing's share link
-  // is `/br/app/...`, which pins every visitor to the Brazilian storefront; without one
-  // Apple redirects each visitor to their own (measured: the bare form answers 301 to
-  // `/us/app/...`, the `/br/` form answers 200).
-  //
-  // The extension's URL is not spelled here at all — see #lib/extensionLinks, which the
-  // extension landing and its JSON-LD read too. The App Store one IS spelled here, and
-  // the asymmetry is deliberate only while this is its single consumer: a mobile landing
-  // page or a MobileApplication JSON-LD is the second, and that is when it earns an
-  // appLinks.ts beside extensionLinks.ts. Note for whoever does it — Footer.test.ts pins
-  // the literal to THIS file, so the move is two edits, not one.
-  const stores = [
-    {
-      provider: 'apple',
-      kicker: 'Download on the',
-      name: 'App Store',
-      href: 'https://apps.apple.com/app/freehire-open-job-search/id6801885119',
-    },
-    {
-      provider: 'chrome',
-      kicker: 'Available in the',
-      name: 'Chrome Web Store',
-      href: EXTENSION_STORE_URL,
-    },
-  ];
-
   // Compact: the account shell (/my/*) is an app-like surface with its own sidebar
   // nav, so the four link columns, the popular-collections strip and the Product
-  // Hunt badge below are marketing chrome that doesn't belong there — only the
+  // promotions are unnecessary there — only the
   // bottom bar (copyright, cookie settings, social links, open-source note) still
   // applies. Full-bleed account routes (/my/assistant/*, /tailor/*) render no
   // footer at all, compact or otherwise — see routes/+layout.svelte's hideFooter.
@@ -199,50 +133,6 @@
         </ul>
       </nav>
 
-      <!-- The badge and the two store buttons share one row, centred rather than
-           stretched: the badge is a fixed 54px image, the buttons sit on the spacing
-           scale at h-14 (56px), and 1px above and below is invisible. Do NOT "fix" that
-           to h-[54px] — check:tokens refuses an arbitrary value here, which is the whole
-           reason these are 56px. Wrapping, so a narrow viewport stacks them rather than
-           shrinking any. -->
-      <div class="mt-8 flex flex-wrap items-center gap-3">
-        <!-- eslint-disable-next-line svelte/no-navigation-without-resolve -- external Product Hunt page opened in a new tab; not an internal route -->
-        <a href={productHunt.href} target="_blank" rel="noopener noreferrer" class="inline-block">
-          <img
-            src={productHunt.light}
-            alt={productHunt.alt}
-            width="250"
-            height="54"
-            loading="lazy"
-            class="dark:hidden"
-          />
-          <img
-            src={productHunt.dark}
-            alt={productHunt.alt}
-            width="250"
-            height="54"
-            loading="lazy"
-            class="hidden dark:block"
-          />
-        </a>
-
-        {#each stores as store (store.href)}
-          <!-- eslint-disable-next-line svelte/no-navigation-without-resolve -- external store listing opened in a new tab; not an internal route -->
-          <a href={store.href}
-            target="_blank"
-            rel="noopener noreferrer"
-            class="inline-flex h-14 items-center gap-3 rounded-lg border border-border px-4 text-foreground transition-colors hover:bg-muted"
-          >
-            <ProviderIcon provider={store.provider} class="size-7 shrink-0" />
-            <span class="flex flex-col leading-tight">
-              <span class="text-xs uppercase tracking-wider text-muted-foreground">
-                {store.kicker}
-              </span>
-              <span class="text-sm font-semibold">{store.name}</span>
-            </span>
-          </a>
-        {/each}
-      </div>
     </div>
   {/if}
 
@@ -254,7 +144,7 @@
       class="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-4 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between sm:gap-1"
     >
       <div class="flex items-center gap-4">
-        <p>© {year}</p>
+        <p>© {year} PH Jobs</p>
         <!-- Re-opens the consent banner so a prior cookie choice can be changed —
              withdrawal as easy as granting (GDPR). -->
         <button
@@ -279,9 +169,9 @@
         </div>
       </div>
       <p>
-        Free &amp; open-source.
+        Built for the Programming Hero team.
         <!-- eslint-disable-next-line svelte/no-navigation-without-resolve -- external repository URL opened in a new tab; not an internal route -->
-        <a href="https://github.com/strelov1/freehire"
+        <a href="https://github.com/anwarpro/freehire"
           target="_blank"
           rel="noopener noreferrer"
           class="font-medium text-foreground transition-colors hover:text-muted-foreground"

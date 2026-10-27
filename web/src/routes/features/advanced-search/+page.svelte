@@ -11,7 +11,7 @@
     jsonLdScript([
       faqPageJsonLd(ADVANCED_SEARCH_FAQ),
       breadcrumbJsonLd([
-        { name: 'freehire', url: `${origin}/` },
+        { name: 'PH Jobs', url: `${origin}/` },
         { name: 'Advanced search', url: canonical },
       ]),
     ])
@@ -19,7 +19,7 @@
 </script>
 
 <Seo
-  title="Advanced job search — filters, exclusions and saved alerts | freehire"
+  title="Advanced job search — filters, exclusions and saved alerts | PH Jobs"
   description="Twenty filterable facets — role, skills, seniority, region, company, salary and more — each one includable or excludable, and saved to your profile as an alert. The same filters work from the API and the CLI."
   {canonical}
 />

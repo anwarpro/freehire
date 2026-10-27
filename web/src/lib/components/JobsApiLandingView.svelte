@@ -57,7 +57,7 @@
     ['Lifecycle', 'posted, first and last seen, and closed — a closed posting says so'],
   ];
 
-  const curl = `curl "https://freehire.me/api/v1/jobs/search?countries=de&category=software_engineering&limit=100" \\
+  const curl = `curl "https://jobs.programming-hero.org/api/v1/jobs/search?countries=de&category=software_engineering&limit=100" \\
   -H "Authorization: Bearer $FREEHIRE_API_KEY"`;
 
   const sample = `{
@@ -170,7 +170,7 @@
         </p>
       </div>
       <div class="rounded-xl border-2 border-primary p-6">
-        <h3 class="font-semibold">Flat on freehire</h3>
+        <h3 class="font-semibold">Flat on PH Jobs</h3>
         <p class="mt-2 text-sm leading-relaxed text-muted-foreground">
           One monthly price and a per-minute request rate with no daily cap. A page returns up
           to 100 full postings, so how much of the catalogue you read never changes the bill.
@@ -196,7 +196,7 @@
     </h2>
     <ul class="mt-8 flex max-w-2xl flex-col gap-3 text-muted-foreground">
       <li><span class="text-foreground">Store</span> what you read and <span class="text-foreground">show</span> it in your own product, commercial or not.</li>
-      <li><span class="text-foreground">Link</span> each posting you show to its freehire page, or credit “via freehire.me”.</li>
+      <li><span class="text-foreground">Link</span> each posting you show to its PH Jobs page, or credit “via freehire.me”.</li>
       <li><span class="text-foreground">Don’t resell</span> the raw data as a dataset, download or feed of its own.</li>
       <li><span class="text-foreground">Analyse</span> it over time and train your own models on it.</li>
       <li><span class="text-foreground">When the plan ends</span>, stop showing the postings. What you derived from them — figures, trends, models — stays yours.</li>

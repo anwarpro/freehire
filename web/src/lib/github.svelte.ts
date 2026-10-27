@@ -13,11 +13,11 @@ import { browser } from '$app/env';
 // is a 403: a console error, and a badge with no number. The server route answers
 // from one process-wide hourly cache (see #lib/server/github).
 
-const REPO = 'strelov1/freehire';
+const REPO = 'anwarpro/freehire';
 export const GITHUB_URL = `https://github.com/${REPO}`;
 const STARS_ENDPOINT = '/github-stars';
 
-const CACHE_KEY = 'hire.gh_stars';
+const CACHE_KEY = 'phjobs.gh_stars';
 const TTL_MS = 6 * 60 * 60 * 1000; // 6h
 
 type Cached = { count: number; at: number };

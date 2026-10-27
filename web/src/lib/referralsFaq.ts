@@ -9,7 +9,7 @@ export const REFERRALS_FAQ: FaqItem[] = [
   {
     question: 'What does it cost?',
     answer:
-      'Nothing. freehire is a free, open-source aggregator — referrals included. No fees, no paywall.',
+      'Nothing. PH Jobs is a free, open-source aggregator — referrals included. No fees, no paywall.',
   },
   {
     question: 'Will the referrer see my name?',

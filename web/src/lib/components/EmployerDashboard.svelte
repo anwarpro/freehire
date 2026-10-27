@@ -88,7 +88,7 @@
   // the same shape SubmitView uses for its own single form.
   let formOpen = $state(false);
   let editingSlug = $state<string | null>(null);
-  // On freehire by default: it is what an employer cannot get from their own careers page.
+  // On PH Jobs by default: it is what an employer cannot get from their own careers page.
   let applyMode = $state<EmployerApplyMode>('freehire');
   let questions = $state<EmployerQuestion[]>([]);
   let questionsLoaded = $state(true);
@@ -104,7 +104,7 @@
   let formError = $state<string | null>(null);
 
   // A url is the identity of a linked vacancy only, and only when creating one: an edit
-  // never sends it, and a vacancy taking applications on freehire has none to send.
+  // never sends it, and a vacancy taking applications on PH Jobs has none to send.
   const needsUrl = $derived(!editingSlug && applyMode === 'external');
   // A description is required: search keeps out a posting without one, and the server
   // refuses it rather than publish a vacancy nobody can find.

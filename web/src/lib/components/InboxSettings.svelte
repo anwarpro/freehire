@@ -1,5 +1,5 @@
 <script lang="ts">
-  // The inbox's Settings pane: the freehire mailbox, the one source it still owns
+  // The inbox's Settings pane: the PH Jobs mailbox, the one source it still owns
   // (claim/release). It reports the outcome upward — the mail list, its filters and
   // its pager live in InboxView and stay there.
   //
@@ -71,7 +71,7 @@
 </script>
 
 <!-- Sources: the two ways to get mail in — Gmail (a status line, connected on
-     Integrations) and the freehire mailbox (owned here). -->
+     Integrations) and the PH Jobs mailbox (owned here). -->
 <div class="grid gap-3 sm:grid-cols-2">
   <!-- Gmail: status only — the connect/disconnect/sync UI lives on Integrations. -->
   <div class="rounded-xl border border-border bg-card p-4">

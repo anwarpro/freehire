@@ -5,8 +5,8 @@
   import { CLI_REPO, MCP_REPO } from '#lib/cliLinks.js';
   import { Button, SectionLabel } from '#lib/ui/index.js';
 
-  const LLMS_TXT = 'https://freehire.me/llms.txt';
-  const OPENAPI = 'https://freehire.me/openapi.yaml';
+  const LLMS_TXT = 'https://jobs.programming-hero.org/llms.txt';
+  const OPENAPI = 'https://jobs.programming-hero.org/openapi.yaml';
   const GPT_URL = 'https://chatgpt.com/g/g-6a5281b64948819193bf3a1021e075da-freehire';
   const CLAUDE_CONNECTOR_URL = 'https://claude.ai/directory/freehire';
   // A third-party, open-source Claude Code job-search framework that ships a
@@ -18,11 +18,11 @@
   // already have. It leans on two URLs that already exist and are already
   // maintained — the install script and llms.txt — rather than restating setup
   // that would then drift from them.
-  const HANDOFF = `Install freehire and use it to run my job search.
+  const HANDOFF = `Install PH Jobs and use it to run my job search.
 
-  curl -fsSL https://freehire.me/install.sh | sh
+  curl -fsSL https://jobs.programming-hero.org/install.sh | sh
 
-Then read https://freehire.me/llms.txt for the conventions,
+Then read https://jobs.programming-hero.org/llms.txt for the conventions,
 and \`freehire --help\` for the commands.`;
 
   // What an agent can actually do, each pointing at the feature that owns it.
@@ -125,7 +125,7 @@ and \`freehire --help\` for the commands.`;
           class="reveal mt-6 max-w-2xl text-balance text-4xl font-semibold leading-[0.98] tracking-tighter sm:text-6xl"
           style="--d:80ms"
         >
-          Hand freehire<br />to your agent.
+          Hand PH Jobs<br />to your agent.
         </h1>
 
         <p class="reveal mt-7 max-w-xl text-lg leading-relaxed text-muted-foreground" style="--d:160ms">
@@ -166,11 +166,11 @@ and \`freehire --help\` for the commands.`;
               {copied ? 'copied ✓' : 'copy'}
             </button>
           </figcaption>
-          <pre class="overflow-x-auto p-4 leading-relaxed">Install freehire and use it to run my job search.
+          <pre class="overflow-x-auto p-4 leading-relaxed">Install PH Jobs and use it to run my job search.
 
-  curl -fsSL <span class="text-foreground">https://freehire.me/install.sh</span> | sh
+  curl -fsSL <span class="text-foreground">https://jobs.programming-hero.org/install.sh</span> | sh
 
-Then read <span class="text-foreground">https://freehire.me/llms.txt</span> for the conventions,
+Then read <span class="text-foreground">https://jobs.programming-hero.org/llms.txt</span> for the conventions,
 and <span class="text-foreground">`freehire --help`</span> for the commands.</pre>
         </figure>
         <p class="mt-3 pl-1 font-mono text-xs text-muted-foreground">
@@ -245,7 +245,7 @@ and <span class="text-foreground">`freehire --help`</span> for the commands.</pr
             terminal
           </figcaption>
           <pre class="overflow-x-auto p-4 leading-relaxed"><span class="text-muted-foreground"># no Go toolchain needed</span>
-curl -fsSL <span class="text-foreground">https://freehire.me/install.sh</span> | sh
+curl -fsSL <span class="text-foreground">https://jobs.programming-hero.org/install.sh</span> | sh
 
 <span class="text-muted-foreground"># only for the account half</span>
 freehire auth login --token <span class="text-foreground">fhk_…</span>
@@ -263,7 +263,7 @@ freehire search <span class="text-foreground">"golang"</span> --remote --region 
         <span class="font-mono text-sm text-muted-foreground">02</span>
         <h3 class="mt-3 text-lg font-semibold tracking-tight">Claude, or any MCP host</h3>
         <p class="mt-3 text-sm leading-relaxed text-muted-foreground">
-          Using Claude.ai? Add the freehire connector from Claude's directory — no config, nothing to
+          Using Claude.ai? Add the PH Jobs connector from Claude's directory — no config, nothing to
           install. For Claude Desktop or another host, run the server yourself:
         </p>
         <p class="mt-3 text-sm leading-relaxed text-muted-foreground">
@@ -282,7 +282,7 @@ freehire search <span class="text-foreground">"golang"</span> --remote --region 
         <pre
           class="mt-4 overflow-x-auto rounded-lg border border-border bg-secondary/50 p-3 font-mono text-xs leading-relaxed">{`{
   "mcpServers": {
-    "freehire": {
+    "PH Jobs": {
       "command": "npx",
       "args": ["-y", "freehire-mcp"]
     }
@@ -382,7 +382,7 @@ freehire search <span class="text-foreground">"golang"</span> --remote --region 
 
     <p class="mt-8 max-w-3xl text-sm leading-relaxed text-muted-foreground">
       An agent never submits an application for you — you still apply on the employer's own site and
-      freehire records that you did. The one exception works the other way round: the
+      PH Jobs records that you did. The one exception works the other way round: the
       <a
         href={resolve('/features/extension')}
         class="font-medium text-foreground underline-offset-4 hover:underline">browser extension</a
@@ -398,7 +398,7 @@ freehire search <span class="text-foreground">"golang"</span> --remote --region 
       <div>
         <h2 class="text-2xl font-semibold tracking-tight">The surface is the difference</h2>
         <p class="mt-4 leading-relaxed text-muted-foreground">
-          A hosted assistant runs freehire's tools inside someone else's conversation. A local
+          A hosted assistant runs PH Jobs's tools inside someone else's conversation. A local
           harness runs them next to your files, which is where a job hunt actually lives: the CV you
           keep, the notes you take, the mailbox you export. That is the whole of the gap — not
           model quality.

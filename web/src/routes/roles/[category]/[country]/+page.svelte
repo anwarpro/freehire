@@ -24,8 +24,8 @@
   const heading = $derived(`${what} Jobs in ${where}`);
   const pageTitle = $derived(
     data.pageNumber > 1
-      ? `${heading} — page ${data.pageNumber} · freehire`
-      : `${heading} · freehire`,
+      ? `${heading} — page ${data.pageNumber} · PH Jobs`
+      : `${heading} · PH Jobs`,
   );
 
   /** Facet distribution → the rows a strip renders, biggest first. */
@@ -48,7 +48,7 @@
     jsonLdScript([
       collectionPageJsonLd(heading, data.intro, canonical, jobListItems(data.initial.items, origin)),
       breadcrumbJsonLd([
-        { name: 'freehire', url: `${origin}/` },
+        { name: 'PH Jobs', url: `${origin}/` },
         { name: 'Roles', url: `${origin}/roles` },
         { name: what, url: `${origin}/roles/${data.categorySlug}` },
         { name: heading, url: base },
@@ -65,7 +65,7 @@
 
 <div class="mx-auto w-full max-w-6xl px-4 py-6">
   <nav class="mb-4 flex items-center gap-2 text-sm text-muted-foreground" aria-label="Breadcrumb">
-    <a href={resolve('/')} class="hover:underline">freehire</a>
+    <a href={resolve('/')} class="hover:underline">PH Jobs</a>
     <span>/</span>
     <a href={resolve('/roles')} class="hover:underline">Roles</a>
     <span>/</span>

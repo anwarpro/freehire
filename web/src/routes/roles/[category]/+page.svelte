@@ -17,7 +17,7 @@
   // what clears the publication gate, and a country with 40 postings is hiring and
   // absent here. Same rule as the salary and english blocks — say what is shown.
   const description = $derived(
-    `${count(data.total)} open ${data.label} jobs on freehire, across the ${data.countries.length} countries with at least ${MIN_PAIR_OPEN} of them.`,
+    `${count(data.total)} open ${data.label} jobs on PH Jobs, across the ${data.countries.length} countries with at least ${MIN_PAIR_OPEN} of them.`,
   );
   // The category's own feed. A query string on a resolve()d base — there is no
   // dynamic route segment here for resolve() to fill.
@@ -26,7 +26,7 @@
   const jsonLd = $derived(
     jsonLdScript([
       breadcrumbJsonLd([
-        { name: 'freehire', url: `${origin}/` },
+        { name: 'PH Jobs', url: `${origin}/` },
         { name: 'Roles', url: `${origin}/roles` },
         { name: data.label, url: canonical },
       ]),
@@ -34,7 +34,7 @@
   );
 </script>
 
-<Seo title={`${heading} · freehire`} {description} {canonical} />
+<Seo title={`${heading} · PH Jobs`} {description} {canonical} />
 <svelte:head>
   <!-- eslint-disable-next-line svelte/no-at-html-tags -- non-executable JSON-LD from jsonLdScript, which escapes `<` -->
   {@html jsonLd}
@@ -42,7 +42,7 @@
 
 <div class="mx-auto w-full max-w-4xl px-4 py-6">
   <nav class="mb-4 flex items-center gap-2 text-sm text-muted-foreground" aria-label="Breadcrumb">
-    <a href={resolve('/')} class="hover:underline">freehire</a>
+    <a href={resolve('/')} class="hover:underline">PH Jobs</a>
     <span>/</span>
     <a href={resolve('/roles')} class="hover:underline">Roles</a>
   </nav>

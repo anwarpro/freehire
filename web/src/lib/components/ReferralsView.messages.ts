@@ -5,7 +5,7 @@ import { defineMessages } from '#lib/i18n/t.js';
 // the token rather than to nothing.
 export const messages = defineMessages(
   {
-    headTitle: 'Referrals — freehire',
+    headTitle: 'Referrals — PH Jobs',
     title: 'Referrals',
     tabs: {
       requests: 'My requests',
@@ -79,7 +79,7 @@ export const messages = defineMessages(
   },
   {
     ru: {
-      headTitle: 'Рефералы — freehire',
+      headTitle: 'Рефералы — PH Jobs',
       title: 'Рефералы',
       tabs: {
         requests: 'Мои запросы',

@@ -2,13 +2,13 @@
   import { page } from '$app/state';
   import Seo from '#lib/components/Seo.svelte';
 
-  const contactEmail = 'hello@freehire.me';
+  const contactUrl = 'https://jobs.programming-hero.org/support';
   const canonical = $derived(`${page.url.origin}/delete-account`);
 </script>
 
 <Seo
-  title="Delete Your Account — freehire"
-  description="How to permanently delete your freehire account and data, on the web or in the mobile app."
+  title="Delete Your Account — PH Jobs"
+  description="How to permanently delete your PH Jobs account and data, on the web or in the mobile app."
   {canonical}
 />
 
@@ -22,7 +22,7 @@
     </header>
 
     <p class="text-base leading-relaxed text-muted-foreground">
-      You can permanently delete your freehire account and its data at any time, from the website
+      You can permanently delete your PH Jobs account and its data at any time, from the website
       or the mobile app. This cannot be undone — there is no grace period and no recovery.
     </p>
 
@@ -58,8 +58,8 @@
       <p class="text-sm leading-relaxed text-muted-foreground">
         If you can't access your account to delete it yourself, email us at
         <a
-          href="mailto:{contactEmail}"
-          class="font-medium text-foreground underline-offset-4 hover:underline">{contactEmail}</a
+          href={contactUrl}
+          class="font-medium text-foreground underline-offset-4 hover:underline">PH Jobs support</a
         >
         from the address on the account and we'll delete it for you.
       </p>

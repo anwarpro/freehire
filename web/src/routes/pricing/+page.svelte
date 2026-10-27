@@ -224,7 +224,7 @@
 </script>
 
 <Seo
-  title="Pricing — freehire"
+  title="Pricing — PH Jobs"
   description="Search, alerts, tracking, the inbox and agent access over MCP are free. Pro adds CV tailoring, the AI assistant, the browser extension that fills applications, and background auto-apply. $5 a month, cancel any time."
   canonical={`${origin}/pricing`}
 />

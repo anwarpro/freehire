@@ -28,7 +28,7 @@
 <!-- noindex: one page per company per offset of postings nobody can apply to is not
      something to hand a crawler. The postings' own pages stay indexable. -->
 <Seo
-  title={`${name} — closed positions · freehire`}
+  title={`${name} — closed positions · PH Jobs`}
   description={`Positions ${name} posted that are no longer accepting applications.`}
   robots="noindex, follow"
 />

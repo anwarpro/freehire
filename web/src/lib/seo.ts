@@ -8,11 +8,11 @@ import { COUNTRY_REGION_MAP } from './generated/contracts';
 import { companyLogoUrl } from './logo';
 import type { Company, Enrichment, Job, JobCard } from './types';
 
-const SITE = 'freehire';
+const SITE = 'PH Jobs';
 // Site-level facts reused across the homepage WebSite/Organization schema.
 const SITE_DESCRIPTION =
-  'Freehire is an open-source search engine for tech jobs: it indexes millions of openings straight from company career boards, deduplicates them, and tags each with stack, seniority and location. Free and open source.';
-const SITE_GITHUB = 'https://github.com/strelov1/freehire';
+  'PH Jobs helps the Programming Hero team discover worldwide tech jobs from company career boards, with skills, technology stacks, seniority and location filters.';
+const SITE_GITHUB = 'https://github.com/anwarpro/freehire';
 
 /** One question/answer pair; the shape shared by the visible FAQ and its schema. */
 export type FaqItem = { question: string; answer: string };
@@ -83,28 +83,28 @@ export function companyMetaDescription(company: Company, max = 200): string {
 
   let text: string;
   if (lead && factClause) {
-    text = `${lead} — ${factClause}. Open roles on freehire.`;
+    text = `${lead} — ${factClause}. Open roles on PH Jobs.`;
   } else if (lead) {
-    text = `${lead}. Open roles at ${company.name} on freehire.`;
+    text = `${lead}. Open roles at ${company.name} on PH Jobs.`;
   } else if (factClause) {
-    text = `${company.name}: ${factClause}. Open roles on freehire.`;
+    text = `${company.name}: ${factClause}. Open roles on PH Jobs.`;
   } else {
-    text = `Open jobs at ${company.name}, aggregated by freehire.`;
+    text = `Open jobs at ${company.name}, aggregated by PH Jobs.`;
   }
 
   if (text.length <= max) return text;
   return `${text.slice(0, max - 1).trimEnd()}…`;
 }
 
-/** "<title> — <company> · freehire" for the document title. */
+/** "<title> — <company> · PH Jobs" for the document title. */
 export function jobPageTitle(job: Job): string {
   const lead = job.company ? `${job.title} — ${job.company}` : job.title;
   return `${lead} · ${SITE}`;
 }
 
-/** "<name> — <n> open jobs · freehire" for a company page's document title.
+/** "<name> — <n> open jobs · PH Jobs" for a company page's document title.
  *
- *  The bare "<name> · freehire" it replaces ran as short as 18 characters, which
+ *  The bare "<name> · PH Jobs" it replaces ran as short as 18 characters, which
  *  left most of the SERP title width unused and read identically whether the
  *  company had one opening or six thousand. The count is the fact a searcher is
  *  actually weighing, and it is the same live total the page's own heading shows.
@@ -120,9 +120,9 @@ export function companyPageTitle(name: string, total: number | undefined): strin
   return `${name} — ${roles} · ${SITE}`;
 }
 
-/** "<n> companies hiring in tech · freehire" for the /companies directory title.
+/** "<n> companies hiring in tech · PH Jobs" for the /companies directory title.
  *
- *  The bare "Companies · freehire" it replaces was 20 characters that named no
+ *  The bare "Companies · PH Jobs" it replaces was 20 characters that named no
  *  subject: nothing in it could match a query, and most of the SERP title width went
  *  to the brand. The count is the fact a searcher weighs, and it is the same total
  *  the page's own heading and its ItemList describe.
@@ -564,7 +564,7 @@ export function websiteJsonLd(origin: string): Record<string, unknown> {
   };
 }
 
-/** schema.org Organization for freehire itself (the publisher) — names the entity
+/** schema.org Organization for PH Jobs itself (the publisher) — names the entity
  *  for search/AI engines. Distinct from `organizationJsonLd`, which describes a
  *  hiring company on its own page. */
 export function siteOrganizationJsonLd(origin: string): Record<string, unknown> {
@@ -641,7 +641,7 @@ export function companyListItems(
 
 /** schema.org Dataset descriptor for a page that presents aggregate figures
  *  (insights salary bands and demand rankings; the live /open snapshot) — tells
- *  search/AI engines the data is free to access and published by freehire.
+ *  search/AI engines the data is free to access and published by PH Jobs.
  *
  *  `distributions` advertises the machine-readable endpoints the page's figures are
  *  read from, and is omitted when there are none: the insights pages are
@@ -709,7 +709,7 @@ export function definedTermJsonLd(
     inDefinedTermSet: {
       '@type': 'DefinedTermSet',
       '@id': `${origin}/skills`,
-      name: 'freehire IT skills glossary',
+      name: 'PH Jobs IT skills glossary',
     },
   };
 }
@@ -721,9 +721,9 @@ export function webApiJsonLd(origin: string): Record<string, unknown> {
   return {
     '@context': 'https://schema.org',
     '@type': 'WebAPI',
-    name: 'freehire API',
+    name: 'PH Jobs API',
     description:
-      'A read-first, open HTTP API over the freehire job catalogue: query jobs by seniority, skills, region and salary, read companies, and track applications with an API key.',
+      'A read-first, open HTTP API over the PH Jobs job catalogue: query jobs by seniority, skills, region and salary, read companies, and track applications with an API key.',
     url: `${origin}/docs/api`,
     documentation: `${origin}/docs/api`,
     termsOfService: `${origin}/privacy`,
@@ -746,9 +746,9 @@ export function cliApplicationJsonLd(
   return {
     '@context': 'https://schema.org',
     '@type': 'SoftwareApplication',
-    name: 'freehire CLI',
+    name: 'PH Jobs CLI',
     description:
-      'A small Go CLI and an MCP server over the freehire job API, so an AI agent or a script can search, open and track jobs without a browser. One API key drives both.',
+      'A small Go CLI and an MCP server over the PH Jobs job API, so an AI agent or a script can search, open and track jobs without a browser. One API key drives both.',
     url: `${origin}/cli`,
     applicationCategory: 'DeveloperApplication',
     operatingSystem: 'macOS, Linux',
@@ -771,7 +771,7 @@ export function extensionApplicationJsonLd(
   return {
     '@context': 'https://schema.org',
     '@type': 'SoftwareApplication',
-    name: 'freehire browser extension',
+    name: 'PH Jobs browser extension',
     description:
       "A job-application agent in your browser's side panel: it reads the posting you are on, scores it against your CV, and fills the application form from your profile — you press Submit.",
     url: `${origin}/features/extension`,

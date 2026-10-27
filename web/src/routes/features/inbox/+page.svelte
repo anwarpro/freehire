@@ -12,8 +12,8 @@
 </script>
 
 <Seo
-  title="Inbox — recruiter replies, sorted onto your board | freehire"
-  description="freehire reads your job mail and tags what it says — received, rejected, interview, information requested — then attaches each reply to the application it belongs to and moves the card forward. Connect Gmail read-only, or claim a freehire address and apply with it."
+  title="Inbox — recruiter replies, sorted onto your board | PH Jobs"
+  description="PH Jobs reads your job mail and tags what it says — received, rejected, interview, information requested — then attaches each reply to the application it belongs to and moves the card forward. Connect Gmail read-only, or claim a PH Jobs address and apply with it."
   {canonical}
 />
 

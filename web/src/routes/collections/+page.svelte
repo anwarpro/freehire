@@ -31,7 +31,7 @@
 </script>
 
 <Seo
-  title="Collections · freehire"
+  title="Collections · PH Jobs"
   description="Curated collections of open tech jobs — remote by region, languages, frameworks, seniority, Y Combinator–backed companies, Big Tech, and more."
   {canonical}
 />

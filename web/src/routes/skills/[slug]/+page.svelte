@@ -42,7 +42,7 @@
         origin,
       ),
       breadcrumbJsonLd([
-        { name: 'freehire', url: `${origin}/` },
+        { name: 'PH Jobs', url: `${origin}/` },
         { name: 'Skills', url: `${origin}/skills` },
         { name: data.label, url: canonical },
       ]),
@@ -50,7 +50,7 @@
   );
 </script>
 
-<Seo title={`What is ${data.label}? · freehire`} description={metaDescription} {canonical} />
+<Seo title={`What is ${data.label}? · PH Jobs`} description={metaDescription} {canonical} />
 <svelte:head>
   <!-- eslint-disable-next-line svelte/no-at-html-tags -- non-executable JSON-LD from jsonLdScript, which escapes `<` -->
   {@html jsonLd}
@@ -58,7 +58,7 @@
 
 <div class="mx-auto w-full max-w-4xl px-4 py-6">
   <nav class="mb-4 flex items-center gap-2 text-sm text-muted-foreground" aria-label="Breadcrumb">
-    <a href={resolve('/')} class="hover:underline">freehire</a>
+    <a href={resolve('/')} class="hover:underline">PH Jobs</a>
     <span>/</span>
     <a href={resolve('/skills')} class="hover:underline">Skills</a>
   </nav>

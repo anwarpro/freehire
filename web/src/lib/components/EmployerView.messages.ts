@@ -5,12 +5,12 @@ import { defineMessages } from '#lib/i18n/t.js';
 // than printing the wire value.
 export const messages = defineMessages(
   {
-    headTitle: 'Employer — freehire',
+    headTitle: 'Employer — PH Jobs',
     signedOut: 'Sign in to manage your company.',
     loadError: "Couldn't load your employer account.",
 
     // Claim step: no account yet.
-    claimTitle: 'Manage your company on freehire',
+    claimTitle: 'Manage your company on PH Jobs',
     claimIntro:
       'Claim your company to edit its profile and publish your own vacancies directly — no crawler, no waiting for a moderator to hand-enter them.',
     companyNameLabel: 'Company name',
@@ -94,8 +94,8 @@ export const messages = defineMessages(
     vacancyError: 'Could not save the vacancy. Please try again.',
     urlTakenError: 'This URL is already used by another employer’s vacancy.',
     applyModeLabel: 'How candidates apply',
-    applyModeFreehire: 'On freehire',
-    applyModeFreehireHint: 'Candidates apply on the vacancy page. You receive each application by email — CV attached, reply goes straight to the candidate. The vacancy is only on freehire.',
+    applyModeFreehire: 'On PH Jobs',
+    applyModeFreehireHint: 'Candidates apply on the vacancy page. You receive each application by email — CV attached, reply goes straight to the candidate. The vacancy is only on PH Jobs.',
     applyModeExternal: 'On my own site',
     applyModeExternalHint: 'Candidates follow your link to apply.',
     questionsLabel: 'Questions for candidates',
@@ -109,16 +109,16 @@ export const messages = defineMessages(
     questionOptions: 'Choices (two or more)',
     addQuestion: 'Add a question',
     removeQuestion: 'Remove question',
-    onSiteLabel: 'applications on freehire',
+    onSiteLabel: 'applications on PH Jobs',
     questionsLoadError: 'Could not load the questions. Close the form and try again.',
   },
   {
     ru: {
-      headTitle: 'Работодатель — freehire',
+      headTitle: 'Работодатель — PH Jobs',
       signedOut: 'Войдите, чтобы управлять компанией.',
       loadError: 'Не удалось загрузить данные аккаунта работодателя.',
 
-      claimTitle: 'Управляйте своей компанией на freehire',
+      claimTitle: 'Управляйте своей компанией на PH Jobs',
       claimIntro:
         'Заявите права на компанию, чтобы редактировать её профиль и публиковать свои вакансии напрямую — без краулера и без ожидания модератора.',
       companyNameLabel: 'Название компании',
@@ -196,8 +196,8 @@ export const messages = defineMessages(
       vacancyError: 'Не удалось сохранить вакансию. Попробуйте ещё раз.',
       urlTakenError: 'Эта ссылка уже используется вакансией другого работодателя.',
       applyModeLabel: 'Как откликаются кандидаты',
-      applyModeFreehire: 'На freehire',
-      applyModeFreehireHint: 'Кандидаты откликаются прямо на странице вакансии. Каждый отклик приходит вам на почту: CV во вложении, ответ уходит кандидату напрямую. Вакансия есть только на freehire.',
+      applyModeFreehire: 'На PH Jobs',
+      applyModeFreehireHint: 'Кандидаты откликаются прямо на странице вакансии. Каждый отклик приходит вам на почту: CV во вложении, ответ уходит кандидату напрямую. Вакансия есть только на PH Jobs.',
       applyModeExternal: 'На своём сайте',
       applyModeExternalHint: 'Кандидаты переходят по вашей ссылке.',
       questionsLabel: 'Вопросы кандидатам',
@@ -211,7 +211,7 @@ export const messages = defineMessages(
       questionOptions: 'Варианты (два или больше)',
       addQuestion: 'Добавить вопрос',
       removeQuestion: 'Удалить вопрос',
-      onSiteLabel: 'отклики на freehire',
+      onSiteLabel: 'отклики на PH Jobs',
       questionsLoadError: 'Не удалось загрузить вопросы. Закройте форму и попробуйте снова.',
     },
   },

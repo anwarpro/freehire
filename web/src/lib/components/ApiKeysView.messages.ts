@@ -5,7 +5,7 @@ import { defineMessages } from '#lib/i18n/t.js';
 // the component rather than living here.
 export const messages = defineMessages(
   {
-    headTitle: 'API keys — freehire',
+    headTitle: 'API keys — PH Jobs',
     signedOut: 'Sign in to create and manage API keys.',
     title: 'API keys',
     intro: {
@@ -15,7 +15,7 @@ export const messages = defineMessages(
       // trailing space to read correctly — and the sentence's final period is a
       // literal in the markup, since it is the same character in every locale.
       lead: 'Reach the API without a browser — search, open jobs, and track applications from a script. Use the',
-      cliLink: 'freehire CLI',
+      cliLink: 'PH Jobs CLI',
       orSendDirectly: ', or send the key directly as',
       seeThe: '. See the',
       apiReferenceLink: 'API reference',
@@ -72,12 +72,12 @@ export const messages = defineMessages(
   },
   {
     ru: {
-      headTitle: 'API-ключи — freehire',
+      headTitle: 'API-ключи — PH Jobs',
       signedOut: 'Войдите, чтобы создавать API-ключи и управлять ими.',
       title: 'API-ключи',
       intro: {
         lead: 'Обращайтесь к API без браузера — ищите вакансии, открывайте их и ведите отклики из скрипта. Используйте',
-        cliLink: 'freehire CLI',
+        cliLink: 'PH Jobs CLI',
         orSendDirectly: ' или передавайте ключ напрямую как',
         seeThe: '. Смотрите',
         apiReferenceLink: 'справочник API',

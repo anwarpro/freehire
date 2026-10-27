@@ -2,23 +2,23 @@
   import { page } from '$app/state';
   import Seo from '#lib/components/Seo.svelte';
 
-  const repoUrl = 'https://github.com/strelov1/freehire';
-  const telegramUrl = 'https://t.me/freehiredev';
+  const repoUrl = 'https://github.com/anwarpro/freehire';
+  const telegramUrl = 'https://jobs.programming-hero.org/support';
   // Confirmed monitored. This is the address a data-subject request and the Google OAuth
   // review team both arrive at, so it has to stay a mailbox somebody actually reads —
   // the same string is published on /terms, /support and /delete-account.
-  const contactEmail = 'hello@freehire.me';
+  const contactUrl = 'https://jobs.programming-hero.org/support';
 
   const canonical = $derived(`${page.url.origin}/privacy`);
 
-  // Static effective date — freehire has no Date.now-driven content, and a hard
+  // Static effective date — PH Jobs has no Date.now-driven content, and a hard
   // date is what a privacy policy needs. Bump this whenever the policy changes.
   const lastUpdated = 'October 21, 2026';
 </script>
 
 <Seo
-  title="Privacy Policy — freehire"
-  description="How freehire, the open-source IT job aggregator, collects, uses, and stores your data: accounts, job tracking, CV analysis, cookies, and third-party services."
+  title="Privacy Policy — PH Jobs"
+  description="How PH Jobs, the open-source IT job aggregator, collects, uses, and stores your data: accounts, job tracking, CV analysis, cookies, and third-party services."
   {canonical}
 />
 
@@ -33,17 +33,16 @@
     </header>
 
     <p class="text-base leading-relaxed text-muted-foreground">
-      freehire (<a
-        href="https://freehire.me"
-        class="font-medium text-foreground underline-offset-4 hover:underline">freehire.me</a
+      PH Jobs (<a
+        href="https://jobs.programming-hero.org"
+        class="font-medium text-foreground underline-offset-4 hover:underline">jobs.programming-hero.org</a
       >) is a free, open-source IT job aggregator. This policy explains what data we collect, why,
       and who we share it with. We collect only what the product needs to work, and we never sell
       your data.
     </p>
 
     <p class="text-sm leading-relaxed text-muted-foreground">
-      freehire is operated by ILYA STRELOV TECNOLOGIA DA INFORMACAO LTDA (CNPJ
-      58.774.293/0001-44), Florianópolis, Brazil, which is the controller of your personal data.
+      PH Jobs is maintained by the Programming Hero team for internal job research. Contact your internal administrator for questions about this installation.
     </p>
 
     <section class="flex flex-col gap-3">
@@ -117,9 +116,9 @@
     </section>
 
     <section class="flex flex-col gap-3">
-      <h2 class="text-xl font-semibold tracking-tight">Applying on freehire</h2>
+      <h2 class="text-xl font-semibold tracking-tight">Applying on PH Jobs</h2>
       <p class="text-sm leading-relaxed text-muted-foreground">
-        Some vacancies are published by their employer directly on freehire and take applications
+        Some vacancies are published by their employer directly on PH Jobs and take applications
         here. When you apply to one, we email that employer the CV you chose, your answers to their
         questions, your note and your email address, so they can reply to you. Nothing reaches an
         employer until you press Send, and only the employer of that vacancy receives it. We keep a
@@ -132,7 +131,7 @@
     <section class="flex flex-col gap-3">
       <h2 class="text-xl font-semibold tracking-tight">Third-party services</h2>
       <p class="text-sm leading-relaxed text-muted-foreground">
-        We rely on a small set of processors to run freehire:
+        We rely on a small set of processors to run PH Jobs:
       </p>
       <ul class="flex flex-col gap-2 text-sm leading-relaxed text-muted-foreground">
         <li>
@@ -164,7 +163,7 @@
           — only if you choose to sign in with them, to verify your identity and email.
         </li>
         <li>
-          <span class="font-medium text-foreground">ChatGPT Actions</span> — if you connect freehire
+          <span class="font-medium text-foreground">ChatGPT Actions</span> — if you connect PH Jobs
           to a custom GPT, ChatGPT sends your search and tracking requests (authenticated with your
           API key) to our API. Your use of ChatGPT is also governed by OpenAI's own privacy policy.
         </li>
@@ -174,13 +173,13 @@
     <section class="flex flex-col gap-3">
       <h2 class="text-xl font-semibold tracking-tight">Browser extension</h2>
       <p class="text-sm leading-relaxed text-muted-foreground">
-        The freehire Chrome extension puts a job-application agent in a side panel next to whatever
+        The PH Jobs Chrome extension puts a job-application agent in a side panel next to whatever
         page you are on. It does nothing until you sign in from the panel.
       </p>
       <ul class="flex flex-col gap-3 text-sm leading-relaxed text-muted-foreground">
         <li>
           <span class="font-medium text-foreground">Session token.</span> Signing in stores your
-          freehire session token in <code class="font-mono text-foreground">chrome.storage.local</code
+          PH Jobs session token in <code class="font-mono text-foreground">chrome.storage.local</code
           >, scoped to your browser profile, alongside the random analytics id described below.
           Nothing else is stored there.
         </li>
@@ -195,14 +194,14 @@
         </li>
         <li>
           <span class="font-medium text-foreground">Profile data for Autofill.</span> Filling an
-          application form sends the relevant fields from your freehire profile (name, email, phone,
+          application form sends the relevant fields from your PH Jobs profile (name, email, phone,
           CV fields) to the page; you review and submit yourself.
         </li>
         <li>
           <span class="font-medium text-foreground">Usage analytics.</span> The extension sends
           anonymous usage events to Google Analytics — that the panel was opened, that you signed
           in, sent a chat message, ran Autofill, or reached a plan limit — under a random id minted
-          for this browser profile, not your freehire account. No page address, page content,
+          for this browser profile, not your PH Jobs account. No page address, page content,
           message, or profile field is ever part of an event.
         </li>
       </ul>
@@ -250,7 +249,7 @@
           vocabulary that runs entirely on our own servers. Only when that cannot decide do we send
           the sender, the subject, and the first 4,000 characters of the body to TypeSafe, and, if
           TypeSafe cannot answer, to our language-model provider (see “Third-party services”). No
-          human at freehire reads your mail, except where you explicitly ask us to look at a
+          human at PH Jobs reads your mail, except where you explicitly ask us to look at a
           specific message for support, or where we are legally required to.
         </li>
         <li>
@@ -261,7 +260,7 @@
         </li>
       </ul>
       <p class="text-sm leading-relaxed text-muted-foreground">
-        freehire's use and transfer to any other app of information received from Google APIs will
+        PH Jobs's use and transfer to any other app of information received from Google APIs will
         adhere to the
         <a
           href="https://developers.google.com/terms/api-services-user-data-policy"
@@ -281,7 +280,7 @@
         on, and switching it on for one CV does not affect any other.
       </p>
       <p class="text-sm leading-relaxed text-muted-foreground">
-        When it is on, the links in that CV's PDF point at freehire and forward to the real
+        When it is on, the links in that CV's PDF point at PH Jobs and forward to the real
         destination. Following one records the time, the browser and operating system family, the
         device type, and the host — not the full address — of the page the visitor came from. It
         also records a keyed hash of the visitor's IP address and browser identity, so that repeat
@@ -333,8 +332,8 @@
       <p class="text-sm leading-relaxed text-muted-foreground">
         Questions or requests about your data? Reach us at
         <a
-          href="mailto:{contactEmail}"
-          class="font-medium text-foreground underline-offset-4 hover:underline">{contactEmail}</a
+          href={contactUrl}
+          class="font-medium text-foreground underline-offset-4 hover:underline">PH Jobs support</a
         >, on
         <a href={telegramUrl} class="font-medium text-foreground underline-offset-4 hover:underline"
           >Telegram</a

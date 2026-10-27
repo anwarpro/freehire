@@ -7,7 +7,7 @@
   const benefits = [
     {
       title: 'Free forever',
-      body: 'freehire is an open-source, non-commercial aggregator. Posting a job costs nothing — no fees, no paywall, no upsell.',
+      body: 'PH Jobs is an open-source, non-commercial aggregator. Posting a job costs nothing — no fees, no paywall, no upsell.',
     },
     {
       title: 'Reviewed, not spammed',
@@ -36,7 +36,7 @@
       Put your role in front of developers.
     </h1>
     <p class="max-w-xl text-lg leading-relaxed text-muted-foreground">
-      Submit a vacancy to freehire and, once a moderator approves it, it joins one clean, searchable
+      Submit a vacancy to PH Jobs and, once a moderator approves it, it joins one clean, searchable
       feed of tech jobs — free, open-source, no fees.
     </p>
     <div class="flex flex-wrap items-center gap-3">

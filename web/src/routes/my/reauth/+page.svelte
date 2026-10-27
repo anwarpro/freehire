@@ -23,7 +23,7 @@
   });
 </script>
 
-<svelte:head><title>Confirm identity · freehire</title></svelte:head>
+<svelte:head><title>Confirm identity · PH Jobs</title></svelte:head>
 <div class="mx-auto max-w-md py-16 text-center">
   <h1 class="mb-3 text-xl font-semibold tracking-tight">Confirm your identity</h1>
   {#if error}

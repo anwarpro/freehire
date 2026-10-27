@@ -15,7 +15,7 @@ export const TAILOR_FAQ: FaqItem[] = [
   {
     question: 'How do I start tailoring?',
     answer:
-      'From a job. Run the AI match analysis on a vacancy, then tailor from its result — the analysis is what the tailored CV reframes toward, so the flow needs one first. freehire copies your base CV into a new one bound to that vacancy; your original is never edited.',
+      'From a job. Run the AI match analysis on a vacancy, then tailor from its result — the analysis is what the tailored CV reframes toward, so the flow needs one first. PH Jobs copies your base CV into a new one bound to that vacancy; your original is never edited.',
   },
   {
     question: 'What does it actually change?',

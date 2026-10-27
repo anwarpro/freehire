@@ -12,15 +12,13 @@
   import { countryLabel } from '#lib/facets.js';
   import { emptyFilters, filtersToParams } from '#lib/facetModel.js';
   import type { StagedFilters } from '#lib/stagedFilters.svelte.js';
-  import { CLI_INSTALL, CLI_REPO } from '#lib/cliLinks.js';
-  import { EXTENSION_CLAIMS, EXTENSION_STORE_URL } from '#lib/extensionLinks.js';
   import { starterSuggestions } from '#lib/suggestions.js';
-  import { Button, ProviderIcon, SectionLabel } from '#lib/ui/index.js';
+  import { SectionLabel } from '#lib/ui/index.js';
   import type { CatalogScale, FacetCounts } from '#lib/types.js';
 
   // The homepage. One search box on an otherwise empty screen, and under it — for the
   // visitor who came to look rather than to search — how big the catalogue is and the
-  // two places freehire runs that are not this page.
+  // two places PH Jobs runs that are not this page.
   //
   // The box is the header's own search component at hero size. On a page with no list
   // registered, that component already drives a target that turns every pick into a
@@ -160,19 +158,6 @@
     void goto(query ? `${resolve('/jobs')}?${query}` : resolve('/jobs'));
   }
 
-  let copied = $state(false);
-  let copyTimer: ReturnType<typeof setTimeout> | undefined;
-  async function copyInstall() {
-    try {
-      await navigator.clipboard.writeText(CLI_INSTALL);
-      copied = true;
-      clearTimeout(copyTimer);
-      copyTimer = setTimeout(() => (copied = false), 1600);
-    } catch {
-      // Clipboard can be blocked (no permission, insecure context) — the command is
-      // plainly visible to select by hand, so a failed copy needs no fallback.
-    }
-  }
 </script>
 
 <!-- One row of shortcuts into the catalogue. Two rows use it — the crafts and the
@@ -306,94 +291,6 @@
 {/if}
 
 <RecentJobsFeed />
-
-<!-- The two places freehire runs that are not a web page. Side by side because they
-     are the same offer twice — the catalogue where you already work — and stacking
-     them would make the second read as an afterthought. Each card carries its own
-     evidence: the CLI its install line, the extension what the panel actually does. -->
-<section class="border-t border-border py-12 sm:py-16">
-  <SectionLabel as="h2" text="take it with you" />
-  <!-- `grid-cols-1` is load-bearing, not the default written out: with no column template
-       the single track below `lg` is `auto`, which sizes to its widest content — the
-       install line in the `pre`, which does not wrap. That took the track to 416px on a
-       390px phone and gave the whole page a horizontal scrollbar. Tailwind's `grid-cols-*`
-       are `repeat(N, minmax(0, 1fr))` for exactly this, and the `pre` scrolls itself. -->
-  <div class="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
-    <div class="flex flex-col gap-5 rounded-xl border border-border p-6 sm:p-8">
-      <div class="flex flex-col gap-3">
-        <!-- h3: the section's own label above is its h2. -->
-        <h3 class="text-2xl font-semibold tracking-tight">
-          Search and track from the terminal.
-        </h3>
-        <p class="text-sm leading-relaxed text-muted-foreground">
-          One binary, no Go needed. Ships agent skills too, so Claude Code and any MCP
-          host can run the search, read the facets and move an application along.
-        </p>
-      </div>
-
-      <figure class="overflow-hidden rounded-lg border border-border bg-secondary/40 font-mono text-xs">
-        <!-- The figure carries `font-mono text-xs`, so nothing inside restates it. -->
-        <figcaption
-          class="flex items-center gap-2 border-b border-border px-3 py-1.5 text-muted-foreground"
-        >
-          install
-          <button
-            type="button"
-            onclick={copyInstall}
-            class="ml-auto rounded-md border border-border px-2 py-0.5 font-medium text-muted-foreground transition-colors hover:text-foreground"
-          >
-            {copied ? 'copied ✓' : 'copy'}
-          </button>
-          <!-- The button's own text change is not reliably voiced, so the result is said
-               through a region that is always mounted and only changes its words. -->
-          <span class="sr-only" role="status">{copied ? 'Install command copied' : ''}</span>
-        </figcaption>
-        <pre class="overflow-x-auto p-4 leading-relaxed">{CLI_INSTALL}</pre>
-      </figure>
-
-      <div class="mt-auto flex flex-wrap items-center gap-3">
-        <Button href={resolve('/cli')} variant="outline" size="md">What it does</Button>
-        <!-- eslint-disable-next-line svelte/no-navigation-without-resolve -- absolute GitHub URL from #lib/cliLinks (shared with the CLI page's JSON-LD codeRepository), not a SvelteKit route -->
-        <a href={CLI_REPO}
-          target="_blank"
-          rel="noopener noreferrer"
-          class="text-sm text-muted-foreground transition-colors hover:text-foreground"
-        >
-          Source
-        </a>
-      </div>
-    </div>
-
-    <div class="flex flex-col gap-5 rounded-xl border border-border p-6 sm:p-8">
-      <div class="flex flex-col gap-3">
-        <h3 class="text-2xl font-semibold tracking-tight">Apply where you already are.</h3>
-        <p class="text-sm leading-relaxed text-muted-foreground">
-          A job-application agent in Chrome's side panel, next to the posting you are
-          reading — on any site, not just the ones freehire tracks.
-        </p>
-      </div>
-
-      <ul class="list-disc space-y-2 pl-5 text-sm text-muted-foreground">
-        {#each EXTENSION_CLAIMS as claim (claim)}
-          <li>{claim}</li>
-        {/each}
-      </ul>
-
-      <div class="mt-auto flex flex-wrap items-center gap-3">
-        <Button href={EXTENSION_STORE_URL} target="_blank" variant="primary" size="md">
-          <ProviderIcon provider="chrome" class="size-4" />
-          Add to Chrome
-        </Button>
-        <a
-          href={resolve('/features/extension')}
-          class="text-sm text-muted-foreground transition-colors hover:text-foreground"
-        >
-          How it works
-        </a>
-      </div>
-    </div>
-  </div>
-</section>
 
 <!-- Seeded empty and applied by navigating: see `searchWithFilters`. `savedSearches`
      is off — that tab manages the alerts a signed-in visitor saved from a list, and

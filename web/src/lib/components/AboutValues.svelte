@@ -23,12 +23,12 @@
     {
       n: '04',
       title: 'Open, so you can check.',
-      body: "freehire is open source and free to fork. You don't have to take our word that there's no catch — the code is right there. Transparency is how we keep the other promises honest.",
+      body: "PH Jobs is open source and free to fork. You don't have to take our word that there's no catch — the code is right there. Transparency is how we keep the other promises honest.",
     },
     {
       n: '05',
       title: 'Built to last, not to flip.',
-      body: "We're not chasing an exit or a data sale. freehire is built to keep serving candidates for years — each improvement compounds instead of being a one-off, so it gets better the longer it runs.",
+      body: "We're not chasing an exit or a data sale. PH Jobs is built to keep serving candidates for years — each improvement compounds instead of being a one-off, so it gets better the longer it runs.",
     },
   ];
 </script>

@@ -9,9 +9,9 @@
   // What the GPT can do, framed as the two halves of the job hunt: find, then
   // track. Mirrors the CLI page so the two agent surfaces read as one product.
   const discover = [
-    { title: 'Search with real filters', body: 'Region, work mode, stack, seniority, salary — the GPT calls the live freehire search, not the open web.' },
+    { title: 'Search with real filters', body: 'Region, work mode, stack, seniority, salary — the GPT calls the live PH Jobs search, not the open web.' },
     { title: 'Open a job or company', body: 'Full posting details, similar roles, and company context, straight from the catalogue.' },
-    { title: 'Every result is real', body: 'Each job links back to its freehire page and the original apply URL — nothing invented.' },
+    { title: 'Every result is real', body: 'Each job links back to its PH Jobs page and the original apply URL — nothing invented.' },
   ];
 
   const track = [
@@ -28,7 +28,7 @@
     <div class="grid items-center gap-12 lg:grid-cols-[1.05fr_0.95fr]">
       <div>
         <p class="reveal font-mono text-xs uppercase tracking-[0.2em] text-muted-foreground" style="--d:0ms">
-          // freehire inside ChatGPT
+          // PH Jobs inside ChatGPT
         </p>
 
         <h1
@@ -39,15 +39,15 @@
         </h1>
 
         <p class="reveal mt-7 max-w-xl text-lg leading-relaxed text-muted-foreground" style="--d:160ms">
-          <span class="text-foreground">freehire GPT</span> is a custom GPT wired to the same job API the
+          <span class="text-foreground">PH Jobs GPT</span> is a custom GPT wired to the same job API the
           site runs on. Ask for jobs in plain language and it searches the live
-          <code class="font-mono text-foreground">freehire</code> catalogue — then saves, applies and tracks
+          <code class="font-mono text-foreground">PH Jobs</code> catalogue — then saves, applies and tracks
           them on your account. (You still apply on the employer's site; the GPT records that you did.)
         </p>
 
         <div class="reveal mt-9 flex flex-wrap items-center gap-3" style="--d:240ms">
           <Button href={GPT_URL} target="_blank" rel="noopener noreferrer" variant="primary" size="lg">
-            Open freehire GPT ↗
+            Open PH Jobs GPT ↗
           </Button>
           <Button href={resolve('/my/api-keys')} variant="outline" size="lg">Get an API key</Button>
         </div>
@@ -69,14 +69,14 @@
           class="flex items-center gap-2 border-b border-border px-4 py-2.5 text-xs text-muted-foreground"
         >
           <span class="size-2.5 rounded-full bg-muted-foreground/30"></span>
-          ChatGPT · freehire
+          ChatGPT · PH Jobs
         </figcaption>
         <div class="flex flex-col gap-4 p-4 leading-relaxed">
           <div class="self-end max-w-[85%] rounded-2xl rounded-br-sm bg-foreground px-3.5 py-2 text-background">
             Find remote senior backend Go jobs in Europe
           </div>
           <div class="max-w-[92%] rounded-2xl rounded-bl-sm border border-border bg-background px-3.5 py-2.5">
-            <p class="text-muted-foreground">Here are open roles from freehire:</p>
+            <p class="text-muted-foreground">Here are open roles from PH Jobs:</p>
             <p class="mt-2 font-medium text-foreground">Senior Go Backend Engineer — Wolt</p>
             <p class="text-xs text-muted-foreground">Remote · Helsinki / Stockholm · EU</p>
             <p class="mt-1 font-mono text-xs text-muted-foreground">freehire.me/jobs/…-wolt</p>
@@ -133,7 +133,7 @@
     <ol class="mt-6 max-w-2xl space-y-3 text-sm leading-relaxed text-muted-foreground">
       <li>
         <span class="font-medium text-foreground">1.</span>
-        <a href={GPT_URL} target="_blank" rel="noopener noreferrer" class="font-medium text-foreground underline-offset-4 hover:underline">Open freehire GPT</a>
+        <a href={GPT_URL} target="_blank" rel="noopener noreferrer" class="font-medium text-foreground underline-offset-4 hover:underline">Open PH Jobs GPT</a>
         and start asking for jobs — search needs no setup.
       </li>
       <li>
@@ -154,7 +154,7 @@
     <p class="text-sm leading-relaxed text-muted-foreground">
       Free and open source — no tracking, no lock-in. Read every line on
       <a
-        href="https://github.com/strelov1/freehire"
+        href="https://github.com/anwarpro/freehire"
         target="_blank"
         rel="noopener noreferrer"
         class="font-medium text-foreground underline-offset-4 hover:underline">GitHub ↗</a

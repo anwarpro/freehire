@@ -30,14 +30,14 @@
   const robots = $derived(listingRobots(data.initial.total));
   // The number belongs in the title too, or every page advertises itself as the same
   // one. Mirrors the job feed. Page 1 leads with the live count and the subject —
-  // see companiesPageTitle for why the bare "Companies · freehire" was a waste.
+  // see companiesPageTitle for why the bare "Companies · PH Jobs" was a waste.
   const title = $derived(
     data.pageNumber > 1
-      ? `Companies — page ${data.pageNumber} · freehire`
+      ? `Companies — page ${data.pageNumber} · PH Jobs`
       : companiesPageTitle(data.initial.total)
   );
   // Structured data for the directory: a CollectionPage wrapping the server-rendered
-  // first page of companies as an ItemList, plus a breadcrumb (freehire → Companies),
+  // first page of companies as an ItemList, plus a breadcrumb (PH Jobs → Companies),
   // mirroring the collection landings. The list follows the active filters, so a
   // deep-linked filtered URL describes what it actually shows.
   const jsonLd = $derived(
@@ -49,7 +49,7 @@
         companyListItems(data.initial.items, origin)
       ),
       breadcrumbJsonLd([
-        { name: 'freehire', url: `${origin}/` },
+        { name: 'PH Jobs', url: `${origin}/` },
         { name: 'Companies', url: canonical },
       ]),
     ])

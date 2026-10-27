@@ -78,7 +78,7 @@
 <div
   class="relative hidden w-5/12 shrink-0 flex-col overflow-hidden bg-brand p-10 text-brand-foreground lg:flex"
   role="group"
-  aria-label="freehire"
+  aria-label="PH Jobs"
   onmouseenter={stop}
   onmouseleave={play}
   onfocusin={stop}
@@ -86,7 +86,7 @@
 >
   <a href={resolve('/')} class="flex items-center gap-2 text-sm font-semibold tracking-tight">
     <BrandMark />
-    freehire
+    PH Jobs
   </a>
 
   <!-- `my-auto` (not the parent's justify-between) centers this block vertically: it

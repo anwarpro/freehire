@@ -128,7 +128,7 @@
   // deliberately deferred change (it touches CardInput, both call sites, and the SPA
   // contracts), so this narrows to the shape that already carries the field.
   // An empty url is a posting with nowhere outside to send the candidate: a vacancy taking
-  // applications on freehire, whose Apply opens its own job page, where the form is. Only
+  // applications on PH Jobs, whose Apply opens its own job page, where the form is. Only
   // `jobview.Job` carries that flag, like `url`.
   // A closed posting takes no applications, so it offers no Apply at all.
   const applyJob = $derived('url' in job && job.url && !job.closed_at ? job : null);

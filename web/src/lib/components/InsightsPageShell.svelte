@@ -21,7 +21,7 @@
   // `heading` is the page's <h1>, NOT its <title>. The distinction is the whole
   // reason for the name: this prop was called `title`, every caller handed it the
   // string it was already giving <Seo>, and the brand suffix that belongs in a tab
-  // label ("… · freehire") rendered inside the heading on every insights page.
+  // label ("… · PH Jobs") rendered inside the heading on every insights page.
   let {
     category,
     label,
@@ -60,7 +60,7 @@
 
 <article class="mx-auto w-full max-w-4xl px-4 py-8">
   <nav aria-label="Breadcrumb" class="mb-4 text-sm text-muted-foreground">
-    <a href={resolve('/')} class="hover:underline">freehire</a>
+    <a href={resolve('/')} class="hover:underline">PH Jobs</a>
     <span aria-hidden="true"> › </span>
     <a href={resolve('/insights')} class="hover:underline">Insights</a>
     <span aria-hidden="true"> › </span>

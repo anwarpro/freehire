@@ -2,7 +2,7 @@ import { defineMessages } from '#lib/i18n/t.js';
 
 export const messages = defineMessages(
   {
-    headTitle: 'Contribute a board — freehire',
+    headTitle: 'Contribute a board — PH Jobs',
     signedOut: 'Sign in to contribute a board.',
     title: 'Contribute a board',
     description:
@@ -27,7 +27,7 @@ export const messages = defineMessages(
   },
   {
     ru: {
-      headTitle: 'Добавить борд — freehire',
+      headTitle: 'Добавить борд — PH Jobs',
       signedOut: 'Войдите, чтобы добавить борд.',
       title: 'Добавить борд',
       description:

@@ -54,13 +54,13 @@
       directory: {
         url: 'https://claude.ai/directory/manage/freehire',
         brand: siClaude,
-        note: 'One click, signs in with freehire',
+        note: 'One click, signs in with PH Jobs',
       },
       steps: [
         'Open Settings, then Connectors.',
         'Choose Add custom connector.',
-        'Name it freehire, paste the address, and choose Add.',
-        'Start a new chat, turn the freehire connector on, and ask a job question.',
+        'Name it PH Jobs, paste the address, and choose Add.',
+        'Start a new chat, turn the PH Jobs connector on, and ask a job question.',
       ],
     },
     {
@@ -71,8 +71,8 @@
       steps: [
         'Open Settings, then Apps & Connectors.',
         'Under Advanced settings, turn on Developer mode.',
-        'Choose Create, name it freehire, and paste the address.',
-        'In a new chat, pick freehire from the + menu and ask a job question.',
+        'Choose Create, name it PH Jobs, and paste the address.',
+        'In a new chat, pick PH Jobs from the + menu and ask a job question.',
       ],
     },
     {
@@ -83,9 +83,9 @@
       mono: true,
       steps: [
         'Open Connect apps in the sidebar.',
-        'Add a custom app, name it freehire, and paste the address.',
+        'Add a custom app, name it PH Jobs, and paste the address.',
         'If Grok Bot asks you to authorize, finish the sign-in in your browser.',
-        'In a chat, type @ and pick freehire, then ask a job question.',
+        'In a chat, type @ and pick PH Jobs, then ask a job question.',
       ],
     },
     {
@@ -93,7 +93,7 @@
       label: 'Claude Code',
       domain: 'claude.ai',
       steps: ['Run this once in your terminal, then ask Claude Code a job question.'],
-      snippet: (u) => `claude mcp add --transport http freehire ${u}`,
+      snippet: (u) => `claude mcp add --transport http ph-jobs ${u}`,
     },
     {
       // Gemini's own web app has no way to add an MCP server; its CLI does.
@@ -101,7 +101,7 @@
       label: 'Gemini CLI',
       domain: 'gemini.google.com',
       steps: ['Run this once in your terminal, then ask Gemini CLI a job question.'],
-      snippet: (u) => `gemini mcp add --transport http freehire ${u}`,
+      snippet: (u) => `gemini mcp add --transport http ph-jobs ${u}`,
     },
     {
       id: 'cursor',
@@ -116,7 +116,7 @@
       file: '~/.cursor/mcp.json',
       snippet: (u) => `{
   "mcpServers": {
-    "freehire": { "url": "${u}" }
+    "PH Jobs": { "url": "${u}" }
   }
 }`,
     },
@@ -190,7 +190,7 @@
       Search jobs right inside your AI assistant.
     </h1>
     <p class="mt-7 max-w-xl text-lg leading-relaxed text-muted-foreground">
-      Free. No freehire account needed to search — sign in only if you want the assistant to save and track jobs for
+      Free. No PH Jobs account needed to search — sign in only if you want the assistant to save and track jobs for
       you.
     </p>
   </div>
@@ -198,13 +198,13 @@
   <figure class="overflow-hidden rounded-xl border border-border bg-secondary/60 text-sm shadow-sm">
     <figcaption class="flex items-center gap-2 border-b border-border px-4 py-2.5 text-xs text-muted-foreground">
       <span class="size-2.5 rounded-full bg-muted-foreground/30"></span>
-      Your assistant · freehire connector
+      Your assistant · PH Jobs connector
     </figcaption>
     <div class="flex flex-col gap-3 p-4 leading-relaxed">
       <div class="max-w-xs self-end rounded-2xl rounded-br-sm bg-foreground px-3.5 py-2 text-background">
         Remote senior Go jobs in Europe, posted this week
       </div>
-      <p class="text-xs text-muted-foreground">Used freehire · Search jobs</p>
+      <p class="text-xs text-muted-foreground">Used PH Jobs · Search jobs</p>
       <div class="max-w-md rounded-2xl rounded-bl-sm border border-border bg-background px-3.5 py-2.5">
         <p class="text-muted-foreground">Here are the strongest matches:</p>
         {#each heroJobs as job (job.title)}
@@ -325,7 +325,7 @@
         {/if}
         {#if mode === 'account'}
           <p class="mt-5 text-sm leading-relaxed text-muted-foreground">
-            The first time it is used, your assistant opens a freehire sign-in page and asks you to approve the
+            The first time it is used, your assistant opens a PH Jobs sign-in page and asks you to approve the
             connection.
           </p>
         {/if}

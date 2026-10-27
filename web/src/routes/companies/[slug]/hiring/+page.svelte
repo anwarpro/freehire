@@ -65,7 +65,7 @@
 </script>
 
 <Seo
-  title={`${name} hiring trends — open roles, reply rate · freehire`}
+  title={`${name} hiring trends — open roles, reply rate · PH Jobs`}
   {description}
   {canonical}
   robots={hiringRobots(data.hiring)}
@@ -110,7 +110,7 @@
               {#if data.response}
                 <p class="mt-1 text-2xl font-semibold tabular-nums">{replyRate(data.response)}%</p>
                 <p class="mt-1 text-sm text-muted-foreground">
-                  of {data.response.applications} applications freehire members tracked here got a reply{#if data.response.median_reply_days !== undefined},
+                  of {data.response.applications} applications PH Jobs members tracked here got a reply{#if data.response.median_reply_days !== undefined},
                     the first after {Math.round(data.response.median_reply_days)} days (median){/if}
                 </p>
               {:else}

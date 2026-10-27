@@ -121,7 +121,7 @@
     <div class={['flex shrink-0 items-center', wideHeader && 'flex-1 basis-0']}>
       <a
         href={resolve('/')}
-        aria-label="freehire"
+        aria-label="PH Jobs"
         class="flex items-center gap-2 text-sm font-semibold tracking-tight"
       >
         <BrandMark />
@@ -130,7 +130,7 @@
              box; the API reference's is Scalar's), which has the room. What the row spends
              that room on instead is the nav below, and the two budgets are the same 358px:
              they are set together. -->
-        <span class={showSiteNav ? 'inline' : 'hidden sm:inline'} aria-hidden="true">freehire</span>
+        <span class={showSiteNav ? 'inline' : 'hidden sm:inline'} aria-hidden="true">PH Jobs</span>
       </a>
     </div>
 
@@ -150,7 +150,7 @@
         <nav aria-label="Site" class="flex items-center gap-3 sm:gap-5 lg:gap-6">
           <!-- Divides the nav from the wordmark, the same rule the search box draws
                between its Location scope and the field. Without it the first link sat
-               one word-gap from "freehire" and read as part of it. -->
+               one word-gap from "PH Jobs" and read as part of it. -->
           <div aria-hidden="true" class="h-5 w-px shrink-0 bg-border"></div>
           {#each HEADER_LINKS as link, i (link.href)}
             {@const Icon = link.icon}

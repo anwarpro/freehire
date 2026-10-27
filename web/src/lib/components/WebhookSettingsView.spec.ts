@@ -67,7 +67,7 @@ describe('WebhookSettingsView — Russian locale', () => {
       ),
     ).toBeTruthy();
     expect(screen.getByText('URL')).toBeTruthy();
-    expect(screen.getByPlaceholderText('https://example.com/freehire-hook')).toBeTruthy();
+    expect(screen.getByPlaceholderText('https://example.com/ph-jobs-hook')).toBeTruthy();
   });
 
   it('renders the enabled status line, action buttons, and delete dialog in Russian once a webhook exists', async () => {
@@ -93,7 +93,7 @@ describe('WebhookSettingsView — Russian locale', () => {
     render(WebhookSettingsView);
 
     const input = await vi.waitFor(() =>
-      screen.getByPlaceholderText('https://example.com/freehire-hook'),
+      screen.getByPlaceholderText('https://example.com/ph-jobs-hook'),
     );
     // Syntactically valid (so the native `type="url"` constraint lets the form
     // submit) — the mocked API is what rejects it, exactly as the server-side
@@ -114,7 +114,7 @@ describe('WebhookSettingsView — Russian locale', () => {
     render(WebhookSettingsView);
 
     const input = await vi.waitFor(() =>
-      screen.getByPlaceholderText('https://example.com/freehire-hook'),
+      screen.getByPlaceholderText('https://example.com/ph-jobs-hook'),
     );
     await fireEvent.input(input, { target: { value: 'https://example.com/hook' } });
     await fireEvent.click(screen.getByText('Создать вебхук'));

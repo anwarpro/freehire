@@ -13,7 +13,7 @@ export const GHOST_FAQ: FaqItem[] = [
       'A posting nobody is actually working to fill — kept up to collect CVs, to look like the company is growing, or simply because nobody took it down. Studies put it between 18% and 27% of listings; Greenhouse, which can see its own customers\' hiring pipelines, reported 18–22% per quarter with 70% of its employers having listed at least one.',
   },
   {
-    question: 'Does freehire say a company is lying?',
+    question: 'Does PH Jobs say a company is lying?',
     answer:
       'No, and it is built so that it cannot. The system observes two things: how a posting behaves, and what happened to people who applied. It never observes intent, so the strongest thing it will say is that a posting may be inactive — always beside the specific facts that led there. "Open 240 days, found only on an aggregator" is checkable; "this employer is not really hiring" is a claim about someone\'s state of mind.',
   },

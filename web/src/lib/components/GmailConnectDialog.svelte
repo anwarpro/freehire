@@ -6,7 +6,7 @@
   // The parent owns open/close; onConnect proceeds to the Google OAuth redirect.
   let { onClose, onConnect }: { onClose: () => void; onConnect: () => void } = $props();
 
-  const REPO = 'https://github.com/strelov1/freehire/blob/main';
+  const REPO = 'https://github.com/anwarpro/freehire/blob/main';
   // The pipeline stages, each linking to the exact source that implements it — the
   // project is open source, so "how it works" is verifiable, not a promise.
   const steps: { title: string; body: string; href: string }[] = [
@@ -58,7 +58,7 @@
       <div class="min-w-0 flex-1">
         <h2 class="text-lg font-semibold leading-tight">Connect Gmail</h2>
         <p class="mt-0.5 text-sm text-muted-foreground">
-          freehire reads only your recruiting mail and sorts it under your applications — automatically.
+          PH Jobs reads only your recruiting mail and sorts it under your applications — automatically.
         </p>
       </div>
       <button
@@ -105,7 +105,7 @@
         <span>
           Read-only Gmail scope, only mail from recruiting platforms is fetched, and it's all
           <a
-            href="https://github.com/strelov1/freehire"
+            href="https://github.com/anwarpro/freehire"
             target="_blank"
             rel="noopener noreferrer"
             class="font-medium text-brand-strong hover:underline">open source</a

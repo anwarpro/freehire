@@ -46,7 +46,7 @@
     <meta property="og:description" content={description} />
   {/if}
   <meta property="og:type" content={ogType} />
-  <meta property="og:site_name" content="freehire" />
+  <meta property="og:site_name" content="PH Jobs" />
   <meta property="og:image" content={previewImage} />
   <meta property="og:image:type" content="image/png" />
   <meta property="og:image:width" content="1200" />

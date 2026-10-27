@@ -332,7 +332,7 @@
             </div>
             {#if existingSlug}
               <p class="text-xs text-muted-foreground">
-                This job is already on freehire —
+                This job is already on PH Jobs —
                 <a
                   href={resolve('/jobs/[slug]', { slug: existingSlug })}
                   class="font-medium text-foreground underline underline-offset-4 hover:no-underline"

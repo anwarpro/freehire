@@ -8,19 +8,19 @@ import type { FaqItem } from './seo';
 
 export const INBOX_FAQ: FaqItem[] = [
   {
-    question: 'How does freehire get my job emails?',
+    question: 'How does PH Jobs get my job emails?',
     answer:
-      'Two ways. Every account can claim a freehire address — you forward recruiter mail to it, or use it when you apply, and replies land there directly. Or you connect Gmail read-only, and freehire syncs the job-related mail it finds. Both feed the same inbox; you can use either or both.',
+      'Two ways. Every account can claim a PH Jobs address — you forward recruiter mail to it, or use it when you apply, and replies land there directly. Or you connect Gmail read-only, and PH Jobs syncs the job-related mail it finds. Both feed the same inbox; you can use either or both.',
   },
   {
-    question: 'Does freehire read all of my email?',
+    question: 'Does PH Jobs read all of my email?',
     answer:
-      'No. The hosted address only ever receives what you forward or what employers send to it — freehire never sees the rest of your mailbox. The Gmail connection is read-only and scoped to job-related mail: freehire learns which senders write about your applications and syncs those. You can disconnect Gmail or release the freehire address at any time.',
+      'No. The hosted address only ever receives what you forward or what employers send to it — PH Jobs never sees the rest of your mailbox. The Gmail connection is read-only and scoped to job-related mail: PH Jobs learns which senders write about your applications and syncs those. You can disconnect Gmail or release the PH Jobs address at any time.',
   },
   {
     question: 'How does an email get attached to the right application?',
     answer:
-      'By matching the mail thread, or the company name carried in the sender name or subject. When that match is certain, the email is linked to the application automatically. When it is not, freehire offers it as a suggestion for you to confirm — the AI classifier can propose a match, but it never links one on its own.',
+      'By matching the mail thread, or the company name carried in the sender name or subject. When that match is certain, the email is linked to the application automatically. When it is not, PH Jobs offers it as a suggestion for you to confirm — the AI classifier can propose a match, but it never links one on its own.',
   },
   {
     question: 'What statuses can an email be tagged with?',

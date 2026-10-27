@@ -210,7 +210,7 @@
      Written into the existing head rather than through <Seo>, which would also emit
      a canonical and an Open Graph card — the opposite of what this page wants. -->
 <svelte:head>
-  <title>{titles[mode]} · freehire</title>
+  <title>{titles[mode]} · PH Jobs</title>
   <meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 
@@ -239,7 +239,7 @@
       <div class="lg:hidden">
         <a href={resolve('/')} class="flex items-center gap-2 text-sm font-semibold tracking-tight">
           <BrandMark />
-          freehire
+          PH Jobs
         </a>
       </div>
 

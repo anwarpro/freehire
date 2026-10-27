@@ -12,7 +12,7 @@
 </script>
 
 <Seo
-  title="Job application tracking — one board, from Preparing to Offer | freehire"
+  title="Job application tracking — one board, from Preparing to Offer | PH Jobs"
   description="Track every application on one board — Preparing, Applied, Interview, Offer — with a day-counter when an employer goes quiet, notes on every card, and recruiter replies that attach and advance it themselves. Also a List, a Pipeline funnel, and a Calendar. Drive it from the browser or the CLI."
   {canonical}
 />

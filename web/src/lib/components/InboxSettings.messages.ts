@@ -1,6 +1,6 @@
 import { defineMessages } from '#lib/i18n/t.js';
 
-// "Gmail" and "freehire" are brand names and stay as-is in every locale.
+// "Gmail" and "PH Jobs" are brand names and stay as-is in every locale.
 export const messages = defineMessages(
   {
     connected: 'Connected',
@@ -8,16 +8,16 @@ export const messages = defineMessages(
     notAvailable: 'Not available yet.',
     manageIntegrations: 'Manage in Integrations',
     connectIntegrations: 'Connect in Integrations',
-    freehireMailboxLabel: 'freehire mailbox',
+    freehireMailboxLabel: 'PH Jobs mailbox',
     copyAddressTitle: 'Copy address',
     addressCopied: 'Address copied',
     copyFailed: "Couldn't copy — select the address and copy it manually.",
     mailboxHint: 'Use this address when you apply — replies land here.',
     release: 'Release',
     creating: 'Creating…',
-    getMailbox: 'Get a freehire mailbox',
+    getMailbox: 'Get a PH Jobs mailbox',
     getMailboxHint: 'Get an address on our domain — no Google needed.',
-    releaseDialogTitle: 'Release your freehire mailbox?',
+    releaseDialogTitle: 'Release your PH Jobs mailbox?',
     releaseDialogDescription: 'Its received mail is deleted.',
     claimFailed: 'Failed to create a mailbox.',
     releaseFailed: 'Failed to release the mailbox.',
@@ -29,16 +29,16 @@ export const messages = defineMessages(
       notAvailable: 'Пока не доступно.',
       manageIntegrations: 'Управлять в Интеграциях',
       connectIntegrations: 'Подключить в Интеграциях',
-      freehireMailboxLabel: 'Почтовый ящик freehire',
+      freehireMailboxLabel: 'Почтовый ящик PH Jobs',
       copyAddressTitle: 'Скопировать адрес',
       addressCopied: 'Адрес скопирован',
       copyFailed: 'Не удалось скопировать — выделите адрес и скопируйте вручную.',
       mailboxHint: 'Используйте этот адрес при отклике — ответы будут приходить сюда.',
       release: 'Отказаться',
       creating: 'Создаём…',
-      getMailbox: 'Получить почтовый ящик freehire',
+      getMailbox: 'Получить почтовый ящик PH Jobs',
       getMailboxHint: 'Получите адрес на нашем домене — без Google.',
-      releaseDialogTitle: 'Отказаться от почтового ящика freehire?',
+      releaseDialogTitle: 'Отказаться от почтового ящика PH Jobs?',
       releaseDialogDescription: 'Полученные письма будут удалены.',
       claimFailed: 'Не удалось создать почтовый ящик.',
       releaseFailed: 'Не удалось отказаться от почтового ящика.',

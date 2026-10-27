@@ -11,20 +11,20 @@
   const canonical = $derived(`${origin}/skills`);
   const count = (n: number) => n.toLocaleString('en-US');
   const description = $derived(
-    `Plain-language definitions for the ${count(data.total)} ${data.total === 1 ? 'skill' : 'skills'} freehire tags jobs with — what each one is, and who is hiring for it.`,
+    `Plain-language definitions for the ${count(data.total)} ${data.total === 1 ? 'skill' : 'skills'} PH Jobs tags jobs with — what each one is, and who is hiring for it.`,
   );
 
   const jsonLd = $derived(
     jsonLdScript([
       breadcrumbJsonLd([
-        { name: 'freehire', url: `${origin}/` },
+        { name: 'PH Jobs', url: `${origin}/` },
         { name: 'Skills', url: canonical },
       ]),
     ]),
   );
 </script>
 
-<Seo title="IT Skills Glossary · freehire" {description} {canonical} />
+<Seo title="IT Skills Glossary · PH Jobs" {description} {canonical} />
 <svelte:head>
   <!-- eslint-disable-next-line svelte/no-at-html-tags -- non-executable JSON-LD from jsonLdScript, which escapes `<` -->
   {@html jsonLd}
@@ -32,7 +32,7 @@
 
 <div class="mx-auto w-full max-w-4xl px-4 py-6">
   <nav class="mb-4 flex items-center gap-2 text-sm text-muted-foreground" aria-label="Breadcrumb">
-    <a href={resolve('/')} class="hover:underline">freehire</a>
+    <a href={resolve('/')} class="hover:underline">PH Jobs</a>
   </nav>
 
   <header class="mb-8">

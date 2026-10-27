@@ -2,13 +2,13 @@ import { defineMessages } from '#lib/i18n/t.js';
 
 export const messages = defineMessages(
   {
-    headTitle: 'Webhook — freehire',
+    headTitle: 'Webhook — PH Jobs',
     signInPrompt: 'Sign in to configure a webhook.',
     heading: 'Webhook',
     description:
       'Get an HTTP POST whenever one of your saved searches finds a new match — alongside or instead of email/Telegram. Turn it on for a saved search from its alert settings once a destination is configured here.',
     urlLabel: 'URL',
-    urlPlaceholder: 'https://example.com/freehire-hook',
+    urlPlaceholder: 'https://example.com/ph-jobs-hook',
     saving: 'Saving…',
     save: 'Save',
     create: 'Create webhook',
@@ -34,13 +34,13 @@ export const messages = defineMessages(
   },
   {
     ru: {
-      headTitle: 'Вебхук — freehire',
+      headTitle: 'Вебхук — PH Jobs',
       signInPrompt: 'Войдите, чтобы настроить вебхук.',
       heading: 'Вебхук',
       description:
         'Получайте HTTP POST при каждом новом совпадении по сохранённому поиску — вместе с email/Telegram или вместо них. Включите его для сохранённого поиска в настройках алерта, когда здесь будет настроен адрес.',
       urlLabel: 'URL',
-      urlPlaceholder: 'https://example.com/freehire-hook',
+      urlPlaceholder: 'https://example.com/ph-jobs-hook',
       saving: 'Сохраняем…',
       save: 'Сохранить',
       create: 'Создать вебхук',

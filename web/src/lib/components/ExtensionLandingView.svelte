@@ -19,7 +19,7 @@
     {
       n: '02',
       title: 'Answers from your profile',
-      body: 'The values come from what your freehire profile already says. Nothing is invented to fill a box, and a question your profile cannot answer stays unanswered and visible.',
+      body: 'The values come from what your PH Jobs profile already says. Nothing is invented to fill a box, and a question your profile cannot answer stays unanswered and visible.',
     },
     {
       n: '03',
@@ -52,7 +52,7 @@
     {
       key: 'account',
       title: 'Yours to read and delete',
-      body: 'A page the agent read stays in that conversation, on your freehire account. Read it on the web, delete it, and the panel quietly starts a fresh one.',
+      body: 'A page the agent read stays in that conversation, on your PH Jobs account. Read it on the web, delete it, and the panel quietly starts a fresh one.',
     },
   ];
 
@@ -64,8 +64,8 @@
     },
     {
       n: '02',
-      title: 'Sign in with freehire',
-      body: 'The panel hands you to freehire to sign in once, and works from your profile after that. Free account; no key to copy anywhere.',
+      title: 'Sign in with PH Jobs',
+      body: 'The panel hands you to PH Jobs to sign in once, and works from your profile after that. Free account; no key to copy anywhere.',
     },
     {
       n: '03',
@@ -86,7 +86,7 @@
       <p class="mt-7 max-w-xl text-lg leading-relaxed text-muted-foreground">
         A job-application agent in your browser's side panel, sitting next to the posting you are reading.
         It reads that page itself, tells you where you fall short of it, and fills the application
-        form from your profile — on any site, not just the ones freehire tracks.
+        form from your profile — on any site, not just the ones PH Jobs tracks.
       </p>
       <div class="mt-8 flex flex-wrap gap-2">
         {#each EXTENSION_CLAIMS as claim (claim)}
@@ -140,7 +140,7 @@
         <div class="bg-background p-3">
           <div class="flex items-center gap-2 text-[11px]">
             <span class="size-4 rounded-full bg-brand"></span>
-            <span class="font-semibold">freehire</span>
+            <span class="font-semibold">PH Jobs</span>
             <span class="ml-auto rounded-full border border-border px-1.5 py-0.5 text-muted-foreground">ready</span>
           </div>
           <div class="mt-3 flex gap-2 text-[11px]">
@@ -181,12 +181,12 @@
           Know whether you fit, before you apply.
         </h2>
         <p class="mt-5 max-w-md leading-relaxed text-muted-foreground">
-          The panel scores the posting against your freehire profile and names both halves of the
+          The panel scores the posting against your PH Jobs profile and names both halves of the
           answer: the requirements your history covers, and the ones it does not. Not a model's
           impression of your chances — a coverage count you can read line by line and disagree with.
         </p>
         <p class="mt-5 max-w-md leading-relaxed text-muted-foreground">
-          It works on a posting freehire has never seen, too. On a page outside the catalogue the
+          It works on a posting PH Jobs has never seen, too. On a page outside the catalogue the
           card still scores; the actions that need a catalogue entry — saving it, running the full
           match analysis — are simply not shown rather than offered and then failing.
         </p>
@@ -209,7 +209,7 @@
       <figure class="overflow-hidden rounded-xl border border-border bg-card shadow-sm">
         <figcaption class="flex items-center gap-2 border-b border-border px-4 py-2.5 text-xs text-muted-foreground">
           <span class="size-2.5 rounded-full bg-muted-foreground/30"></span>
-          freehire · side panel
+          PH Jobs · side panel
         </figcaption>
         <div class="p-5">
           <div class="flex items-baseline gap-3">
@@ -321,7 +321,7 @@
       <figure class="overflow-hidden rounded-xl border border-border bg-card shadow-sm">
         <figcaption class="flex items-center gap-2 border-b border-border px-4 py-2.5 text-xs text-muted-foreground">
           <span class="size-2.5 rounded-full bg-muted-foreground/30"></span>
-          freehire · Chat
+          PH Jobs · Chat
         </figcaption>
         <div class="flex flex-col gap-3 p-4 text-sm">
           <p class="ml-auto max-w-[85%] rounded-lg bg-secondary px-3 py-2 leading-relaxed">
@@ -395,7 +395,7 @@
       {/each}
     </div>
     <p class="mt-6 max-w-3xl text-sm leading-relaxed text-muted-foreground">
-      Everything the extension sends goes to freehire and nowhere else. There is no analytics
+      Everything the extension sends goes to PH Jobs and nowhere else. There is no analytics
       endpoint on the side, and no second host in the manifest.
     </p>
   </section>
@@ -431,7 +431,7 @@
     <div class="flex flex-col items-start gap-4 rounded-xl border border-border bg-secondary/40 p-6 sm:p-8">
       <h2 class="text-2xl font-semibold tracking-tight">Put it beside the next posting you open.</h2>
       <p class="max-w-xl leading-relaxed text-muted-foreground">
-        Free, and it works on whatever page you are already on — including the ones freehire does not
+        Free, and it works on whatever page you are already on — including the ones PH Jobs does not
         track.
       </p>
       <div class="flex flex-wrap gap-3">

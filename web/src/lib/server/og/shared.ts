@@ -8,13 +8,10 @@
 export const OG_WIDTH = 1200;
 export const OG_HEIGHT = 630;
 
-// The freehire brand mark (a circle with a diamond cut-out), inlined as a base64
+// The PH Jobs brand mark (a circle with a diamond cut-out), inlined as a base64
 // data-URI so satori embeds it with no network fetch (satori cannot fetch remote
 // images). Coloured #0a0a0a to match the footer wordmark beside it.
-const MARK_SVG =
-  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">' +
-  '<path fill-rule="evenodd" clip-rule="evenodd" d="M256 56C366.457 56 456 145.543 456 256C456 366.457 366.457 456 256 456C145.543 456 56 366.457 56 256C56 145.543 145.543 56 256 56ZM256 166L346 256L256 346L166 256L256 166Z" fill="#0a0a0a"/>' +
-  '</svg>';
+const MARK_SVG = '<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><rect width="512" height="512" rx="112" fill="#6d28d9"/><path d="M112 368V144h72a64 64 0 0 1 0 128h-72M304 144v224m96-224v224m-96-112h96" fill="none" stroke="white" stroke-width="36" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 export const MARK_DATA_URI = `data:image/svg+xml;base64,${Buffer.from(MARK_SVG).toString('base64')}`;
 
 export function esc(s: string): string {
@@ -72,15 +69,15 @@ export function chipMarkup(chip: Chip): string {
   return `<div style="${style}">${esc(chip.text)}</div>`;
 }
 
-/** The shared bottom row: the freehire mark + wordmark on the left, the site
+/** The shared bottom row: the PH Jobs mark + wordmark on the left, the site
  *  domain on the right. Every card closes with this. */
 export function brandFooter(): string {
   return `
   <div style="display:flex;align-items:center;justify-content:space-between">
     <div style="display:flex;align-items:center;gap:14px">
       <img src="${MARK_DATA_URI}" style="width:34px;height:34px" />
-      <div style="display:flex;font-size:30px;font-weight:700;letter-spacing:-0.03em">freehire</div>
+      <div style="display:flex;font-size:30px;font-weight:700;letter-spacing:-0.03em">PH Jobs</div>
     </div>
-    <div style="display:flex;font-size:22px;color:#a3a3a3">freehire.me</div>
+    <div style="display:flex;font-size:22px;color:#a3a3a3">jobs.programming-hero.org</div>
   </div>`;
 }

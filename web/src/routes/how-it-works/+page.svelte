@@ -14,7 +14,7 @@
     jsonLdScript([
       faqPageJsonLd(PIPELINE_FAQ),
       breadcrumbJsonLd([
-        { name: 'freehire', url: `${origin}/` },
+        { name: 'PH Jobs', url: `${origin}/` },
         { name: 'How it works', url: canonical },
       ]),
     ])
@@ -22,8 +22,8 @@
 </script>
 
 <Seo
-  title="How freehire works — from a job board to your search results | freehire"
-  description="How a posting becomes searchable on freehire: crawled straight from the source, tagged, checked for duplicates across every board, and rebuilt into the live search index — five steps, no person touching a listing."
+  title="How PH Jobs works — from a job board to your search results | PH Jobs"
+  description="How a posting becomes searchable on PH Jobs: crawled straight from the source, tagged, checked for duplicates across every board, and rebuilt into the live search index — five steps, no person touching a listing."
   {canonical}
 />
 

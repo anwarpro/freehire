@@ -22,10 +22,9 @@ const outPath = resolve(webRoot, 'static/og.png');
 // counts a posting once per board and reads ~40% higher than anything a visitor can
 // browse.
 const STATS = [
-  { value: '3.3M+', label: 'unique jobs' },
-  { value: '470K+', label: 'companies' },
-  { value: '300+', label: 'sources' },
-  { value: '90+', label: 'Telegram channels' },
+  { value: 'Worldwide', label: 'tech opportunities' },
+  { value: 'Skills', label: 'market insights' },
+  { value: 'PH', label: 'team workspace' },
 ];
 
 async function main() {

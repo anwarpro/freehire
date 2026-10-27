@@ -8,7 +8,7 @@ export const TRACKING_FAQ: FaqItem[] = [
   {
     question: 'How does a job end up on my board?',
     answer:
-      'Save it or apply to it from anywhere on freehire — the job page, search, or the browser extension — and it lands on your board as a tracked application. Nothing is added without you doing one of those two things first.',
+      'Save it or apply to it from anywhere on PH Jobs — the job page, search, or the browser extension — and it lands on your board as a tracked application. Nothing is added without you doing one of those two things first.',
   },
   {
     question: 'What are the stages?',
@@ -23,7 +23,7 @@ export const TRACKING_FAQ: FaqItem[] = [
   {
     question: 'Can a reply move the card for me?',
     answer:
-      'Connect your mail through the freehire inbox and a recruiter reply is tagged with what it says, attached to the application it belongs to, and walks the card to its next stage automatically — you only intervene when it guesses wrong.',
+      'Connect your mail through the PH Jobs inbox and a recruiter reply is tagged with what it says, attached to the application it belongs to, and walks the card to its next stage automatically — you only intervene when it guesses wrong.',
   },
   {
     question: 'Is the board the only view?',

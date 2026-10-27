@@ -15,7 +15,7 @@
     if (!open) onClose();
   });
 
-  const prompt = $derived(`Tailor my freehire CV (id ${cvId}) to this vacancy using the freehire CLI.`);
+  const prompt = $derived(`Tailor my PH Jobs CV (id ${cvId}) to this vacancy using the freehire CLI.`);
 
   let copied = $state(false);
   let copyTimer: ReturnType<typeof setTimeout> | undefined;

@@ -29,7 +29,7 @@
   const robots = $derived(listingRobots(data.initial?.total));
   const pageTitle = $derived(
     data.pageNumber > 1
-      ? `${data.company.name} — page ${data.pageNumber} · freehire`
+      ? `${data.company.name} — page ${data.pageNumber} · PH Jobs`
       : listingTitle,
   );
   // The one breadcrumb trail feeding both the visible nav and the structured data below —

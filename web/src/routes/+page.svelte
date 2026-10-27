@@ -17,8 +17,8 @@
 </script>
 
 <Seo
-  title="freehire — the open-source search engine for tech jobs"
-  description="Search 3M+ tech jobs indexed straight from company career boards — deduplicated and tagged by stack, seniority and location. Free, open source, no walls."
+  title="PH Jobs — tech jobs for the Programming Hero team"
+  description="Discover worldwide tech jobs from company career boards. Explore skills, technology stacks, seniority and locations with the Programming Hero team."
   canonical="{origin}/"
 />
 

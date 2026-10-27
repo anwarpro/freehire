@@ -11,7 +11,7 @@ export const OPEN_FAQ: FaqItem[] = [
   {
     question: 'Where do these numbers come from?',
     answer:
-      "Straight from freehire's own public API at request time — the same endpoints anyone can call — plus the GitHub REST API for the repository stats. Each number links to the endpoint behind it, so you can check it rather than trust it.",
+      "Straight from PH Jobs's own public API at request time — the same endpoints anyone can call — plus the GitHub REST API for the repository stats. Each number links to the endpoint behind it, so you can check it rather than trust it.",
   },
   {
     question: 'How fresh are they?',
@@ -21,7 +21,7 @@ export const OPEN_FAQ: FaqItem[] = [
   {
     question: 'Do the engagement counts expose anyone?',
     answer:
-      'No. Each one is a single integer total, and the queries behind them select no user id, email or individual row. "Inboxes connected" counts live Gmail grants plus claimed freehire addresses — never a message.',
+      'No. Each one is a single integer total, and the queries behind them select no user id, email or individual row. "Inboxes connected" counts live Gmail grants plus claimed PH Jobs addresses — never a message.',
   },
   {
     question: 'Can I query the same data myself?',
@@ -31,11 +31,11 @@ export const OPEN_FAQ: FaqItem[] = [
   {
     question: 'What counts as an open job?',
     answer:
-      'A posting freehire has crawled and has not yet detected as closed. Roles are never silently deleted: when a vacancy stops appearing on its source board it is marked closed and leaves the open count, which is what the "removed" bars above track. That count is not de-duplicated — the same role reposted across several boards counts once per posting — which is why it reads higher than the number of unique jobs you can actually browse.',
+      'A posting PH Jobs has crawled and has not yet detected as closed. Roles are never silently deleted: when a vacancy stops appearing on its source board it is marked closed and leaves the open count, which is what the "removed" bars above track. That count is not de-duplicated — the same role reposted across several boards counts once per posting — which is why it reads higher than the number of unique jobs you can actually browse.',
   },
   {
     question: 'Why publish all of this?',
     answer:
-      'freehire is free and open source, so the numbers behind its claims should be checkable rather than asserted. Any figure quoted elsewhere on the site — or by an AI assistant citing freehire — should reconcile with this page, the live source rather than a rounded snapshot.',
+      'PH Jobs is free and open source, so the numbers behind its claims should be checkable rather than asserted. Any figure quoted elsewhere on the site — or by an AI assistant citing PH Jobs — should reconcile with this page, the live source rather than a rounded snapshot.',
   },
 ];

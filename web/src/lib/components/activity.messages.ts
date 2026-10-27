@@ -10,7 +10,7 @@ import { defineMessages } from '#lib/i18n/t.js';
 export const messages = defineMessages(
   {
     // The layout's base title; each child page overrides it with its own.
-    headTitle: 'Activity — freehire',
+    headTitle: 'Activity — PH Jobs',
     title: 'Activity',
     tablistLabel: 'Activity view',
     tabs: {
@@ -20,10 +20,10 @@ export const messages = defineMessages(
       hidden: 'Hidden',
     },
     headTitles: {
-      saved: 'Saved — Activity — freehire',
-      history: 'History — Activity — freehire',
-      matches: 'Matches — Activity — freehire',
-      hidden: 'Hidden — Activity — freehire',
+      saved: 'Saved — Activity — PH Jobs',
+      history: 'History — Activity — PH Jobs',
+      matches: 'Matches — Activity — PH Jobs',
+      hidden: 'Hidden — Activity — PH Jobs',
     },
     saved: {
       loadError: "Couldn't load your saved jobs.",
@@ -49,7 +49,7 @@ export const messages = defineMessages(
   },
   {
     ru: {
-      headTitle: 'Активность — freehire',
+      headTitle: 'Активность — PH Jobs',
       title: 'Активность',
       tablistLabel: 'Раздел активности',
       tabs: {
@@ -59,10 +59,10 @@ export const messages = defineMessages(
         hidden: 'Скрытые',
       },
       headTitles: {
-        saved: 'Сохранённые — Активность — freehire',
-        history: 'История — Активность — freehire',
-        matches: 'Совпадения — Активность — freehire',
-        hidden: 'Скрытые — Активность — freehire',
+        saved: 'Сохранённые — Активность — PH Jobs',
+        history: 'История — Активность — PH Jobs',
+        matches: 'Совпадения — Активность — PH Jobs',
+        hidden: 'Скрытые — Активность — PH Jobs',
       },
       saved: {
         loadError: 'Не удалось загрузить сохранённые вакансии.',

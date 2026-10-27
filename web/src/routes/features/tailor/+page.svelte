@@ -12,8 +12,8 @@
 </script>
 
 <Seo
-  title="CV tailoring — rewrite your CV for one job, inventing nothing | freehire"
-  description="freehire reframes your CV toward a single vacancy: it reads the match analysis, pulls forward the experience you already have but buried, asks about anything your history doesn't support, and exports an ATS-readable PDF. Drive it in the browser or from the CLI."
+  title="CV tailoring — rewrite your CV for one job, inventing nothing | PH Jobs"
+  description="PH Jobs reframes your CV toward a single vacancy: it reads the match analysis, pulls forward the experience you already have but buried, asks about anything your history doesn't support, and exports an ATS-readable PDF. Drive it in the browser or from the CLI."
   {canonical}
 />
 

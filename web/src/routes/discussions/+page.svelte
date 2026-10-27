@@ -11,7 +11,7 @@
   const jsonLd = $derived(
     jsonLdScript([
       breadcrumbJsonLd([
-        { name: 'freehire', url: `${origin}/` },
+        { name: 'PH Jobs', url: `${origin}/` },
         { name: 'Discussions', url: canonical },
       ]),
     ]),
@@ -19,8 +19,8 @@
 </script>
 
 <Seo
-  title="Discussions — freehire"
-  description="What job seekers are asking about companies and vacancies on freehire: is this posting real, does this employer reply, what is the process actually like."
+  title="Discussions — PH Jobs"
+  description="What job seekers are asking about companies and vacancies on PH Jobs: is this posting real, does this employer reply, what is the process actually like."
   {canonical}
 />
 

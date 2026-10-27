@@ -20,7 +20,7 @@ export type GithubStats = {
 };
 
 const TTL_MS = 60 * 60 * 1000;
-const REPO = 'strelov1/freehire';
+const REPO = 'anwarpro/freehire';
 
 // (Date.now() is fine here — this is a server module, not a resumable workflow.)
 let cache: { at: number; data: GithubStats | null } | null = null;

@@ -10,8 +10,8 @@
 </script>
 
 <Seo
-  title="Job market analytics · freehire"
-  description="See how many tech vacancies match your criteria — counts by region, stack, seniority, work mode and more, across the freehire catalogue."
+  title="Job market analytics · PH Jobs"
+  description="See how many tech vacancies match your criteria — counts by region, stack, seniority, work mode and more, across the PH Jobs catalogue."
   {canonical}
 />
 

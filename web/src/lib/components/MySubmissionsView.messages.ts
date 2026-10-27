@@ -5,7 +5,7 @@ import { defineMessages } from '#lib/i18n/t.js';
 // printing the wire value — the enum is a protocol token, not display text.
 export const messages = defineMessages(
   {
-    headTitle: 'My submissions — freehire',
+    headTitle: 'My submissions — PH Jobs',
     signedOut: 'Sign in to see your submissions.',
     title: 'My submissions',
     // Split around the link, which sits mid-sentence.
@@ -25,7 +25,7 @@ export const messages = defineMessages(
   },
   {
     ru: {
-      headTitle: 'Мои вакансии — freehire',
+      headTitle: 'Мои вакансии — PH Jobs',
       signedOut: 'Войдите, чтобы увидеть отправленные вакансии.',
       title: 'Мои вакансии',
       descriptionPrefix: 'Вакансии, которые вы отправили на проверку.',

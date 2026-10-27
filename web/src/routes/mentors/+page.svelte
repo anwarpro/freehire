@@ -11,7 +11,7 @@
     'Book half an hour with someone who actually works there, before you apply.';
 </script>
 
-<Seo title="Mentors · freehire" {description} {canonical} />
+<Seo title="Mentors · PH Jobs" {description} {canonical} />
 
 <div class="mx-auto w-full max-w-6xl px-4 py-6">
   <h1 class="text-2xl font-semibold">Talk to someone who works there</h1>

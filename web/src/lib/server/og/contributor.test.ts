@@ -81,6 +81,6 @@ describe('buildContributorCard', () => {
   it('closes with the shared brand footer', () => {
     const markup = buildContributorCard(person(), { avatar: null });
 
-    expect(markup).toContain('freehire.me');
+    expect(markup).toContain('jobs.programming-hero.org');
   });
 });

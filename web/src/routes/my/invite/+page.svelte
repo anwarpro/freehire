@@ -34,7 +34,7 @@
 </script>
 
 <svelte:head>
-  <title>Invite a friend — freehire</title>
+  <title>Invite a friend — PH Jobs</title>
 </svelte:head>
 
 <div class="flex max-w-3xl flex-col gap-6">

@@ -19,7 +19,7 @@
 </script>
 
 <Seo
-  title="freehire CLI & MCP — search and track jobs from the terminal"
+  title="CLI & MCP — PH Jobs"
   description="A small Go CLI and an MCP server over the freehire job API, built so an AI agent or a script can search, open and track jobs — no browser. One API key drives both CLI and MCP."
   {canonical}
 />

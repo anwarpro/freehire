@@ -16,10 +16,8 @@
   import NotificationBell from './NotificationBell.svelte';
   import HeaderProfileMenu from './HeaderProfileMenu.svelte';
   import { ensureAccountSetupLoaded, setupOutstanding } from '#lib/accountSetup.svelte.js';
-  import { ProviderIcon } from '#lib/ui/index.js';
   import { NAV } from '#lib/siteNav.js';
   import { accountLinks } from '#lib/headerAccountLinks.js';
-  import { DISCORD_URL } from '#lib/socialLinks.js';
 
   // This menu carries the site nav and the theme toggle on every viewport; on
   // mobile it additionally carries the signed-in account items and the auth
@@ -183,7 +181,7 @@
 {/snippet}
 
 <div class="relative flex items-center gap-1" bind:this={root}>
-  <!-- Desktop bar order: GitHub stars, Discord, then the visitor's OWN two controls —
+  <!-- Desktop bar order: GitHub source, then the visitor's OWN two controls —
        the bell and profile/sign-in — then the menu button pinned to the far right. The
        bell used to sit ahead of the project's links, which put two icons about the site
        between it and the account it notifies about. On mobile the two about the site
@@ -191,16 +189,6 @@
        bell is how they learn something happened, and it cannot be a tap deeper than
        the menu that would tell them. -->
   <GithubStars class="hidden sm:inline-flex" />
-
-  <!-- eslint-disable-next-line svelte/no-navigation-without-resolve -- external Discord invite, not an internal route -->
-  <a href={DISCORD_URL}
-    target="_blank"
-    rel="noreferrer"
-    aria-label="freehire on Discord"
-    class={cn('hidden sm:inline-flex', iconButton)}
-  >
-    <ProviderIcon provider="discord" />
-  </a>
 
   <NotificationBell />
 
@@ -262,7 +250,7 @@
       <div class="flex h-14 shrink-0 items-center justify-between border-b border-border px-4 sm:hidden">
         <span class="flex items-center gap-2 text-sm font-semibold tracking-tight">
           <BrandMark />
-          freehire
+          PH Jobs
         </span>
         <button
           type="button"
@@ -384,17 +372,6 @@
       <!-- Mobile-only: GitHub + theme + auth pinned to the bottom of the drawer. -->
       <div class="shrink-0 border-t border-border p-2 sm:hidden">
         <GithubStars variant="row" class={cn(rowBase, 'text-muted-foreground')} />
-        <!-- eslint-disable-next-line svelte/no-navigation-without-resolve -- external Discord invite, not an internal route -->
-        <a href={DISCORD_URL}
-          target="_blank"
-          rel="noreferrer"
-          role="menuitem"
-          aria-label="freehire on Discord"
-          class={cn(rowBase, 'text-muted-foreground')}
-        >
-          <ProviderIcon provider="discord" class="size-4 shrink-0" />
-          <span>Discord</span>
-        </a>
         {@render themeButton()}
         {@render authButton()}
       </div>

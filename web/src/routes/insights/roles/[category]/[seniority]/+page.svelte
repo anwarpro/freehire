@@ -12,7 +12,7 @@
   const origin = $derived(page.url.origin);
   const canonical = $derived(`${origin}/insights/roles/${data.category}/${data.seniority}`);
   const heading = $derived(`What ${data.roleName} Jobs Ask For`);
-  const title = $derived(`${heading} · freehire`);
+  const title = $derived(`${heading} · PH Jobs`);
   const updated = $derived(
     new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
   );
@@ -35,7 +35,7 @@
     jsonLdScript([
       datasetJsonLd(`Skills asked for in ${data.roleName} jobs`, data.intro, canonical, origin),
       breadcrumbJsonLd([
-        { name: 'freehire', url: `${origin}/` },
+        { name: 'PH Jobs', url: `${origin}/` },
         { name: 'Insights', url: `${origin}/insights` },
         { name: `${data.label} Roles`, url: `${origin}/insights/roles/${data.category}` },
         { name: data.roleName, url: canonical },

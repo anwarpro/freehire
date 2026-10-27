@@ -11,7 +11,7 @@
 </script>
 
 <Seo
-  title="Talent Network — freehire"
+  title="Talent Network — PH Jobs"
   description="Anonymous profiles of candidates open to being approached. Filter by discipline, skills, seniority, timezone and experience."
 />
 

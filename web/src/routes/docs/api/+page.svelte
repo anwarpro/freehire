@@ -29,7 +29,7 @@
 </script>
 
 <Seo
-  title="freehire API reference — query jobs by filters"
+  title="PH Jobs API reference — query jobs by filters"
   description="The freehire HTTP API: a read-first, open endpoint set over the job catalogue. Search and filter jobs by seniority, skills, region, salary and more, read companies, and track applications with an API key."
   {canonical}
 />

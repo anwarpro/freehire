@@ -18,13 +18,13 @@
   const people = $derived(data.maintainers.length + data.contributors.length);
 
   const description = $derived(
-    `The ${people} people who build freehire — every merged pull request and every issue opened, straight from the repository.`,
+    `The ${people} people who build PH Jobs — every merged pull request and every issue opened, straight from the repository.`,
   );
 
   const jsonLd = $derived(
     jsonLdScript([
       breadcrumbJsonLd([
-        { name: 'freehire', url: `${origin}/` },
+        { name: 'PH Jobs', url: `${origin}/` },
         { name: 'Contributors', url: canonical },
       ]),
     ]),
@@ -37,7 +37,7 @@
     });
 </script>
 
-<Seo title="Contributors — the people who build freehire" {description} {canonical} />
+<Seo title="Contributors — the people who build PH Jobs" {description} {canonical} />
 
 <svelte:head>
   <!-- eslint-disable-next-line svelte/no-at-html-tags -- non-executable JSON-LD built by jsonLdScript, which escapes `<`; raw injection is the only way to emit a structured-data <script> -->
@@ -101,7 +101,7 @@
   <section class="rounded-xl border border-border bg-muted/30 p-6 sm:p-8">
     <h2 class="text-xl font-semibold tracking-tight">Your name goes here next.</h2>
     <p class="mt-2 max-w-2xl text-muted-foreground">
-      An opened issue counts as much as merged code. Pick something that annoys you about freehire
+      An opened issue counts as much as merged code. Pick something that annoys you about PH Jobs
       and tell us, or fix it.
     </p>
     <div class="mt-5 flex flex-wrap gap-3">
@@ -113,7 +113,7 @@
       </a>
       <!-- eslint-disable-next-line svelte/no-navigation-without-resolve -- external repository, not a SvelteKit route -->
       <a
-        href="https://github.com/strelov1/freehire/issues"
+        href="https://github.com/anwarpro/freehire/issues"
         class="rounded-lg border border-border px-4 py-2 text-sm font-medium transition-colors hover:bg-background"
         rel="noopener"
         target="_blank"

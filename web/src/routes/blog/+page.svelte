@@ -11,7 +11,7 @@
   const origin = $derived(page.url.origin);
   const canonical = $derived(`${origin}/blog`);
   const description =
-    'Product updates, changelog, and longer write-ups from the freehire team — new job sources, search improvements, and how the aggregator works.';
+    'Product updates, changelog, and longer write-ups from the PH Jobs team — new job sources, search improvements, and how the aggregator works.';
   // Built from the full `data.posts`, not the filtered view: the type filter is a
   // client-side affordance, so narrowing the schema to it would describe a
   // transient UI state rather than the feed a crawler fetched.
@@ -19,7 +19,7 @@
     jsonLdScript([
       blogJsonLd(data.posts, origin),
       breadcrumbJsonLd([
-        { name: 'freehire', url: `${origin}/` },
+        { name: 'PH Jobs', url: `${origin}/` },
         { name: 'Blog', url: canonical },
       ]),
     ]),
@@ -44,7 +44,7 @@
   const formatDate = (iso: string) => dateFmt.format(new Date(iso));
 </script>
 
-<Seo title="Blog · freehire" {description} {canonical} />
+<Seo title="Blog · PH Jobs" {description} {canonical} />
 
 <svelte:head>
   <!-- eslint-disable-next-line svelte/no-at-html-tags -- non-executable JSON-LD built by jsonLdScript, which escapes `<`; raw injection is the only way to emit a structured-data <script> -->

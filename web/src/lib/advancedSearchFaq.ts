@@ -20,11 +20,11 @@ export const ADVANCED_SEARCH_FAQ: FaqItem[] = [
   {
     question: 'What happens when I save a search?',
     answer:
-      'It’s stored on your profile and listed under Saved searches & alerts. Turning on a channel — Telegram, email or push — makes freehire message you the moment a new job matches it, instead of you coming back to check by hand.',
+      'It’s stored on your profile and listed under Saved searches & alerts. Turning on a channel — Telegram, email or push — makes PH Jobs message you the moment a new job matches it, instead of you coming back to check by hand.',
   },
   {
     question: 'Do the same filters work outside the browser?',
     answer:
-      'Yes. The public API and the freehire CLI use the same parameter names as the filter panel — role, regions, skills, company_type and the rest. `freehire facets` prints the live vocabulary before you search from a terminal or a script.',
+      'Yes. The public API and the freehire CLI use the same parameter names as the filter panel — role, regions, skills, company_type and the rest. `PH Jobs facets` prints the live vocabulary before you search from a terminal or a script.',
   },
 ];

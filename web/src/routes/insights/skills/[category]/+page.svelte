@@ -12,9 +12,9 @@
   const canonical = $derived(`${origin}/insights/skills/${data.category}`);
   // The heading is the page's own name; the title is that plus the brand suffix a
   // browser tab and a SERP need. Kept apart deliberately — one variable serving both
-  // is how "· freehire" ended up inside the <h1>.
+  // is how "· PH Jobs" ended up inside the <h1>.
   const heading = $derived(`Most In-Demand ${data.label} Skills`);
-  const title = $derived(`${heading} · freehire`);
+  const title = $derived(`${heading} · PH Jobs`);
   const updated = $derived(
     new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
   );
@@ -22,7 +22,7 @@
     jsonLdScript([
       datasetJsonLd(`In-demand ${data.label} skills`, data.intro, canonical, origin),
       breadcrumbJsonLd([
-        { name: 'freehire', url: `${origin}/` },
+        { name: 'PH Jobs', url: `${origin}/` },
         { name: 'Insights', url: `${origin}/insights` },
         { name: `${data.label} Skills`, url: canonical },
       ]),

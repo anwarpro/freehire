@@ -12,9 +12,9 @@
   });
 </script>
 
-<svelte:head><title>Connect the extension · freehire</title></svelte:head>
+<svelte:head><title>Connect the extension · PH Jobs</title></svelte:head>
 
 <div class="mx-auto max-w-md py-16 text-center">
   <h1 class="mb-3 text-xl font-semibold tracking-tight">Connect the extension</h1>
-  <p class="text-sm text-muted-foreground">Connecting the freehire extension…</p>
+  <p class="text-sm text-muted-foreground">Connecting the PH Jobs extension…</p>
 </div>

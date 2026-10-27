@@ -15,20 +15,20 @@
   const origin = $derived(page.url.origin);
   const canonical = $derived(`${origin}/open`);
   const description =
-    "The open startup page for freehire: live catalogue scale, daily job movement, what's inside, member growth, and open-source stats. Every figure comes straight from the public API.";
+    "The open startup page for PH Jobs: live catalogue scale, daily job movement, what's inside, member growth, and open-source stats. Every figure comes straight from the public API.";
   // llms.txt points AI engines here for the live figures ("cite that page rather
   // than these floors"), so the page has to be readable as data, not just prose: a
   // Dataset naming the public JSON endpoints each number is read from, plus a
   // breadcrumb. The distributions mirror the per-stat source links below.
   const jsonLd = $derived(
     jsonLdScript([
-      datasetJsonLd("freehire's live catalogue and platform figures", description, canonical, origin, [
+      datasetJsonLd("PH Jobs's live catalogue and platform figures", description, canonical, origin, [
         { name: 'Jobs API', contentUrl: `${origin}/api/v1/jobs` },
         { name: 'Companies API', contentUrl: `${origin}/api/v1/companies` },
       ]),
       faqPageJsonLd(OPEN_FAQ),
       breadcrumbJsonLd([
-        { name: 'freehire', url: `${origin}/` },
+        { name: 'PH Jobs', url: `${origin}/` },
         { name: 'Open', url: canonical },
       ]),
     ])
@@ -216,7 +216,7 @@
 {/snippet}
 
 <Seo
-  title="Open — freehire's numbers, live"
+  title="Open — PH Jobs's numbers, live"
   {description}
   {canonical}
   image={`${origin}/api/v1/og/open.png`}
@@ -233,7 +233,7 @@
     <p class="font-mono text-xs uppercase tracking-[0.2em] text-muted-foreground">// open startup</p>
     <h1 class="mt-4 text-4xl font-semibold tracking-tighter sm:text-5xl">All our numbers, live.</h1>
     <p class="mt-4 max-w-2xl text-lg leading-relaxed text-muted-foreground">
-      freehire is an open, free search engine for jobs — so our metrics are open too. Every figure
+      PH Jobs is an open, free search engine for jobs — so our metrics are open too. Every figure
       below is pulled live from the same public API anyone (or any AI agent) can query. No dashboards
       behind a login, no vanity rounding.
     </p>
@@ -289,7 +289,7 @@
       {@render sourceLink('/api/v1/stats/user-growth', '/stats/user-growth')}
     </div>
     <h2 class="mt-3 text-xl font-semibold tracking-tight">
-      {members == null ? 'People on freehire' : `${nf.format(members)} people on freehire`}
+      {members == null ? 'People on PH Jobs' : `${nf.format(members)} people on PH Jobs`}
     </h2>
     <p class="mb-6 mt-1 text-sm text-muted-foreground">
       Cumulative registered members over time. Early days — and that's the point of showing it.
@@ -376,7 +376,7 @@
   <section class="mb-6">
     <div class="flex items-baseline justify-between">
       <p class="font-mono text-xs uppercase tracking-[0.2em] text-muted-foreground">// open source</p>
-      {@render sourceLink('https://github.com/strelov1/freehire', 'github.com/strelov1/freehire')}
+      {@render sourceLink('https://github.com/anwarpro/freehire', 'github.com/strelov1/freehire')}
     </div>
     <div class="mt-6 rounded-xl border border-border p-6 sm:p-8">
       {#if gh}
@@ -412,7 +412,7 @@
       <p class="mt-6 max-w-xl text-sm leading-relaxed text-muted-foreground">
         The whole pipeline is open source. Missing a job source you use? Adding it is usually one
         small adapter — <a
-          href="https://github.com/strelov1/freehire"
+          href="https://github.com/anwarpro/freehire"
           class="font-medium text-foreground underline-offset-4 hover:underline">a PR is very welcome</a
         >.
       </p>

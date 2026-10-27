@@ -3,7 +3,7 @@
 </script>
 
 <svelte:head>
-  <title>Search alerts — freehire</title>
+  <title>Search alerts — PH Jobs</title>
 </svelte:head>
 
 <!-- The account shell (my/+layout) owns the container, auth gate, and noindex;
