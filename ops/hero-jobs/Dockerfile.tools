@@ -1,0 +1,4 @@
+FROM hero-jobs-build:local AS hero-tools
+RUN GOMAXPROCS=2 CGO_ENABLED=0 go build -p 2 -ldflags="-s -w" -o /extra/ ./cmd/hero-bootstrap ./cmd/add-board ./cmd/search-drain ./cmd/harvest-boards ./cmd/rollup-facets ./cmd/reindex-companies ./cmd/rollup-stats ./cmd/seed-from-inventory
+FROM hero-jobs-app:local
+COPY --from=hero-tools /extra/ /app/

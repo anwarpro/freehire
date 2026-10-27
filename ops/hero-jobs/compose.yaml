@@ -1,0 +1,83 @@
+name: hero-jobs
+services:
+  db:
+    image: pgvector/pgvector:pg18
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: hire
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: hire
+    volumes:
+      - pgdata:/var/lib/postgresql
+    healthcheck:
+      test: [CMD-SHELL, 'pg_isready -U hire -d hire']
+      interval: 5s
+      timeout: 5s
+      retries: 30
+  redis:
+    image: redis:8-alpine
+    restart: unless-stopped
+    command: [redis-server, --maxmemory, 128mb, --maxmemory-policy, allkeys-lru]
+  meilisearch:
+    image: getmeili/meilisearch:v1.49.0
+    restart: unless-stopped
+    environment:
+      MEILI_MASTER_KEY: ${MEILI_MASTER_KEY}
+      MEILI_ENV: production
+      MEILI_MAX_INDEXING_MEMORY: 512Mb
+      MEILI_MAX_INDEXING_THREADS: 1
+      MEILI_NO_ANALYTICS: 'true'
+    volumes:
+      - meili:/meili_data
+  app:
+    image: hero-jobs-app:local
+    build:
+      context: /opt/freehire
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      PORT: '8080'
+      DATABASE_URL: postgres://hire:${DB_PASSWORD}@db:5432/hire?sslmode=disable
+      MEILI_URL: http://meilisearch:7700
+      REDIS_URL: redis://redis:6379/0
+      FRONTEND_ORIGIN: https://jobs.programming-hero.org
+      COOKIE_SECURE: 'true'
+      GOMAXPROCS: '2'
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+  web:
+    image: hero-jobs-web:local
+    build:
+      context: /opt/freehire
+      dockerfile: web/Dockerfile
+      args:
+        ORIGIN: https://jobs.programming-hero.org
+    restart: unless-stopped
+    environment:
+      API_INTERNAL_URL: http://app:8080
+    volumes:
+      - ./nginx.conf:/opt/nginx.conf:ro
+    entrypoint: [/bin/sh, -c, "cp /opt/nginx.conf /etc/nginx/http.d/default.conf && exec /usr/local/bin/entrypoint.sh"]
+    depends_on:
+      - app
+  proxy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - '80:80'
+      - '443:443'
+      - '443:443/udp'
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - web
+volumes:
+  pgdata:
+  meili:
+  caddy_data:
+  caddy_config:

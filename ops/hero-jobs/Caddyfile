@@ -1,0 +1,5 @@
+jobs.programming-hero.org {
+    encode zstd gzip
+    reverse_proxy web:80
+    header X-Robots-Tag "noindex, nofollow, noarchive"
+}

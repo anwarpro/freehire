@@ -1,0 +1,14 @@
+services:
+  tools:
+    image: hero-jobs-tools:local
+    profiles: [tools]
+    mem_limit: 1200m
+    memswap_limit: 2400m
+    env_file: .env
+    environment:
+      DATABASE_URL: postgres://hire:${DB_PASSWORD}@db:5432/hire?sslmode=disable
+      MEILI_URL: http://meilisearch:7700
+      REDIS_URL: redis://redis:6379/0
+      FRONTEND_ORIGIN: https://jobs.programming-hero.org
+      GOMAXPROCS: '2'
+      GOMEMLIMIT: 900MiB

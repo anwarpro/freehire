@@ -1,0 +1,8 @@
+SHELL=/bin/sh
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+*/5 * * * * root /opt/hero-jobs/refresh-jobs.sh >> /opt/hero-jobs/logs/refresh.log 2>&1
+*/2 * * * * root /opt/hero-jobs/index-jobs.sh >> /opt/hero-jobs/logs/index.log 2>&1
+17 */2 * * * root /opt/hero-jobs/discover-boards.sh >> /opt/hero-jobs/logs/discovery.log 2>&1
+15 20 * * * root /opt/hero-jobs/backup.sh >> /opt/hero-jobs/logs/backup.log 2>&1
+35 */6 * * * root /opt/hero-jobs/refresh-stats.sh >> /opt/hero-jobs/logs/stats.log 2>&1
+45 22 * * * root /opt/hero-jobs/expand-tech-catalog.sh >> /opt/hero-jobs/logs/tech-expansion.log 2>&1
