@@ -8,7 +8,7 @@ deployment branch until the fork establishes another integration branch.
 
 | Capability | Finding | Evidence | Next step |
 | --- | --- | --- | --- |
-| Manual job intake | Reusable backend and public submission form; direct moderator publishing and a job-page editor use the existing endpoints | [Moderation API](../internal/api/handler/jobs_moderation.go), [submission form](../web/src/lib/components/SubmitView.svelte), [job editor](../web/src/lib/components/ManualJobEditor.svelte) | Verify each feature after deployment; add posting/deadline controls in a separate PR |
+| Manual job intake | Reusable backend and public submission form; direct moderator publishing, a job-page editor, and posting-date controls use the existing endpoints | [Moderation API](../internal/api/handler/jobs_moderation.go), [submission form](../web/src/lib/components/SubmitView.svelte), [job editor](../web/src/lib/components/ManualJobEditor.svelte) | Verify each feature after deployment; add application-deadline persistence and expiry handling in a separate PR |
 | Browsing and filtering | Reusable list, search, pagination, and job detail | [Jobs view](../web/src/lib/components/JobsView.svelte), [jobs route](../web/src/routes/jobs/+page.server.ts) | Verify the Bangladeshi source and curriculum workflow against actual stored jobs |
 | Source ingestion | Reusable adapters, catalog registration, refresh, and indexing operations | [Source integration guide](../ops/hero-jobs/README.md), [source registry](../internal/ingest/sources/registry.go) | Verify selected Bangladeshi career pages and the feasible access method for BDJobs and LinkedIn before implementing collectors |
 | Accounts and roles | Reusable authentication and moderator authorization; school-team account management is additional scope | [Role middleware](../internal/identity/auth/middleware.go), [account services](../internal/identity/accounts/AGENTS.md) | Add a complete team account lifecycle, then a reviewer assignment feature |
@@ -57,3 +57,28 @@ The existing backend recalculates search tags from the edited text and location,
 queues indexing, and keeps closed jobs closed. The form explains those effects.
 This PR changes no database schema or Go behavior. Posting/deadline controls and
 structured skill/facet editing remain separate features.
+
+## Feature: set and correct posting dates
+
+The publishing/submission form accepts an optional **Posting date**. The date
+picker uses Bangladesh time (UTC+06:00), and the selected day is sent as midnight
+in that offset through the existing `posted_at` field. Blank omits the field;
+publication resets the selection only after success. Invalid or future dates
+are refused before submission.
+
+The moderator editor shows the job's current displayed posting date and provides
+an optional **New posting date**. Selecting a different timestamp allows a
+date-only correction. Leaving the replacement blank preserves the stored value;
+clearing a draft selection undoes that replacement. Failed saves retain the date.
+The existing API does not support clearing a stored date with null, so this UI
+offers set/correct operations. An equivalent timestamp is treated as unchanged.
+
+The public API already serves an effective posting date: the source timestamp
+when usable, otherwise the job's creation time. The editor labels this as the
+current *displayed* date and never copies that fallback into an update unless a
+replacement is explicitly selected. Existing job-page date display and search
+indexing consume the corrected timestamp.
+
+This feature has no Go/schema changes. Application deadlines are tracked
+separately: the current job model has no deadline field, and supporting one
+requires storage, editing/display, and expiry handling together.

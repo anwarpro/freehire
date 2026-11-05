@@ -38,6 +38,56 @@ async function openEditor() {
 }
 
 describe('manual job editing', () => {
+  it('corrects the posting date independently of the job text', async () => {
+    const onSaved = vi.fn();
+    render(ManualJobEditor, { job, onSaved });
+    await openEditor();
+    await fireEvent.input(screen.getByLabelText('New posting date'), { target: { value: '2026-01-15' } });
+    await fireEvent.click(screen.getByRole('button', { name: 'Save changes' }));
+    await waitFor(() => expect(updateManualJob).toHaveBeenCalledWith(job.public_slug, {
+      posted_at: '2026-01-14T18:00:00.000Z',
+    }));
+    expect(await screen.findByText('Job updated.')).toBeTruthy();
+  });
+
+  it('preserves an existing posting date when correcting another field', async () => {
+    getJob.mockResolvedValue({ ...job, posted_at: '2026-01-14T18:00:00Z' });
+    render(ManualJobEditor, { job, onSaved: vi.fn() });
+    await openEditor();
+    expect(screen.getByText(/Current displayed posting date/).textContent).toContain('15 January 2026');
+    expect((screen.getByLabelText('New posting date') as HTMLInputElement).value).toBe('');
+    await fireEvent.input(screen.getByRole('textbox', { name: 'Title' }), { target: { value: 'Corrected title' } });
+    await fireEvent.click(screen.getByRole('button', { name: 'Save changes' }));
+    await waitFor(() => expect(updateManualJob).toHaveBeenCalledWith(job.public_slug, { title: 'Corrected title' }));
+  });
+
+  it('treats an equivalent timestamp as unchanged and clearing the selection as undo', async () => {
+    getJob.mockResolvedValue({ ...job, posted_at: '2026-01-14T18:00:00Z' });
+    render(ManualJobEditor, { job, onSaved: vi.fn() });
+    await openEditor();
+    await fireEvent.input(screen.getByLabelText('New posting date'), { target: { value: '2026-01-15' } });
+    expect((screen.getByRole('button', { name: 'Save changes' }) as HTMLButtonElement).disabled).toBe(true);
+    await fireEvent.input(screen.getByLabelText('New posting date'), { target: { value: '2026-01-16' } });
+    expect((screen.getByRole('button', { name: 'Save changes' }) as HTMLButtonElement).disabled).toBe(false);
+    await fireEvent.input(screen.getByLabelText('New posting date'), { target: { value: '' } });
+    expect((screen.getByRole('button', { name: 'Save changes' }) as HTMLButtonElement).disabled).toBe(true);
+    expect(updateManualJob).not.toHaveBeenCalled();
+  });
+
+  it('retains the selected date after a failed save and refuses future dates', async () => {
+    updateManualJob.mockRejectedValueOnce(new ApiError(500, 'Try again'));
+    render(ManualJobEditor, { job, onSaved: vi.fn() });
+    await openEditor();
+    await fireEvent.input(screen.getByLabelText('New posting date'), { target: { value: '2026-01-15' } });
+    await fireEvent.click(screen.getByRole('button', { name: 'Save changes' }));
+    expect((await screen.findByRole('alert')).textContent).toBe('Try again');
+    expect((screen.getByLabelText('New posting date') as HTMLInputElement).value).toBe('2026-01-15');
+    await fireEvent.input(screen.getByRole('textbox', { name: 'Title' }), { target: { value: 'Corrected title' } });
+    await fireEvent.input(screen.getByLabelText('New posting date'), { target: { value: '2099-01-01' } });
+    expect((screen.getByRole('button', { name: 'Save changes' }) as HTMLButtonElement).disabled).toBe(true);
+    expect(updateManualJob).toHaveBeenCalledTimes(1);
+  });
+
   it.each([null, 'user', 'admin'])('hides editing from the %s role', (role) => {
     auth.role = role;
     render(ManualJobEditor, { job, onSaved: vi.fn() });
