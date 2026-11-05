@@ -1422,6 +1422,7 @@ type Querier interface {
 	// second profile-derived row for the same user (both surfaced by the repository via
 	// pgerr.UniqueViolationConstraint, mapped to distinct sentinels). Returns the row.
 	CreateSavedSearch(ctx context.Context, arg CreateSavedSearchParams) (SavedSearch, error)
+	CreateStudentFollowup(ctx context.Context, arg CreateStudentFollowupParams) (TeamStudentFollowup, error)
 	// Insert a user-contributed vacancy into the moderation queue as 'pending'. The partial
 	// unique index on lower(url) WHERE status='pending' rejects a second pending submission of
 	// the same URL (the repository maps that unique violation to a 409).
@@ -2824,6 +2825,8 @@ type Querier interface {
 	// Which customer to ask the provider about for this account. NULL means the account has
 	// never transacted, which is the same answer the provider gives for an id it does not know.
 	GetStripeCustomerID(ctx context.Context, id int64) (pgtype.Text, error)
+	GetStudentContactRequest(ctx context.Context, arg GetStudentContactRequestParams) (TeamStudentFollowupEvent, error)
+	GetStudentFollowup(ctx context.Context, arg GetStudentFollowupParams) (TeamStudentFollowup, error)
 	// Load a single submission by id for the review path. The approve/reject flow guards the
 	// status in the service; the Mark* queries are additionally scoped to status='pending' as
 	// defense-in-depth against a concurrent second decision.
@@ -3086,6 +3089,7 @@ type Querier interface {
 	// Two sources rather than one because they cover different moments: the event row exists from
 	// the first delivery onward, and the column survives even if events are ever pruned.
 	HasRevenueCatFootprint(ctx context.Context, userID int64) (pgtype.Bool, error)
+	HasStudentContact(ctx context.Context, followupID int64) (bool, error)
 	// Mark one of the caller's own applications as hidden from the buddy feed and from the
 	// shared-company count. The SELECT is what proves ownership: for an application that is
 	// not the caller's it yields nothing and no row comes back. Hiding twice is a no-op that
@@ -3282,6 +3286,7 @@ type Querier interface {
 	// browsable_jobs is NULL when Meilisearch could not be reached. Never 0: see the
 	// migration's comment.
 	InsertSourceStat(ctx context.Context, arg InsertSourceStatParams) error
+	InsertStudentFollowupEvent(ctx context.Context, arg InsertStudentFollowupEventParams) error
 	InsertTeamMemberEvent(ctx context.Context, arg InsertTeamMemberEventParams) error
 	InsertTeamReviewEvent(ctx context.Context, arg InsertTeamReviewEventParams) error
 	// Crawl write path: store a fetched post once. ON CONFLICT DO NOTHING makes
@@ -4792,6 +4797,8 @@ type Querier interface {
 	// The whole snapshot. Aggregate only — per-source counts, no record-level data. A few hundred rows, so it is read whole and joined in Go against
 	// the adapter registry rather than filtered here.
 	ListSourceStats(ctx context.Context) ([]SourceStat, error)
+	ListStudentFollowupEvents(ctx context.Context, arg ListStudentFollowupEventsParams) ([]ListStudentFollowupEventsRow, error)
+	ListStudentFollowups(ctx context.Context, arg ListStudentFollowupsParams) ([]ListStudentFollowupsRow, error)
 	// "My submissions": one user's submissions, newest first, whatever their status.
 	// LEFT JOIN the minted job (present only once approved) to surface its public_slug,
 	// so the UI can link an approved submission straight to its live vacancy page.
@@ -7652,6 +7659,7 @@ type Querier interface {
 	// query string is a real value (not NULL), so "save the unfiltered view" is honored.
 	// No matching owner-scoped row returns no row (the handler maps that to 404).
 	UpdateSavedSearch(ctx context.Context, arg UpdateSavedSearchParams) (SavedSearch, error)
+	UpdateStudentFollowup(ctx context.Context, arg UpdateStudentFollowupParams) (TeamStudentFollowup, error)
 	UpdateTeamMember(ctx context.Context, arg UpdateTeamMemberParams) (TeamMember, error)
 	// Set the account's preferred interface language. The handler validates the code
 	// against the curated set before this runs (also enforced by the DB CHECK

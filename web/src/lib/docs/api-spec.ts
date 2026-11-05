@@ -1958,6 +1958,55 @@ data: {"type":"result","stop_reason":"completed"}
     ],
   },
   {
+    title: 'Student job follow-ups',
+    intro: 'Private, session-cookie-only references to students in an existing school system. Managers and the current job assignee may use this workflow; ordinary/inactive accounts and API keys cannot. No student directory, account, automated message or inferred eligibility is created. Private pasted jobs are excluded. All responses are private/no-store.',
+    endpoints: [
+      {
+        method: 'GET', path: '/team/student-followups', auth: 'cookie', summary: 'Search authorized student references across jobs, with outcome and overdue filters.',
+        description: 'Fixed 50-row pages ordered by last update/id. References and names use literal case-insensitive substring search. No full catalogue count. Reassignment/deactivation revoke access.',
+        query: [{ name: 'q', type: 'string', description: 'Student reference or name, maximum 300 characters.' }, { name: 'status', type: 'string', description: 'suggested, informed, interested, applied, interview, offer, or closed.' }, { name: 'overdue', type: 'boolean', description: 'Follow-up before today in Bangladesh, excluding offer/closed.' }, { name: 'offset', type: 'integer', description: '0–100000; meta.has_more indicates another page.' }],
+        curl: `curl "${BASE_URL}/team/student-followups?status=informed&overdue=true" -b cookies.txt`, responseExample: `{ "data": [], "meta": { "limit": 50, "offset": 0, "has_more": false } }`,
+      },
+      {
+        method: 'GET', path: '/team/jobs/{slug}/students', auth: 'cookie', summary: 'List a job’s student follow-ups with the same q/status/overdue/offset filters.',
+        pathParams: [{ name: 'slug', type: 'string', required: true, description: 'Public job slug.' }],
+        curl: `curl "${BASE_URL}/team/jobs/react-developer/students" -b cookies.txt`, responseExample: `{ "data": [], "meta": { "limit": 50, "offset": 0, "has_more": false } }`,
+      },
+      {
+        method: 'POST', path: '/team/jobs/{slug}/students', auth: 'cookie', summary: 'Link a student reference to an active public job. Returns 201.',
+        description: 'Starts at suggested/version 1 and records an audit snapshot. Duplicate references on this job (case-insensitive, trimmed) return 409. A closed posting refuses new links. Reference is immutable; close a mistaken link with a note.',
+        pathParams: [{ name: 'slug', type: 'string', required: true, description: 'Public job slug.' }],
+        body: [{ name: 'student_ref', type: 'string', required: true, description: 'Stable student ID or profile reference, 1–300 characters.' }, { name: 'student_name', type: 'string', description: 'Optional name, maximum 120 characters.' }, { name: 'profile_url', type: 'string', description: 'Optional HTTP/HTTPS school profile URL, no credentials, maximum 1000 characters.' }, { name: 'reason', type: 'string', required: true, description: 'Why this job may fit; 1–2000 characters.' }],
+        curl: `curl -X POST "${BASE_URL}/team/jobs/react-developer/students" -b cookies.txt -H 'Content-Type: application/json' -d '{"student_ref":"PH-42","reason":"Relevant React practice"}'`,
+      },
+      {
+        method: 'GET', path: '/team/jobs/{slug}/students/{id}', auth: 'cookie', summary: 'Read the latest follow-up, original job URL, closure state, contact count and version.',
+        pathParams: [{ name: 'slug', type: 'string', required: true, description: 'Public job slug.' }, { name: 'id', type: 'integer', required: true, description: 'Follow-up record ID scoped to this job.' }],
+        curl: `curl "${BASE_URL}/team/jobs/react-developer/students/1" -b cookies.txt`,
+      },
+      {
+        method: 'PUT', path: '/team/jobs/{slug}/students/{id}', auth: 'cookie', summary: 'Update outcome, context and follow-up date with an atomic audit snapshot.',
+        description: 'Stale expected_version returns 409; unchanged saves add no event. informed requires a recorded manual contact. Other outcomes can be entered directly and corrected. Closed postings retain editable outcomes.',
+        pathParams: [{ name: 'slug', type: 'string', required: true, description: 'Public job slug.' }, { name: 'id', type: 'integer', required: true, description: 'Follow-up record ID.' }],
+        body: [{ name: 'student_name', type: 'string', required: true, description: 'Optional name or empty string, maximum 120 characters.' }, { name: 'profile_url', type: 'string', required: true, description: 'Optional HTTP/HTTPS URL or empty string, maximum 1000 characters.' }, { name: 'reason', type: 'string', required: true, description: '1–2000 characters.' }, { name: 'status', type: 'string', required: true, description: 'suggested, informed, interested, applied, interview, offer, or closed.' }, { name: 'notes', type: 'string', required: true, description: 'Private follow-up notes, maximum 2000 characters.' }, { name: 'follow_up', type: 'string', required: true, description: 'YYYY-MM-DD or null.' }, { name: 'expected_version', type: 'integer', required: true, description: 'Loaded version.' }],
+        curl: `curl -X PUT "${BASE_URL}/team/jobs/react-developer/students/1" -b cookies.txt -H 'Content-Type: application/json' --data-binary @student-outcome.json`,
+      },
+      {
+        method: 'POST', path: '/team/jobs/{slug}/students/{id}/contacts', auth: 'cookie', summary: 'Record manual contact already made by the signed-in staff member. Sends no message.',
+        description: 'Adds channel/contact time/note to audit and moves suggested to informed while preserving other outcomes. Closed postings/follow-ups refuse contacts. UUID retries by the same actor/payload add no event, even after later edits. Changed retry content or a stale new request returns 409.',
+        pathParams: [{ name: 'slug', type: 'string', required: true, description: 'Public job slug.' }, { name: 'id', type: 'integer', required: true, description: 'Follow-up record ID.' }],
+        body: [{ name: 'channel', type: 'string', required: true, description: 'email, phone, whatsapp, messenger, or other.' }, { name: 'contacted_at', type: 'string', required: true, description: 'RFC3339 contact time with timezone; year 1900 or later, no more than five minutes in the future.' }, { name: 'note', type: 'string', description: 'Contact context, maximum 2000 characters.' }, { name: 'request_id', type: 'string', required: true, description: 'Nonzero UUID unique per manual contact; preserve it for identical network retries.' }, { name: 'expected_version', type: 'integer', required: true, description: 'Loaded version, checked for new requests.' }],
+        curl: `curl -X POST "${BASE_URL}/team/jobs/react-developer/students/1/contacts" -b cookies.txt -H 'Content-Type: application/json' --data-binary @student-contact.json`,
+      },
+      {
+        method: 'GET', path: '/team/jobs/{slug}/students/{id}/history', auth: 'cookie', summary: 'Latest 100 immutable follow-up/contact snapshots, newest version first.',
+        description: 'Includes actor, name/profile/reason/outcome/notes/date snapshot, channel, actual contact time, contact note and recorded time. Older events remain stored. An inaccessible or cross-job ID returns 404.',
+        pathParams: [{ name: 'slug', type: 'string', required: true, description: 'Public job slug.' }, { name: 'id', type: 'integer', required: true, description: 'Follow-up record ID.' }],
+        curl: `curl "${BASE_URL}/team/jobs/react-developer/students/1/history" -b cookies.txt`, responseExample: `{ "data": [] }`,
+      },
+    ],
+  },
+  {
     title: 'Curriculum matching',
     intro: 'Private, session-cookie-only taught-skill matching. Managers configure mappings and browse all public postings; reviewers see only current assignments. Suggestions and evidence are deterministic and use no model calls. Reviewer labels take precedence and survive refreshes. Background matching is incremental; progress distinguishes an incomplete catalogue scan from no matches.',
     endpoints: [

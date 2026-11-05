@@ -81,3 +81,6 @@ Student profiles, job–student matching, notification records and outcomes are
 separate T03–T06 work. This delivery sends no messages to students. LinkedIn
 collection is deployed. The [curriculum workflow](curriculum-matching.md) adds
 course badges and evidence inside Team review without changing assignment notes.
+
+See [student job follow-ups](student-job-followups.md) to link school references,
+record manual contact and track student outcomes under the same job permissions.

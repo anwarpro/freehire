@@ -255,3 +255,10 @@ seeds existing jobs in bounded pages; human labels and history survive refreshes
 This implements Q02/Q06/M01 as one feature. Student profiles, job–student links,
 notification records and the discussion bot remain separate workflows. Deployment
 and the initial production matching pass are separate from PR completion.
+
+## Student references and follow-ups
+
+The [student job follow-up workflow](student-job-followups.md) covers lightweight
+job links, manual-contact audit and outcome tracking (T04–T06). It uses existing
+school IDs/profile links; full student profiles/import (T03) remain deferred.
+This feature requires migration 0217 and a separate deployment.

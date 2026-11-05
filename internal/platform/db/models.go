@@ -1526,6 +1526,42 @@ type TeamMemberEvent struct {
 	CreatedAt pgtype.Timestamptz `json:"created_at"`
 }
 
+type TeamStudentFollowup struct {
+	ID          int64              `json:"id"`
+	JobID       int64              `json:"job_id"`
+	StudentRef  string             `json:"student_ref"`
+	StudentName string             `json:"student_name"`
+	ProfileUrl  string             `json:"profile_url"`
+	Reason      string             `json:"reason"`
+	Status      string             `json:"status"`
+	Notes       string             `json:"notes"`
+	FollowUp    pgtype.Date        `json:"follow_up"`
+	Version     int64              `json:"version"`
+	CreatedBy   pgtype.Int8        `json:"created_by"`
+	UpdatedBy   pgtype.Int8        `json:"updated_by"`
+	CreatedAt   pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt   pgtype.Timestamptz `json:"updated_at"`
+}
+
+type TeamStudentFollowupEvent struct {
+	ID          int64              `json:"id"`
+	FollowupID  int64              `json:"followup_id"`
+	ActorID     pgtype.Int8        `json:"actor_id"`
+	Action      string             `json:"action"`
+	StudentName string             `json:"student_name"`
+	ProfileUrl  string             `json:"profile_url"`
+	Reason      string             `json:"reason"`
+	Status      string             `json:"status"`
+	Notes       string             `json:"notes"`
+	FollowUp    pgtype.Date        `json:"follow_up"`
+	Version     int64              `json:"version"`
+	Channel     string             `json:"channel"`
+	ContactedAt pgtype.Timestamptz `json:"contacted_at"`
+	ContactNote string             `json:"contact_note"`
+	RequestID   pgtype.Text        `json:"request_id"`
+	CreatedAt   pgtype.Timestamptz `json:"created_at"`
+}
+
 type TelegramChannel struct {
 	ID        int64              `json:"id"`
 	Channel   string             `json:"channel"`
