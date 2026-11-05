@@ -1958,6 +1958,51 @@ data: {"type":"result","stop_reason":"completed"}
     ],
   },
   {
+    title: 'Curriculum matching',
+    intro: 'Private, session-cookie-only taught-skill matching. Managers configure mappings and browse all public postings; reviewers see only current assignments. Suggestions and evidence are deterministic and use no model calls. Reviewer labels take precedence and survive refreshes. Background matching is incremental; progress distinguishes an incomplete catalogue scan from no matches.',
+    endpoints: [
+      {
+        method: 'GET', path: '/team/curriculum', auth: 'cookie', summary: 'Active staff: current curriculum rules and worker progress.',
+        description: 'Approved editable defaults: L1 frontend, L2 backend, Python/software engineering, AI/ML, data analysis and competitive programming. Each track has a stable id, label, enabled flag, minimum distinct skills and literal skill aliases. Progress reports initial scan state, checks processed, last run and sanitized error.',
+        curl: `curl "${BASE_URL}/team/curriculum" -b cookies.txt`, responseExample: `{ "data": { "version": 1, "config": { "tracks": [] }, "progress": { "mapping_version": 1, "complete": false, "processed": 0, "last_run_at": null, "last_error": "" } } }`,
+      },
+      {
+        method: 'PUT', path: '/team/curriculum', auth: 'cookie', summary: 'Managers only: save an editable mapping and queue a bounded catalogue rebuild.',
+        description: 'Choose 1–12 tracks, each with 1–30 distinct skills and 1–8 literal aliases per skill. IDs are stable and cannot be removed; disable retired tracks. Label limit 100 characters, skill name 80 and alias 64. Aliases cannot contain comma or pipe separators. Minimum is 1 through the skill count. Changes increment the mapping version and append an audit snapshot. Unchanged saves do not rebuild. A stale expected_version returns 409.',
+        body: [{ name: 'expected_version', type: 'integer', required: true, description: 'Loaded mapping version.' }, { name: 'config', type: 'object', required: true, description: 'Full { tracks: [{ id, label, enabled, minimum, skills: [{ name, aliases: [...] }] }] } mapping; preserve all existing track IDs.' }],
+        curl: `curl -X PUT "${BASE_URL}/team/curriculum" -b cookies.txt -H 'Content-Type: application/json' --data-binary @curriculum-mapping.json`,
+      },
+      {
+        method: 'GET', path: '/team/curriculum/history', auth: 'cookie', summary: 'Managers only: latest 30 mapping snapshots, including initial defaults.',
+        curl: `curl "${BASE_URL}/team/curriculum/history" -b cookies.txt`, responseExample: `{ "data": [] }`,
+      },
+      {
+        method: 'GET', path: '/team/curriculum/jobs', auth: 'cookie', summary: 'Filter projected jobs by effective course labels, review state, source and posting state.',
+        description: 'Fixed page size 50, newest job id first. Reviewer labels override automatic suggestions, including an explicitly reviewed empty set. Only projections for the current mapping are listed; jobs appear as background processing finishes. update_pending flags a source edit queued for reprocessing. No exact catalogue count is performed. Former assignees and deactivated staff cannot retain access.',
+        query: [{ name: 'track', type: 'string', description: 'Optional stable track ID.' }, { name: 'review', type: 'string', description: 'unreviewed, reviewed, or needs_review (reviewed input/mapping changed or update queued).' }, { name: 'source', type: 'string', description: 'Optional source key, e.g. linkedin or bdjobs.' }, { name: 'state', type: 'string', description: 'active (default), closed, or all.' }, { name: 'offset', type: 'integer', description: '0–100000; meta.has_more indicates another page.' }],
+        curl: `curl "${BASE_URL}/team/curriculum/jobs?track=python&review=unreviewed" -b cookies.txt`, responseExample: `{ "data": [], "meta": { "limit": 50, "offset": 0, "has_more": false } }`,
+      },
+      {
+        method: 'GET', path: '/team/curriculum/jobs/{slug}', auth: 'cookie', summary: 'Managers/current assignee: refresh one job immediately and read suggested/reviewed labels with evidence.',
+        description: 'Returns mapping_version, input_hash, review_version, suggested_tracks, reviewed_tracks (null when unreviewed), effective_tracks, review_notes, reviewed, review_stale, tracks and evidence. Evidence is { matches: [{ track_id, evidence: [{ skill, alias, kind, text }] }], truncated }. Kinds are required, preferred, title and mentioned. Only standard explicit qualifiers/headings are inferred; unqualified mentions never become required. Matching is capped at the first 50000 description characters and reports truncation. Private pasted jobs return 404.',
+        pathParams: [{ name: 'slug', type: 'string', required: true, description: 'Public job slug.' }],
+        curl: `curl "${BASE_URL}/team/curriculum/jobs/python-engineer" -b cookies.txt`,
+      },
+      {
+        method: 'PUT', path: '/team/curriculum/jobs/{slug}', auth: 'cookie', summary: 'Managers/current assignee: confirm or correct course labels with an atomic audit snapshot.',
+        description: 'tracks=[] records reviewed no-fit; tracks=null restores automatic suggestions. Enabled tracks only. expected_version, mapping_version and input_hash must all match fresh evidence, otherwise 409 preserves the existing review. Refreshes retain manual labels and flag review_stale after requirement/mapping changes. Unchanged saves add no events. Notes and decisions never enter public job data or search.',
+        pathParams: [{ name: 'slug', type: 'string', required: true, description: 'Public job slug.' }],
+        body: [{ name: 'tracks', type: 'string[] (nullable)', required: true, description: 'Unique enabled track IDs; [] for reviewed no-fit, null to reset.' }, { name: 'notes', type: 'string', required: true, description: 'Private rationale, maximum 2000 characters.' }, { name: 'expected_version', type: 'integer', required: true, description: 'Loaded review_version, initially 0.' }, { name: 'mapping_version', type: 'integer', required: true, description: 'Loaded mapping_version.' }, { name: 'input_hash', type: 'string', required: true, description: 'Loaded input_hash; guards edits to job requirements.' }],
+        curl: `curl -X PUT "${BASE_URL}/team/curriculum/jobs/python-engineer" -b cookies.txt -H 'Content-Type: application/json' --data-binary @curriculum-review.json`,
+      },
+      {
+        method: 'GET', path: '/team/curriculum/jobs/{slug}/history', auth: 'cookie', summary: 'Managers/current assignee: latest 100 curriculum review snapshots.',
+        pathParams: [{ name: 'slug', type: 'string', required: true, description: 'Public job slug.' }],
+        curl: `curl "${BASE_URL}/team/curriculum/jobs/python-engineer/history" -b cookies.txt`, responseExample: `{ "data": [] }`,
+      },
+    ],
+  },
+  {
     title: 'Company career pages',
     intro: 'Moderator-managed company collection. Preview verifies a public HTTPS source before enabling it in the board catalogue. Unsupported sites remain explicit manual fallbacks. Jobs are collected and indexed asynchronously by the existing workers.',
     endpoints: [

@@ -25,6 +25,7 @@ type Querier interface {
 	// over the same events both narrate, and only the first to finish moves the cursor, so the
 	// second neither rewinds it nor skips past an event it never saw.
 	AdvanceAssistantNarratedEvent(ctx context.Context, arg AdvanceAssistantNarratedEventParams) (int64, error)
+	AdvanceCurriculumScan(ctx context.Context, arg AdvanceCurriculumScanParams) error
 	// Move an application forward to a new stage (the worker only calls this after
 	// checking the transition is strictly forward and high-confidence), and record the
 	// transition in the ledger under the same predicate that moves the column — exactly as
@@ -1587,6 +1588,8 @@ type Querier interface {
 	// Remove a user's company vote (toggle-clear or the DELETE endpoint). No-op when
 	// absent.
 	DeleteCompanyVote(ctx context.Context, arg DeleteCompanyVoteParams) error
+	DeleteCurriculumDirty(ctx context.Context, jobID int64) error
+	DeleteCurriculumMatch(ctx context.Context, jobID int64) error
 	// Housekeeping: drop dead-lettered entries older than the cutoff.
 	//
 	// Note what this does NOT reap: entries whose job row is gone. For search_outbox that is
@@ -2477,6 +2480,9 @@ type Querier interface {
 	// language stamp is checked against the VACANCY, not the caller's profile, unlike
 	// GetUserJobAnalysis.
 	GetCoverLetter(ctx context.Context, arg GetCoverLetterParams) (GetCoverLetterRow, error)
+	GetCurriculumConfig(ctx context.Context) (CurriculumConfig, error)
+	GetCurriculumMatch(ctx context.Context, jobID int64) (CurriculumMatch, error)
+	GetCurriculumScan(ctx context.Context) (CurriculumScanState, error)
 	// One candidate's application to one vacancy, if any — whether it reached the employer is
 	// sent_at, whether a delivery is in flight is a sending_at younger than the claim's two
 	// minutes. Read by the apply form ("already applied") and by Apply to tell the three
@@ -3128,6 +3134,7 @@ type Querier interface {
 	// right for this question on its own: a pasted JD was not INGESTED, and counting one would
 	// put 'pasted' and 'weblink' in the exposition as providers that no crawl can explain.
 	IngestDuplicationMetrics(ctx context.Context) ([]IngestDuplicationMetricsRow, error)
+	InitializeCurriculumScan(ctx context.Context, mappingVersion int64) error
 	// Record a received webhook event, once. See the add-pro-subscription change.
 	//
 	// ON CONFLICT DO NOTHING against the (provider, event_id) unique index is the whole of the
@@ -3176,6 +3183,8 @@ type Querier interface {
 	// does not take part or they already reported it; the caller looks the conversation up to
 	// say which.
 	InsertConversationReport(ctx context.Context, arg InsertConversationReportParams) (int64, error)
+	InsertCurriculumConfigEvent(ctx context.Context, arg InsertCurriculumConfigEventParams) error
+	InsertCurriculumReviewEvent(ctx context.Context, arg InsertCurriculumReviewEventParams) error
 	// Append the debit for a metered action. delta is negative (the action cost). The partial
 	// unique index on (user_id, feature, ref) WHERE kind='debit' guards against a double charge
 	// for the same ref even under a race.
@@ -3946,6 +3955,11 @@ type Querier interface {
 	// by a caller-supplied limit and served by the (user_id, created_at DESC) index. The handler
 	// resolves each debit's ref to a human label (the job/CV it named).
 	ListCreditLedger(ctx context.Context, arg ListCreditLedgerParams) ([]ListCreditLedgerRow, error)
+	ListCurriculumConfigEvents(ctx context.Context) ([]ListCurriculumConfigEventsRow, error)
+	ListCurriculumDirty(ctx context.Context, limit int32) ([]int64, error)
+	ListCurriculumJobs(ctx context.Context, arg ListCurriculumJobsParams) ([]ListCurriculumJobsRow, error)
+	ListCurriculumReviewEvents(ctx context.Context, arg ListCurriculumReviewEventsParams) ([]ListCurriculumReviewEventsRow, error)
+	ListCurriculumSeed(ctx context.Context, arg ListCurriculumSeedParams) ([]int64, error)
 	// The next page of bindings to reconcile, each with the plan that decides its role.
 	//
 	// The plan comes back WITH the link, in one read, because resolving it separately would be
@@ -5095,6 +5109,10 @@ type Querier interface {
 	// (see LockJobForVote for the drift this prevents). Called first in the vote
 	// transaction.
 	LockCompanyForVote(ctx context.Context, slug string) error
+	LockCurriculumConfig(ctx context.Context) (CurriculumConfig, error)
+	// Worker reads privacy only to remove projections for pasted JDs. Team callers
+	// authorize through GetTeamJobReview before reaching this row lock.
+	LockCurriculumJob(ctx context.Context, id int64) (LockCurriculumJobRow, error)
 	// Take the job row's lock so concurrent applies on the same job serialize. Without
 	// it, two applies in the same window under READ COMMITTED each read a snapshot
 	// missing the other's user_jobs row and both bump applied_count. Called first in
@@ -5921,6 +5939,7 @@ type Querier interface {
 	// reason its job sibling is: the row is what stops a re-run after a partial failure from
 	// spending a bounded budget twice.
 	RecordCompanySearchPing(ctx context.Context, arg RecordCompanySearchPingParams) error
+	RecordCurriculumRun(ctx context.Context, arg RecordCurriculumRunParams) error
 	// One live (pending or accepted) row per term: the first ask inserts it and keeps its
 	// raw_term and submitted_by, every later ask only bumps the count. A rejected row is
 	// not live, so asking again opens a new pending one beside it. One upsert rather than
@@ -6453,6 +6472,7 @@ type Querier interface {
 	// index probes, so this stays cheap on an 11M-row table — deliberately unfiltered,
 	// because counting the open rows would be a scan and the chunk query filters anyway.
 	RequirementsDerivedBackfillBounds(ctx context.Context) (RequirementsDerivedBackfillBoundsRow, error)
+	ResetCurriculumScan(ctx context.Context, mappingVersion int64) error
 	// A healthy (not-expired) probe clears any accumulated strikes, so only CONSECUTIVE
 	// expired probes can close a job. Guarded to the non-zero case so probing an
 	// already-clean job does not churn the row.
@@ -6618,6 +6638,7 @@ type Querier interface {
 	// Records `retried` in the same statement: the history trigger only names transitions INTO
 	// a state, and clearing markers is the one write it cannot tell from any other.
 	RetryAutoApplyEntry(ctx context.Context, arg RetryAutoApplyEntryParams) (RetryAutoApplyEntryRow, error)
+	ReviewCurriculumMatch(ctx context.Context, arg ReviewCurriculumMatchParams) (CurriculumMatch, error)
 	// An admin kill switch. Deliberately does not delete the row or free company_slug — see the
 	// migration comment: there is no self-service handoff on this MVP, so freeing the slug on
 	// revoke would let anyone re-claim a company an admin just decided to shut out.
@@ -7543,6 +7564,7 @@ type Querier interface {
 	// Replace a CV's editable fields, stamping updated_at. Owner-scoped: no row is updated
 	// for a foreign or missing id (the handler maps the resulting no-row error to 404).
 	UpdateCV(ctx context.Context, arg UpdateCVParams) (UpdateCVRow, error)
+	UpdateCurriculumConfig(ctx context.Context, arg UpdateCurriculumConfigParams) (CurriculumConfig, error)
 	// The employer-authored analogue of UpdateManualJob, scoped narrower on purpose: WHERE
 	// created_by = actor_id (not merely IS NOT NULL) AND source = 'employer'. UpdateManualJob's
 	// own scope lets any moderator edit any manually-authored job, which is correct for trusted
@@ -7729,6 +7751,7 @@ type Querier interface {
 	// re-ages itself on every redraft would silently break any future rule that did — the same
 	// trap the fit-analysis quota documents on its own upsert.
 	UpsertCoverLetter(ctx context.Context, arg UpsertCoverLetterParams) error
+	UpsertCurriculumMatch(ctx context.Context, arg UpsertCurriculumMatchParams) (CurriculumMatch, error)
 	// Records a candidate's application to an on-site vacancy and CLAIMS it for delivery
 	// (sending_at), or replaces the content of one they recorded earlier that never reached the
 	// employer — the retry after a failed delivery. See migration 0187.

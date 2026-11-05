@@ -3,6 +3,7 @@
   import { ApiError, api } from '#lib/api.js';
   import { reviewStatuses, reviewStatusLabel } from '#lib/teamReview.js';
   import type { TeamAccess, TeamMember, TeamReview, TeamReviewEvent, ReviewStatus } from '#lib/teamReview.js';
+  import CurriculumJobReview from './CurriculumJobReview.svelte';
   import { Button, Dialog } from '#lib/ui/index.js';
 
   let { slug, onClose, onSaved }: { slug: string; onClose: () => void; onSaved: () => void } = $props();
@@ -20,6 +21,7 @@
   let conflict = $state(false);
   let history = $state.raw<TeamReviewEvent[]>([]);
   let historyOpen = $state(false);
+  let curriculumOpen = $state(false);
   let historyError = $state('');
   let alive = false;
   let generation = 0;
@@ -125,6 +127,10 @@
           {#if conflict}<Button variant="outline" onclick={load}>Reload latest (discard draft)</Button>{/if}
         </div>
       </form>
+      <div class="border-t border-border pt-4">
+        <Button variant="outline" onclick={() => (curriculumOpen = !curriculumOpen)}>{curriculumOpen ? 'Hide curriculum badges' : 'Curriculum badges'}</Button>
+        {#if curriculumOpen}<div class="mt-4"><CurriculumJobReview {slug} {onSaved} /></div>{/if}
+      </div>
       <div class="border-t border-border pt-4">
         <Button variant="ghost" onclick={showHistory} disabled={saving}>{historyOpen ? 'Hide history' : 'View change history'}</Button>
         {#if historyOpen}

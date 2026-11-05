@@ -79,4 +79,5 @@ app/web release may leave the additive tables in place to preserve reviews.
 
 Student profiles, job–student matching, notification records and outcomes are
 separate T03–T06 work. This delivery sends no messages to students. LinkedIn
-collection remains the next major delivery after team assignment is deployed.
+collection is deployed. The [curriculum workflow](curriculum-matching.md) adds
+course badges and evidence inside Team review without changing assignment notes.

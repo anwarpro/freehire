@@ -91,6 +91,7 @@ const TYPE_SCHEMAS = {
   'string (UUID)': { type: 'string', format: 'uuid' },
   'string (form field)': { type: 'string' },
   'string[]': { type: 'array', items: { type: 'string' } },
+  'string[] (nullable)': { type: ['array', 'null'], items: { type: 'string' } },
   'string[] (2 uuids)': { type: 'array', items: { type: 'string', format: 'uuid' }, minItems: 2, maxItems: 2 },
   integer: { type: 'integer' },
   number: { type: 'number' },

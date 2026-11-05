@@ -1,3 +1,4 @@
+import type { CurriculumSettings, CurriculumDetail, CurriculumReviewInput, CurriculumQueue, CurriculumFilter, CurriculumEvent, CurriculumConfigEvent } from './curriculum.js';
 import type { TeamAccess, TeamMember, TeamMemberInput, TeamMemberUpdate, TeamMemberEvent, TeamReview, TeamReviewInput, TeamReviewEvent, TeamQueue, TeamQueueFilter } from './teamReview.js';
 // The only module that knows the API base URL and wire shapes. Views call the
 // typed functions below; they never touch fetch or URLs directly. List endpoints
@@ -3220,8 +3221,21 @@ export function createApi(
   async function saveTeamReview(slug: string, input: TeamReviewInput): Promise<TeamReview> { return requestData(`/api/v1/team/jobs/${encodeURIComponent(slug)}`, { method: 'PUT', body: JSON.stringify(input) }); }
   async function teamReviewHistory(slug: string): Promise<TeamReviewEvent[]> { return requestData(`/api/v1/team/jobs/${encodeURIComponent(slug)}/history`); }
 
+  async function curriculumSettings(): Promise<CurriculumSettings> { return requestData('/api/v1/team/curriculum'); }
+  async function saveCurriculumSettings(input: { expected_version: number; config: CurriculumSettings['config'] }): Promise<CurriculumSettings> { return requestData('/api/v1/team/curriculum', { method: 'PUT', body: JSON.stringify(input) }); }
+  async function curriculumConfigHistory(): Promise<CurriculumConfigEvent[]> { return requestData('/api/v1/team/curriculum/history'); }
+  async function curriculumJobs(filter: CurriculumFilter = {}): Promise<CurriculumQueue> {
+    const params = new URLSearchParams();
+    for (const [key, value] of Object.entries(filter)) if (value !== '' && value !== undefined) params.set(key, String(value));
+    return request(`/api/v1/team/curriculum/jobs?${params}`);
+  }
+  async function curriculumJob(slug: string): Promise<CurriculumDetail> { return requestData(`/api/v1/team/curriculum/jobs/${encodeURIComponent(slug)}`); }
+  async function reviewCurriculum(slug: string, input: CurriculumReviewInput): Promise<CurriculumDetail> { return requestData(`/api/v1/team/curriculum/jobs/${encodeURIComponent(slug)}`, { method: 'PUT', body: JSON.stringify(input) }); }
+  async function curriculumHistory(slug: string): Promise<CurriculumEvent[]> { return requestData(`/api/v1/team/curriculum/jobs/${encodeURIComponent(slug)}/history`); }
+
   return {
-    teamAccess, teamMembers, createTeamMember, updateTeamMember, teamMemberHistory, teamReviews, teamReview, saveTeamReview, teamReviewHistory,
+    teamAccess,
+    curriculumSettings, saveCurriculumSettings, curriculumConfigHistory, curriculumJobs, curriculumJob, reviewCurriculum, curriculumHistory, teamMembers, createTeamMember, updateTeamMember, teamMemberHistory, teamReviews, teamReview, saveTeamReview, teamReviewHistory,
     listJobs,
     getJob,
     getSimilarJobs,

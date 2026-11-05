@@ -243,3 +243,15 @@ a rotating sample outside discovery without closing jobs merely because they
 disappear from search. Existing source health and logs expose access failures.
 See the workflow for measured evidence and JobSpy/Apify alternatives. Deployment
 and production collection remain separate verification steps.
+
+
+## Major feature: curriculum matching and badges
+
+The [curriculum workflow](curriculum-matching.md) provides the approved editable
+track defaults, literal skill aliases, evidence-backed automatic suggestions,
+manual review/correction, stale-review flags and track/source/review filters in
+the private team workspace. An incremental worker projects new/edited jobs and
+seeds existing jobs in bounded pages; human labels and history survive refreshes.
+This implements Q02/Q06/M01 as one feature. Student profiles, job–student links,
+notification records and the discussion bot remain separate workflows. Deployment
+and the initial production matching pass are separate from PR completion.
