@@ -5,10 +5,12 @@
   import { currentUser } from '#lib/auth.svelte.js';
   import { htmlToMarkdown } from '#lib/htmlToMarkdown.js';
   import { renderMarkdown } from '#lib/markdown.js';
+  import { postingDateError, postingDateTimestamp } from '#lib/postingDate.js';
   import type { Job, ManualJobUpdate } from '#lib/types.js';
   import { Button, Dialog, Input } from '#lib/ui/index.js';
   import NoteEditor from './NoteEditor.svelte';
   import JobDescription from './JobDescription.svelte';
+  import PostingDateField from './PostingDateField.svelte';
 
   let { slug, onClose, onSaved }: {
     slug: string;
@@ -28,14 +30,19 @@
   let description = $state('');
   let originalDescription = $state('');
   let preview = $state(false);
+  let postingDate = $state('');
   let alive = false;
   const allowed = $derived(currentUser()?.role === 'moderator');
+  const dateError = $derived(postingDateError(postingDate));
+  const selectedPostedAt = $derived(dateError ? undefined : postingDateTimestamp(postingDate));
+  const dateChanged = $derived(selectedPostedAt !== undefined &&
+    (!current?.posted_at || Date.parse(selectedPostedAt) !== Date.parse(current.posted_at)));
   const changed = $derived(current !== null && (
     title.trim() !== current.title || company.trim() !== current.company ||
     location.trim() !== current.location || remote !== (current.work_mode === 'remote') ||
-    description !== originalDescription
+    description !== originalDescription || dateChanged
   ));
-  const canSave = $derived(allowed && changed && title.trim() !== '' && company.trim() !== '' && !saving);
+  const canSave = $derived(allowed && changed && !dateError && title.trim() !== '' && company.trim() !== '' && !saving);
 
   $effect(() => {
     if (!open) onClose();
@@ -78,6 +85,7 @@
       if (company.trim() !== current.company) patch.company = company.trim();
       if (location.trim() !== current.location) patch.location = location.trim();
       if (remote !== (current.work_mode === 'remote')) patch.remote = remote;
+      if (dateChanged) patch.posted_at = selectedPostedAt;
       if (description !== originalDescription) patch.description = await marked.parse(description);
       updated = await api.updateManualJob(current.public_slug, patch);
     } catch (err) {
@@ -125,6 +133,13 @@
           Location
           <Input bind:value={location} class="w-full" />
         </label>
+        {#if current.posted_at}
+          <p class="text-xs text-muted-foreground">
+            Current displayed posting date:
+            {new Intl.DateTimeFormat('en-GB', { dateStyle: 'long', timeZone: 'Asia/Dhaka' }).format(new Date(current.posted_at))}.
+          </p>
+        {/if}
+        <PostingDateField bind:value={postingDate} label="New posting date" help="Optional: select a replacement date, or leave blank to keep the current date." />
         <label class="flex items-center gap-2 text-sm">
           <input type="checkbox" bind:checked={remote} /> Fully remote
         </label>

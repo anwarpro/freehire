@@ -19,6 +19,7 @@
   import { currentUser, isAuthenticated } from '#lib/auth.svelte.js';
   import { htmlToMarkdown } from '#lib/htmlToMarkdown.js';
   import { renderMarkdown } from '#lib/markdown.js';
+  import { postingDateError, postingDateTimestamp } from '#lib/postingDate.js';
   import {
     REGION_OPTIONS,
     WORK_MODE_OPTIONS,
@@ -31,6 +32,7 @@
   import JobPreview from './JobPreview.svelte';
   import NoteEditor from './NoteEditor.svelte';
   import TokenInput from './facets/TokenInput.svelte';
+  import PostingDateField from './PostingDateField.svelte';
 
   let { mode = 'review' }: { mode?: 'review' | 'publish' } = $props();
   const publishing = $derived(mode === 'publish');
@@ -49,6 +51,7 @@
   let company = $state('');
   let location = $state('');
   let source = $state('');
+  let postingDate = $state('');
 
   // The description is authored as markdown in the shared tracker editor and converted
   // to HTML on submit (the catalogue renders descriptions as sanitized HTML).
@@ -123,6 +126,7 @@
       title.trim() !== '' &&
       company.trim() !== '' &&
       existingSlug === null &&
+      postingDateError(postingDate) === null &&
       !submitting,
   );
 
@@ -185,6 +189,7 @@
 
   function resetForm() {
     url = title = company = location = source = '';
+    postingDate = '';
     descriptionMarkdown = '';
     region = workMode = employmentType = seniority = currency = period = '';
     cities = [];
@@ -211,6 +216,7 @@
         remote: workMode === 'remote',
         description: descriptionHtml || undefined,
         source: source.trim() || undefined,
+        posted_at: postingDateTimestamp(postingDate),
         skills: skills.length ? skills : undefined,
         regions: region ? [region] : undefined,
         cities: cities.length ? cities : undefined,
@@ -396,6 +402,10 @@
             </label>
           </div>
         </fieldset>
+
+        <div class="py-6">
+          <PostingDateField bind:value={postingDate} help="Optional: use the date on the original posting. Leave blank when it is unknown." />
+        </div>
 
         <!-- Details: the structured facets that make the vacancy searchable. -->
         <fieldset class="flex flex-col gap-4 py-6">

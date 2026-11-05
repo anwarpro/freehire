@@ -61,7 +61,10 @@ describe('moderator job publishing', () => {
     const fetcher = vi.fn<typeof fetch>().mockResolvedValue(
       new Response(JSON.stringify({ data: job }), { status: 201 }),
     );
-    const input = { url: 'https://example.com/jobs/python', title: job.title, company: job.company };
+    const input = {
+      url: 'https://example.com/jobs/python', title: job.title, company: job.company,
+      posted_at: '2026-01-14T18:00:00.000Z',
+    };
 
     expect(await createApi(fetcher).publishJob(input)).toEqual(job);
     expect(fetcher).toHaveBeenCalledWith('/api/v1/jobs', expect.objectContaining({
@@ -85,9 +88,10 @@ describe('manual job editing', () => {
     const fetcher = vi.fn<typeof fetch>().mockResolvedValue(
       new Response(JSON.stringify({ data: job }), { status: 200 }),
     );
-    expect(await createApi(fetcher).updateManualJob(job.public_slug, { title: job.title })).toEqual(job);
+    const input = { title: job.title, posted_at: '2026-01-14T18:00:00.000Z' };
+    expect(await createApi(fetcher).updateManualJob(job.public_slug, input)).toEqual(job);
     expect(fetcher).toHaveBeenCalledWith('/api/v1/jobs/a%2Fb%3Fc', expect.objectContaining({
-      method: 'PATCH', credentials: 'include', body: JSON.stringify({ title: job.title }),
+      method: 'PATCH', credentials: 'include', body: JSON.stringify(input),
     }));
   });
 

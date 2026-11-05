@@ -50,6 +50,36 @@ beforeEach(() => {
 });
 
 describe('moderator job publishing', () => {
+  it('publishes a selected posting date and clears the selection on success', async () => {
+    render(SubmitView, { mode: 'publish' });
+    await fillBasics();
+    await fireEvent.input(screen.getByLabelText('Posting date'), { target: { value: '2026-01-15' } });
+    await fireEvent.click(screen.getByRole('button', { name: 'Publish job' }));
+    expect(await screen.findByRole('link', { name: 'Open published job' })).toBeTruthy();
+    expect(publishJob).toHaveBeenCalledWith(expect.objectContaining({ posted_at: '2026-01-14T18:00:00.000Z' }));
+    expect((screen.getByLabelText('Posting date') as HTMLInputElement).value).toBe('');
+  });
+
+  it('blocks a future posting date', async () => {
+    render(SubmitView, { mode: 'publish' });
+    await fillBasics();
+    await fireEvent.input(screen.getByLabelText('Posting date'), { target: { value: '2099-01-01' } });
+    expect((await screen.findByRole('alert')).textContent).toContain('after today');
+    expect((screen.getByRole('button', { name: 'Publish job' }) as HTMLButtonElement).disabled).toBe(true);
+    expect(publishJob).not.toHaveBeenCalled();
+  });
+
+  it('passes the optional posting date through the ordinary review flow', async () => {
+    auth.role = 'user';
+    render(SubmitView);
+    await fillBasics();
+    await fireEvent.input(screen.getByLabelText('Posting date'), { target: { value: '2026-01-15' } });
+    await fireEvent.click(screen.getByRole('button', { name: 'Submit for review' }));
+    expect(await screen.findByRole('link', { name: 'My submissions' })).toBeTruthy();
+    expect(submitJob).toHaveBeenCalledWith(expect.objectContaining({ posted_at: '2026-01-14T18:00:00.000Z' }));
+    expect(publishJob).not.toHaveBeenCalled();
+  });
+
   it('publishes the draft directly and links to the resulting job', async () => {
     render(SubmitView, { mode: 'publish' });
     await fillBasics();
