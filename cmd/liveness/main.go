@@ -99,7 +99,7 @@ const expiryWindow = 45 * 24 * time.Hour
 // rather than racing it. empregos leaks the same way for a different reason: its crawl reads
 // every posting that names a state but cannot prove it read the rest (see empregos.go), so it
 // is not fullCatalog and its sweep is company-scoped too.
-var probeDespiteRegistered = []string{"himalayas", "echojobs", "jobicy", "remoteok", "hh", "empregos"}
+var probeDespiteRegistered = []string{"himalayas", "echojobs", "jobicy", "remoteok", "hh", "empregos", "linkedin"}
 
 // probeDespiteRegisteredGET is the probeDespiteRegistered subset verified by the same
 // plain-GET-then-Classify probe as every orphan candidate — their job pages answer a
@@ -277,7 +277,7 @@ func run() int {
 		log.Printf("select stale registered candidates: %v", err)
 		return 1
 	}
-	var getProbeStale, himalayasStale, echojobsStale, hhStale []candidate
+	var getProbeStale, himalayasStale, echojobsStale, hhStale, linkedinStale []candidate
 	for _, c := range staleCandidates {
 		switch {
 		case slices.Contains(probeDespiteRegisteredGET, c.Source):
@@ -288,6 +288,8 @@ func run() int {
 			echojobsStale = append(echojobsStale, staleCandidate(c))
 		case c.Source == "hh":
 			hhStale = append(hhStale, staleCandidate(c))
+		case c.Source == "linkedin":
+			linkedinStale = append(linkedinStale, staleCandidate(c))
 		default:
 			// Unreachable in practice — every probeDespiteRegistered member is one of
 			// the branches above — but a candidate silently going unverified
@@ -297,9 +299,9 @@ func run() int {
 			log.Printf("liveness: %s has no wired evidence path for probeDespiteRegistered — skipping %s", c.Source, c.PublicSlug)
 		}
 	}
-	log.Printf("liveness: %d orphan candidates (excluding %d ATS providers + %d unsignalled sources) + %d stale candidates from %d registered sources (%d GET, %d himalayas, %d echojobs, %d hh)",
+	log.Printf("liveness: %d orphan candidates (excluding %d ATS providers + %d unsignalled sources) + %d stale candidates from %d registered sources (%d GET, %d himalayas, %d echojobs, %d hh, %d linkedin)",
 		orphanCount, len(atsProviders), len(unsignalledSources), len(staleCandidates), len(probeDespiteRegistered),
-		len(getProbeStale), len(himalayasStale), len(echojobsStale), len(hhStale))
+		len(getProbeStale), len(himalayasStale), len(echojobsStale), len(hhStale), len(linkedinStale))
 	if *sourceFilter != "" {
 		log.Printf("liveness: restricted to source %q for this run", *sourceFilter)
 	}
@@ -360,6 +362,7 @@ func run() int {
 	// probeDespiteRegisteredGET for why these two can't share the GET probe above.
 	applyHimalayasVerdicts(ctx, client, queries, himalayasStale, &st)
 	st.applyVerdicts(ctx, queries, echojobsStale, echoJobsJudge(client))
+	applyLinkedInVerdicts(ctx, client, queries, linkedinStale, &st)
 	// Last, because it is the slow one: hh is probed one page a second (see hh.go).
 	applyHHVerdicts(ctx, client, queries, hhStale, &st, hhVacancyPage, hhProbeInterval)
 

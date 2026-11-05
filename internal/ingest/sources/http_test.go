@@ -562,3 +562,20 @@ func TestNewLongTimeoutClientKeepsTheOrdinaryStreamTimeout(t *testing.T) {
 		t.Errorf("streamClient.Timeout = %v, want the ordinary %v", c.streamClient.Timeout, streamTimeout)
 	}
 }
+
+func TestClientStatusErrorPreservesFinalURL(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == "/job" {
+			http.Redirect(w, r, "/authwall", http.StatusFound)
+			return
+		}
+		w.WriteHeader(http.StatusNotFound)
+	}))
+	defer srv.Close()
+	c := &Client{httpClient: srv.Client()}
+	_, err := c.GetHTML(context.Background(), srv.URL+"/job")
+	var status *StatusError
+	if !errors.As(err, &status) || status.Code != 404 || status.URL != srv.URL+"/job" || status.FinalURL != srv.URL+"/authwall" {
+		t.Fatalf("lost response origin: %#v", err)
+	}
+}

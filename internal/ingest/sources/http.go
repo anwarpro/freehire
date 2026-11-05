@@ -495,7 +495,7 @@ func (c *Client) GetStream(ctx context.Context, url, accept string, fn func(io.R
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-		return &StatusError{Method: http.MethodGet, Code: resp.StatusCode, URL: url}
+		return &StatusError{Method: http.MethodGet, Code: resp.StatusCode, URL: url, FinalURL: finalResponseURL(resp)}
 	}
 	return fn(resp.Body)
 }
@@ -718,6 +718,16 @@ type StatusError struct {
 	Method string
 	Code   int
 	URL    string
+	// FinalURL identifies the response origin after redirects. An auth-wall 404
+	// must not be mistaken for removal of the requested vacancy.
+	FinalURL string
+}
+
+func finalResponseURL(resp *http.Response) string {
+	if resp.Request == nil || resp.Request.URL == nil {
+		return ""
+	}
+	return resp.Request.URL.String()
 }
 
 func (e *StatusError) Error() string {
@@ -950,7 +960,7 @@ func (c *Client) do(ctx context.Context, r request) error {
 				delay = 0
 			}
 			resp.Body.Close()
-			lastErr = &StatusError{Method: r.method, Code: resp.StatusCode, URL: r.url}
+			lastErr = &StatusError{Method: r.method, Code: resp.StatusCode, URL: r.url, FinalURL: finalResponseURL(resp)}
 			if c.refusalClient != nil {
 				// Both egresses refusing is not a transient failure of either — it is the
 				// platform declining the request, and further attempts only spend a shared
@@ -964,11 +974,11 @@ func (c *Client) do(ctx context.Context, r request) error {
 			continue // rate limited — transient
 		case resp.StatusCode >= 500:
 			resp.Body.Close()
-			lastErr = &StatusError{Method: r.method, Code: resp.StatusCode, URL: r.url}
+			lastErr = &StatusError{Method: r.method, Code: resp.StatusCode, URL: r.url, FinalURL: finalResponseURL(resp)}
 			continue // server error — transient
 		default:
 			resp.Body.Close()
-			lastErr = &StatusError{Method: r.method, Code: resp.StatusCode, URL: r.url}
+			lastErr = &StatusError{Method: r.method, Code: resp.StatusCode, URL: r.url, FinalURL: finalResponseURL(resp)}
 			// A 403 is final on this IP but not necessarily on another: it is the shape an edge
 			// uses to turn away an address it has judged, which is the one 4xx a different
 			// egress can fix. So it retries once through the fallback when there is one, and

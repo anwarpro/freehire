@@ -6,3 +6,4 @@ PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 15 20 * * * root /opt/hero-jobs/backup.sh >> /opt/hero-jobs/logs/backup.log 2>&1
 35 */6 * * * root /opt/hero-jobs/refresh-stats.sh >> /opt/hero-jobs/logs/stats.log 2>&1
 45 22 * * * root /opt/hero-jobs/expand-tech-catalog.sh >> /opt/hero-jobs/logs/tech-expansion.log 2>&1
+47 */6 * * * root /opt/hero-jobs/check-linkedin.sh >> /opt/hero-jobs/logs/linkedin-liveness.log 2>&1

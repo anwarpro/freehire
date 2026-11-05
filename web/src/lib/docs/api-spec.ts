@@ -3030,7 +3030,10 @@ data: {"type":"result","stop_reason":"completed"}
           'could read the page, so the link went to manual triage. `company_slug` is ' +
           'returned whenever the catalogue already carries the employer, through any ' +
           'source — independent of what became of the board. Rate-limited, because it ' +
-          'makes the server fetch a URL you chose. A URL that is not http(s) is a 422.',
+          'makes the server fetch a URL you chose. A URL that is not http(s) is a 422. ' +
+          'Public LinkedIn /jobs/view links use the same native job identity as the ' +
+          'scheduled collector, including title-bearing and tracking-tagged variants. ' +
+          'Unreadable or login-gated pages remain triage outcomes; a search page is not a job.',
         body: [
           { name: 'url', type: 'string', required: true, description: 'The job page to resolve.' },
           { name: 'surface', type: 'string', description: 'Where the link came from (website, extension, cli, bot) — recorded, not validated against a whitelist.' },
