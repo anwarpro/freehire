@@ -43,6 +43,7 @@
   import type { Job, FacetCounts } from '#lib/types.js';
   import FilterSummary from './filters/FilterSummary.svelte';
   import FilterModal from './filters/FilterModal.svelte';
+  import SourceFilterButton from './filters/SourceFilterButton.svelte';
   import ListToolbar from './ListToolbar.svelte';
   import States from './States.svelte';
   import JobRow from './JobRow.svelte';
@@ -241,6 +242,11 @@
   const openWithinAvailable = openWithinEnabled({ PUBLIC_OPEN_WITHIN });
 
   let modalOpen = $state(false);
+  let modalSection = $state<string | undefined>();
+  function openFilters(section?: string) {
+    modalSection = section;
+    modalOpen = true;
+  }
   let started = false;
   // Signature of the applied filters last reported as a search, so a re-run that
   // didn't change the filters (a back/forward re-seed) doesn't emit a spurious
@@ -381,7 +387,7 @@
           filters.applyParts(plan.facets, plan.q ?? '', plan.qFields ?? null);
         },
       },
-      openFilters: () => (modalOpen = true),
+      openFilters: () => openFilters(),
       activeFilters: () => filters.active,
     });
     return () => {
@@ -780,6 +786,10 @@
      `reality` facet. The whole facet now sits in the modal's Posted pane, beside the age
      bound it belongs with. -->
 {#snippet listControls()}
+  {#if !excludeFacets.includes('source') && !('source' in scope) && !('source_exclude' in scope)}
+    <SourceFilterButton selection={filters.facet('source')}
+      open={modalOpen && modalSection === 'source'} onOpen={() => openFilters('source')} />
+  {/if}
   {@render postedSelect()}
   <!-- Unconditional. This used to be guarded against a one-option select - a label
        wearing a control's clothes - which could happen when match was hidden from a
@@ -797,7 +807,7 @@
     <div class="sticky top-20 flex max-h-[calc(100vh-6.5rem)] flex-col gap-4 overflow-y-auto">
       {@render sidebarTop?.()}
       <div class="rounded-xl border border-border bg-card p-4">
-        <FilterSummary store={filters} exclude={excludeFacets} onOpen={() => (modalOpen = true)} canSave={standalone} />
+        <FilterSummary store={filters} exclude={excludeFacets} onOpen={() => openFilters()} canSave={standalone} />
       </div>
     </div>
   </aside>
@@ -974,6 +984,7 @@
 {/if}
 
 <FilterModal
+  openKey={modalSection}
   store={filters}
   {counts}
   exclude={excludeFacets}
