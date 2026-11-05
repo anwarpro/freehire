@@ -206,3 +206,16 @@ See the workflow for current verification evidence, access limitations, API and
 schema changes, source lifecycle behavior, and deployment/initialization steps.
 BDJobs, LinkedIn, team assignment, curriculum badges and student follow-up remain
 separate major workflows.
+
+
+## Major feature: BDJobs collection
+
+The [BDJobs collection workflow](bdjobs-collection.md) imports the public
+IT/Telecommunication category through BDJobs' own search and detail API. One
+boardless aggregator identity avoids overlapping-category namespaces. The adapter
+verifies complete pagination, deduplicates promoted copies, preserves original
+links and source dates, uses Bangladesh end-of-day deadlines, and distinguishes
+explicit closures from unreadable details. Scheduled collection, source health,
+search indexing and expiry reuse the existing pipeline. Production acceptance
+remains a separate deployment check. Internal team job assignment is the next
+major delivery after this feature.

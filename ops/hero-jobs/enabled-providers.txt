@@ -27,3 +27,4 @@ builtin
 jazzhr
 jobvite
 breezy
+bdjobs

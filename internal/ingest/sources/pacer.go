@@ -968,3 +968,10 @@ func (g limitedHireClickGetter) GetJSON(ctx context.Context, url string, v any) 
 	defer func() { <-g.sem }()
 	return g.inner.GetJSON(ctx, url, v)
 }
+
+// BDJobs publishes no measured API rate budget. Start conservatively at one
+// request per second across the complete listing and detail walk, with no burst.
+// Revisit from successful-run duration and refusal counts, not faster probes.
+func limitedBDJobsGetter(c JSONGetter) JSONGetter {
+	return rateLimitedJSONGetter{inner: c, limiter: rate.NewLimiter(rate.Every(time.Second), 1)}
+}

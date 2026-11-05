@@ -83,8 +83,10 @@ stays on the server under `state/tech-seeds`, outside Git.
 Implement a source adapter under `internal/ingest/sources`, register it in
 `sources.All`, and follow that package's instructions and tests. Commit the
 integration to this fork and redeploy. A new adapter still needs its catalog
-entries and any required API credentials. LinkedIn, Indeed, and Bdjobs are not
-made available merely by registering their names.
+entries and any required API credentials. LinkedIn and Indeed are not
+made available merely by registering their names. The [BDJobs collector](../../docs/bdjobs-collection.md)
+reads the public IT/Telecommunication category through the site’s own search and
+detail API; bootstrap registers it and the enabled-provider policy schedules it.
 
 ## Collector coverage and schedules
 
