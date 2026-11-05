@@ -1,3 +1,4 @@
+import type { TeamAccess, TeamMember, TeamMemberInput, TeamMemberUpdate, TeamMemberEvent, TeamReview, TeamReviewInput, TeamReviewEvent, TeamQueue, TeamQueueFilter } from './teamReview.js';
 // The only module that knows the API base URL and wire shapes. Views call the
 // typed functions below; they never touch fetch or URLs directly. List endpoints
 // return a `Slice` so callers (and the Paginator) stay ignorant of how each one
@@ -3202,7 +3203,25 @@ export function createApi(
     );
   }
 
+  async function teamAccess(): Promise<TeamAccess> { return requestData('/api/v1/team/me'); }
+  async function teamMembers(): Promise<TeamMember[]> { return requestData('/api/v1/team/members'); }
+  async function createTeamMember(input: TeamMemberInput): Promise<{ id: number }> { return requestData('/api/v1/team/members', { method: 'POST', body: JSON.stringify(input) }); }
+  async function updateTeamMember(id: number, input: TeamMemberUpdate): Promise<void> { await request(`/api/v1/team/members/${id}`, { method: 'PATCH', body: JSON.stringify(input) }); }
+  async function teamMemberHistory(id: number): Promise<TeamMemberEvent[]> { return requestData(`/api/v1/team/members/${id}/history`); }
+  async function teamReviews(filter: TeamQueueFilter = {}): Promise<TeamQueue> {
+    const params = new URLSearchParams();
+    if (filter.scope) params.set('scope', filter.scope);
+    if (filter.status) params.set('status', filter.status);
+    if (filter.overdue) params.set('overdue', 'true');
+    if (filter.offset) params.set('offset', String(filter.offset));
+    return request(`/api/v1/team/reviews?${params}`);
+  }
+  async function teamReview(slug: string): Promise<TeamReview> { return requestData(`/api/v1/team/jobs/${encodeURIComponent(slug)}`); }
+  async function saveTeamReview(slug: string, input: TeamReviewInput): Promise<TeamReview> { return requestData(`/api/v1/team/jobs/${encodeURIComponent(slug)}`, { method: 'PUT', body: JSON.stringify(input) }); }
+  async function teamReviewHistory(slug: string): Promise<TeamReviewEvent[]> { return requestData(`/api/v1/team/jobs/${encodeURIComponent(slug)}/history`); }
+
   return {
+    teamAccess, teamMembers, createTeamMember, updateTeamMember, teamMemberHistory, teamReviews, teamReview, saveTeamReview, teamReviewHistory,
     listJobs,
     getJob,
     getSimilarJobs,

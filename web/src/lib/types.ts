@@ -449,6 +449,7 @@ interface CompanyFacetValue {
 
 /** An authenticated account, as returned by the auth endpoints. */
 export interface User {
+  team_role?: 'admin' | 'reviewer';
   id: number;
   email: string;
   // Authorization role ('user' | 'moderator' | 'admin'). A UI affordance only —

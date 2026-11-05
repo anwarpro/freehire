@@ -278,6 +278,7 @@ func (h *authHandlers) requireRecentAuth(c *fiber.Ctx) error {
 // decide whether to surface moderator-only UI; it is an affordance only, as RequireRole
 // re-checks the DB-stored role on every privileged request.
 type userResponse struct {
+	TeamRole   string `json:"team_role,omitempty"`
 	ID         int64  `json:"id"`
 	Email      string `json:"email"`
 	Role       string `json:"role"`
@@ -338,6 +339,11 @@ func toUserResponse(u accounts.User) userResponse {
 // already powers currentUser() on every page — see resolveTier.
 func (h *authHandlers) toUserResponseWithTier(ctx context.Context, u accounts.User) userResponse {
 	resp := toUserResponse(u)
+	if h.queries != nil {
+		if team, err := h.queries.GetTeamAccess(ctx, u.ID); err == nil && team.TeamRole != "none" {
+			resp.TeamRole = team.TeamRole
+		}
+	}
 	resp.Tier = h.resolveTier(ctx, u.ID)
 	resp.AgentConnected = h.resolveAgentConnected(ctx, u.ID)
 	return resp

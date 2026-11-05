@@ -16,11 +16,11 @@ reports the whole graph at once, including imports that exist only in test files
 
 ## Packages
 
-`adzunadesc` `applyform` `atsboard` `atsdetect` `boardresolve` `catalogstats` `contribution` `employer` `jdresolve` `linkimport` `linksource` `moderation` `pipeline` `screeninganswers` `sources` `sourcestats` `submission` `telegram`
+`adzunadesc` `applyform` `atsboard` `atsdetect` `boardresolve` `catalogstats` `contribution` `employer` `jdresolve` `linkimport` `linksource` `moderation` `pipeline` `screeninganswers` `sources` `sourcestats` `submission` `teamreview` `telegram`
 
 ## The service-extraction seam
 
-`ingest` reaches into a higher block in exactly five places. Four are the whole cost of
+`ingest` reaches into a higher block in six places. Four are the whole cost of
 running the CRAWL as its own service, and are listed here so the number stays honest:
 
 ```
@@ -32,14 +32,16 @@ The two `platform` edges are transport and cost nothing — a separate binary li
 client. The two from `linkimport` are the real seam: importing a job by URL enriches it and
 pushes it to the index inline.
 
-The fifth is a different kind of edge, not part of that crawl-extraction accounting:
+The other two are account-service reuse, outside that crawl-extraction accounting:
 
 ```
 employer -> identity/accounts
+teamreview -> identity/accounts
 ```
 
 Claiming a company reuses `accounts.Service`'s generic, purpose-keyed mailed-code
 machinery (`IssueCode`/`ConfirmCode` — see `identity/accounts/AGENTS.md`) rather than
 building a second one, so a company-account claim shares the same rate-limiting and
-attempt-bounding every other account code already has. No other `ingest` package imports
-`identity` today.
+attempt-bounding every other account code already has. `teamreview` also imports
+`identity/accounts` to create reviewer accounts through the existing registration
+and password policy, without attaching a mailer.

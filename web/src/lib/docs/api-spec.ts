@@ -1896,6 +1896,68 @@ data: {"type":"result","stop_reason":"completed"}
     ],
   },
   {
+    title: 'Team job reviews',
+    intro: 'Private, session-cookie-only workspace. Global moderators and administrators manage reviewers and assignments. Active reviewers can read/update only their current assignments. API keys are refused. Responses are private/no-store; notes never enter public job data or search.',
+    endpoints: [
+      {
+        method: 'GET', path: '/team/me', auth: 'cookie', summary: 'Current team access: admin, reviewer, or none.',
+        description: 'Login and /auth/me also include optional team_role for navigation. Current membership is checked again on each team request.',
+        curl: `curl "${BASE_URL}/team/me" -b cookies.txt`, responseExample: `{ "data": { "user_id": 2, "name": "Reviewer", "role": "reviewer" } }`,
+      },
+      {
+        method: 'GET', path: '/team/members', auth: 'cookie', summary: 'Managers only: list managers and active/inactive reviewers with assignment counts.',
+        curl: `curl "${BASE_URL}/team/members" -b cookies.txt`, responseExample: `{ "data": [{ "id": 2, "email": "reviewer@example.com", "name": "Reviewer", "team_role": "reviewer", "active": true, "version": 1, "assignment_count": 0 }] }`,
+      },
+      {
+        method: 'POST', path: '/team/members', auth: 'cookie', summary: 'Managers only: create a password reviewer or enroll an existing verified account. Returns 201.',
+        description: 'New accounts retain global user role and unverified email. Normal bcrypt and 8–72 byte password policy apply. No email is sent. Existing accounts keep their password; duplicates return 409.',
+        body: [
+          { name: 'name', type: 'string', required: true, description: 'Display name, 1–120 characters.' },
+          { name: 'email', type: 'string', required: true, description: 'Reviewer email.' },
+          { name: 'use_existing', type: 'boolean', required: true, description: 'Enroll an existing verified account when true.' },
+          { name: 'password', type: 'string', description: 'Initial password for a new account; omit for an existing account.' },
+        ],
+        curl: `curl -X POST "${BASE_URL}/team/members" -b cookies.txt -H 'Content-Type: application/json' -d '{"name":"Reviewer","email":"reviewer@example.com","use_existing":true}'`, responseExample: `{ "data": { "id": 2 } }`,
+      },
+      {
+        method: 'PATCH', path: '/team/members/{id}', auth: 'cookie', summary: 'Managers only: rename, deactivate, or reactivate a reviewer. Returns 204.',
+        description: 'Deactivation blocks team access immediately; public account, assignments and history remain. Global managers cannot be changed here. Stale versions return 409.',
+        pathParams: [{ name: 'id', type: 'integer', required: true, description: 'Reviewer user ID.' }],
+        body: [{ name: 'name', type: 'string', required: true, description: 'Display name.' }, { name: 'active', type: 'boolean', required: true, description: 'Team access enabled.' }, { name: 'expected_version', type: 'integer', required: true, description: 'Current member version.' }],
+        curl: `curl -X PATCH "${BASE_URL}/team/members/2" -b cookies.txt -H 'Content-Type: application/json' -d '{"name":"Reviewer","active":false,"expected_version":1}'`,
+      },
+      {
+        method: 'GET', path: '/team/members/{id}/history', auth: 'cookie', summary: 'Managers only: latest 100 membership changes, newest first.',
+        pathParams: [{ name: 'id', type: 'integer', required: true, description: 'Reviewer user ID.' }],
+        curl: `curl "${BASE_URL}/team/members/2/history" -b cookies.txt`, responseExample: `{ "data": [] }`,
+      },
+      {
+        method: 'GET', path: '/team/reviews', auth: 'cookie', summary: 'Paginated assignment queue, including reviews of closed public postings.',
+        query: [{ name: 'scope', type: 'string', description: 'mine for reviewers; managers also have all (default) and unassigned.' }, { name: 'status', type: 'string', description: 'Optional pending, in_review, reviewed, or not_relevant.' }, { name: 'overdue', type: 'boolean', description: 'Pending/in_review entries with follow-up before today in Bangladesh.' }, { name: 'offset', type: 'integer', description: '0–100000. Fixed page size 50; meta.has_more indicates another page.' }],
+        curl: `curl "${BASE_URL}/team/reviews?scope=mine&overdue=true" -b cookies.txt`, responseExample: `{ "data": [], "meta": { "limit": 50, "offset": 0, "has_more": false } }`,
+      },
+      {
+        method: 'GET', path: '/team/jobs/{slug}', auth: 'cookie', summary: 'Managers or current assignee: load a private review.',
+        description: 'Managers may load any public posting; an unreviewed job starts at version 0. Other assignments and private pasted jobs return 404 to reviewers.',
+        pathParams: [{ name: 'slug', type: 'string', required: true, description: 'Public job slug.' }],
+        curl: `curl "${BASE_URL}/team/jobs/python-engineer" -b cookies.txt`, responseExample: `{ "data": { "job_id": 1, "public_slug": "python-engineer", "title": "Python Engineer", "company": "Example BD", "closed_at": null, "assignee_id": null, "assignee": "Unassigned", "assignee_active": false, "status": "pending", "notes": "", "follow_up": null, "version": 0, "updated_at": null, "overdue": false } }`,
+      },
+      {
+        method: 'PUT', path: '/team/jobs/{slug}', auth: 'cookie', summary: 'Save a review and atomic audit snapshot. Managers may assign, reassign, or unassign.',
+        description: 'Reviewers must retain themselves as assignee. Choose an active assignee. Stale expected_version returns 409 without overwriting. Unchanged saves add no events.',
+        pathParams: [{ name: 'slug', type: 'string', required: true, description: 'Public job slug.' }],
+        body: [{ name: 'assignee_id', type: 'integer', required: true, description: 'Active member user ID, or null to unassign (manager only).' }, { name: 'status', type: 'string', required: true, description: 'pending, in_review, reviewed, or not_relevant.' }, { name: 'notes', type: 'string', required: true, description: 'Private text, maximum 5000 characters.' }, { name: 'follow_up', type: 'string', required: true, description: 'YYYY-MM-DD, or null.' }, { name: 'expected_version', type: 'integer', required: true, description: '0 for first save; otherwise the loaded version.' }],
+        curl: `curl -X PUT "${BASE_URL}/team/jobs/python-engineer" -b cookies.txt -H 'Content-Type: application/json' -d '{"assignee_id":2,"status":"pending","notes":"Check student fit","follow_up":null,"expected_version":0}'`,
+      },
+      {
+        method: 'GET', path: '/team/jobs/{slug}/history', auth: 'cookie', summary: 'Managers or current assignee: latest 100 review snapshots, newest first.',
+        description: 'Includes actor, assignment, notes, status, follow-up, version and time. Former assignees lose access after reassignment.',
+        pathParams: [{ name: 'slug', type: 'string', required: true, description: 'Public job slug.' }],
+        curl: `curl "${BASE_URL}/team/jobs/python-engineer/history" -b cookies.txt`, responseExample: `{ "data": [] }`,
+      },
+    ],
+  },
+  {
     title: 'Company career pages',
     intro: 'Moderator-managed company collection. Preview verifies a public HTTPS source before enabling it in the board catalogue. Unsupported sites remain explicit manual fallbacks. Jobs are collected and indexed asynchronously by the existing workers.',
     endpoints: [

@@ -21,6 +21,7 @@ Base URL: `https://freehire.me/api/v1`
 - [Job interactions](#job-interactions)
 - [In-app assistant](#in-app-assistant)
 - [Job submissions](#job-submissions)
+- [Team job reviews](#team-job-reviews)
 - [Company career pages](#company-career-pages)
 - [Job reports](#job-reports)
 - [Moderator jobs](#moderator-jobs)
@@ -576,6 +577,206 @@ curl -X POST "https://freehire.me/api/v1/submissions/9/reject" \
 
 ```json
 { "data": { "id": 9, "status": "rejected", "review_reason": "duplicate" } }
+```
+
+## Team job reviews
+
+Private, session-cookie-only workspace. Global moderators and administrators manage reviewers and assignments. Active reviewers can read/update only their current assignments. API keys are refused. Responses are private/no-store; notes never enter public job data or search.
+
+### `GET /team/me`
+
+**Auth:** Session only
+
+Current team access: admin, reviewer, or none.
+
+Login and /auth/me also include optional team_role for navigation. Current membership is checked again on each team request.
+
+```bash
+curl "https://freehire.me/api/v1/team/me" -b cookies.txt
+```
+
+```json
+{ "data": { "user_id": 2, "name": "Reviewer", "role": "reviewer" } }
+```
+
+### `GET /team/members`
+
+**Auth:** Session only
+
+Managers only: list managers and active/inactive reviewers with assignment counts.
+
+```bash
+curl "https://freehire.me/api/v1/team/members" -b cookies.txt
+```
+
+```json
+{ "data": [{ "id": 2, "email": "reviewer@example.com", "name": "Reviewer", "team_role": "reviewer", "active": true, "version": 1, "assignment_count": 0 }] }
+```
+
+### `POST /team/members`
+
+**Auth:** Session only
+
+Managers only: create a password reviewer or enroll an existing verified account. Returns 201.
+
+New accounts retain global user role and unverified email. Normal bcrypt and 8–72 byte password policy apply. No email is sent. Existing accounts keep their password; duplicates return 409.
+
+**Body**
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `name` | string | yes | Display name, 1–120 characters. |
+| `email` | string | yes | Reviewer email. |
+| `use_existing` | boolean | yes | Enroll an existing verified account when true. |
+| `password` | string | no | Initial password for a new account; omit for an existing account. |
+
+```bash
+curl -X POST "https://freehire.me/api/v1/team/members" -b cookies.txt -H 'Content-Type: application/json' -d '{"name":"Reviewer","email":"reviewer@example.com","use_existing":true}'
+```
+
+```json
+{ "data": { "id": 2 } }
+```
+
+### `PATCH /team/members/{id}`
+
+**Auth:** Session only
+
+Managers only: rename, deactivate, or reactivate a reviewer. Returns 204.
+
+Deactivation blocks team access immediately; public account, assignments and history remain. Global managers cannot be changed here. Stale versions return 409.
+
+**Path parameters**
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `id` | integer | yes | Reviewer user ID. |
+
+**Body**
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `name` | string | yes | Display name. |
+| `active` | boolean | yes | Team access enabled. |
+| `expected_version` | integer | yes | Current member version. |
+
+```bash
+curl -X PATCH "https://freehire.me/api/v1/team/members/2" -b cookies.txt -H 'Content-Type: application/json' -d '{"name":"Reviewer","active":false,"expected_version":1}'
+```
+
+### `GET /team/members/{id}/history`
+
+**Auth:** Session only
+
+Managers only: latest 100 membership changes, newest first.
+
+**Path parameters**
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `id` | integer | yes | Reviewer user ID. |
+
+```bash
+curl "https://freehire.me/api/v1/team/members/2/history" -b cookies.txt
+```
+
+```json
+{ "data": [] }
+```
+
+### `GET /team/reviews`
+
+**Auth:** Session only
+
+Paginated assignment queue, including reviews of closed public postings.
+
+**Query parameters**
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `scope` | string | no | mine for reviewers; managers also have all (default) and unassigned. |
+| `status` | string | no | Optional pending, in_review, reviewed, or not_relevant. |
+| `overdue` | boolean | no | Pending/in_review entries with follow-up before today in Bangladesh. |
+| `offset` | integer | no | 0–100000. Fixed page size 50; meta.has_more indicates another page. |
+
+```bash
+curl "https://freehire.me/api/v1/team/reviews?scope=mine&overdue=true" -b cookies.txt
+```
+
+```json
+{ "data": [], "meta": { "limit": 50, "offset": 0, "has_more": false } }
+```
+
+### `GET /team/jobs/{slug}`
+
+**Auth:** Session only
+
+Managers or current assignee: load a private review.
+
+Managers may load any public posting; an unreviewed job starts at version 0. Other assignments and private pasted jobs return 404 to reviewers.
+
+**Path parameters**
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `slug` | string | yes | Public job slug. |
+
+```bash
+curl "https://freehire.me/api/v1/team/jobs/python-engineer" -b cookies.txt
+```
+
+```json
+{ "data": { "job_id": 1, "public_slug": "python-engineer", "title": "Python Engineer", "company": "Example BD", "closed_at": null, "assignee_id": null, "assignee": "Unassigned", "assignee_active": false, "status": "pending", "notes": "", "follow_up": null, "version": 0, "updated_at": null, "overdue": false } }
+```
+
+### `PUT /team/jobs/{slug}`
+
+**Auth:** Session only
+
+Save a review and atomic audit snapshot. Managers may assign, reassign, or unassign.
+
+Reviewers must retain themselves as assignee. Choose an active assignee. Stale expected_version returns 409 without overwriting. Unchanged saves add no events.
+
+**Path parameters**
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `slug` | string | yes | Public job slug. |
+
+**Body**
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `assignee_id` | integer | yes | Active member user ID, or null to unassign (manager only). |
+| `status` | string | yes | pending, in_review, reviewed, or not_relevant. |
+| `notes` | string | yes | Private text, maximum 5000 characters. |
+| `follow_up` | string | yes | YYYY-MM-DD, or null. |
+| `expected_version` | integer | yes | 0 for first save; otherwise the loaded version. |
+
+```bash
+curl -X PUT "https://freehire.me/api/v1/team/jobs/python-engineer" -b cookies.txt -H 'Content-Type: application/json' -d '{"assignee_id":2,"status":"pending","notes":"Check student fit","follow_up":null,"expected_version":0}'
+```
+
+### `GET /team/jobs/{slug}/history`
+
+**Auth:** Session only
+
+Managers or current assignee: latest 100 review snapshots, newest first.
+
+Includes actor, assignment, notes, status, follow-up, version and time. Former assignees lose access after reassignment.
+
+**Path parameters**
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `slug` | string | yes | Public job slug. |
+
+```bash
+curl "https://freehire.me/api/v1/team/jobs/python-engineer/history" -b cookies.txt
+```
+
+```json
+{ "data": [] }
 ```
 
 ## Company career pages

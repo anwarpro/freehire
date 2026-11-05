@@ -219,3 +219,14 @@ explicit closures from unreadable details. Scheduled collection, source health,
 search indexing and expiry reuse the existing pipeline. Production acceptance
 remains a separate deployment check. Internal team job assignment is the next
 major delivery after this feature.
+
+## Major feature: internal team job assignment
+
+The [team assignment workflow](team-job-assignment.md) implements T01/T02 in one
+independent delivery: manager-created reviewer accounts, immediate team-access
+deactivation/reactivation, job assignment/reassignment, personal queues, review
+status, private notes, Bangladesh calendar follow-ups and transactional history.
+Cookie authentication and current membership checks enforce manager/reviewer
+boundaries. Optimistic versions prevent concurrent edits from overwriting each
+other. Public posting/search data is unchanged. Migration 0215 must precede the
+app/web deployment. Student profiles and notifications remain separate work.

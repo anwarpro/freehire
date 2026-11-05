@@ -36,6 +36,10 @@
       "description": "Any signed-in user can submit a vacancy for moderation and read their own queue. The review actions are moderator-only; approval mints a live job."
     },
     {
+      "name": "Team job reviews",
+      "description": "Private, session-cookie-only workspace. Global moderators and administrators manage reviewers and assignments. Active reviewers can read/update only their current assignments. API keys are refused. Responses are private/no-store; notes never enter public job data or search."
+    },
+    {
       "name": "Company career pages",
       "description": "Moderator-managed company collection. Preview verifies a public HTTPS source before enabling it in the board catalogue. Unsupported sites remain explicit manual fallbacks. Jobs are collected and indexed asynchronously by the existing workers."
     },
@@ -823,6 +827,429 @@
         ],
         "tags": [
           "Job submissions"
+        ]
+      }
+    },
+    "/team/me": {
+      "get": {
+        "operationId": "get_team_me",
+        "summary": "Current team access: admin, reviewer, or none.",
+        "description": "Login and /auth/me also include optional team_role for navigation. Current membership is checked again on each team request.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "{ \"data\": { \"user_id\": 2, \"name\": \"Reviewer\", \"role\": \"reviewer\" } }"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "tags": [
+          "Team job reviews"
+        ]
+      }
+    },
+    "/team/members": {
+      "get": {
+        "operationId": "get_team_members",
+        "summary": "Managers only: list managers and active/inactive reviewers with assignment counts.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "{ \"data\": [{ \"id\": 2, \"email\": \"reviewer@example.com\", \"name\": \"Reviewer\", \"team_role\": \"reviewer\", \"active\": true, \"version\": 1, \"assignment_count\": 0 }] }"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "tags": [
+          "Team job reviews"
+        ]
+      },
+      "post": {
+        "operationId": "post_team_members",
+        "summary": "Managers only: create a password reviewer or enroll an existing verified account. Returns 201.",
+        "description": "New accounts retain global user role and unverified email. Normal bcrypt and 8–72 byte password policy apply. No email is sent. Existing accounts keep their password; duplicates return 409.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Display name, 1–120 characters."
+                  },
+                  "email": {
+                    "type": "string",
+                    "description": "Reviewer email."
+                  },
+                  "use_existing": {
+                    "type": "boolean",
+                    "description": "Enroll an existing verified account when true."
+                  },
+                  "password": {
+                    "type": "string",
+                    "description": "Initial password for a new account; omit for an existing account."
+                  }
+                },
+                "required": [
+                  "name",
+                  "email",
+                  "use_existing"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "{ \"data\": { \"id\": 2 } }"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "tags": [
+          "Team job reviews"
+        ]
+      }
+    },
+    "/team/members/{id}": {
+      "patch": {
+        "operationId": "patch_team_members_id",
+        "summary": "Managers only: rename, deactivate, or reactivate a reviewer. Returns 204.",
+        "description": "Deactivation blocks team access immediately; public account, assignments and history remain. Global managers cannot be changed here. Stale versions return 409.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Reviewer user ID.",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Display name."
+                  },
+                  "active": {
+                    "type": "boolean",
+                    "description": "Team access enabled."
+                  },
+                  "expected_version": {
+                    "type": "integer",
+                    "description": "Current member version."
+                  }
+                },
+                "required": [
+                  "name",
+                  "active",
+                  "expected_version"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "tags": [
+          "Team job reviews"
+        ]
+      }
+    },
+    "/team/members/{id}/history": {
+      "get": {
+        "operationId": "get_team_members_id_history",
+        "summary": "Managers only: latest 100 membership changes, newest first.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Reviewer user ID.",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "{ \"data\": [] }"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "tags": [
+          "Team job reviews"
+        ]
+      }
+    },
+    "/team/reviews": {
+      "get": {
+        "operationId": "get_team_reviews",
+        "summary": "Paginated assignment queue, including reviews of closed public postings.",
+        "parameters": [
+          {
+            "name": "scope",
+            "in": "query",
+            "required": false,
+            "description": "mine for reviewers; managers also have all (default) and unassigned.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "description": "Optional pending, in_review, reviewed, or not_relevant.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "overdue",
+            "in": "query",
+            "required": false,
+            "description": "Pending/in_review entries with follow-up before today in Bangladesh.",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "description": "0–100000. Fixed page size 50; meta.has_more indicates another page.",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "{ \"data\": [], \"meta\": { \"limit\": 50, \"offset\": 0, \"has_more\": false } }"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "tags": [
+          "Team job reviews"
+        ]
+      }
+    },
+    "/team/jobs/{slug}": {
+      "get": {
+        "operationId": "get_team_jobs_slug",
+        "summary": "Managers or current assignee: load a private review.",
+        "description": "Managers may load any public posting; an unreviewed job starts at version 0. Other assignments and private pasted jobs return 404 to reviewers.",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "description": "Public job slug.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "{ \"data\": { \"job_id\": 1, \"public_slug\": \"python-engineer\", \"title\": \"Python Engineer\", \"company\": \"Example BD\", \"closed_at\": null, \"assignee_id\": null, \"assignee\": \"Unassigned\", \"assignee_active\": false, \"status\": \"pending\", \"notes\": \"\", \"follow_up\": null, \"version\": 0, \"updated_at\": null, \"overdue\": false } }"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "tags": [
+          "Team job reviews"
+        ]
+      },
+      "put": {
+        "operationId": "put_team_jobs_slug",
+        "summary": "Save a review and atomic audit snapshot. Managers may assign, reassign, or unassign.",
+        "description": "Reviewers must retain themselves as assignee. Choose an active assignee. Stale expected_version returns 409 without overwriting. Unchanged saves add no events.",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "description": "Public job slug.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "assignee_id": {
+                    "type": "integer",
+                    "description": "Active member user ID, or null to unassign (manager only)."
+                  },
+                  "status": {
+                    "type": "string",
+                    "description": "pending, in_review, reviewed, or not_relevant."
+                  },
+                  "notes": {
+                    "type": "string",
+                    "description": "Private text, maximum 5000 characters."
+                  },
+                  "follow_up": {
+                    "type": "string",
+                    "description": "YYYY-MM-DD, or null."
+                  },
+                  "expected_version": {
+                    "type": "integer",
+                    "description": "0 for first save; otherwise the loaded version."
+                  }
+                },
+                "required": [
+                  "assignee_id",
+                  "status",
+                  "notes",
+                  "follow_up",
+                  "expected_version"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "tags": [
+          "Team job reviews"
+        ]
+      }
+    },
+    "/team/jobs/{slug}/history": {
+      "get": {
+        "operationId": "get_team_jobs_slug_history",
+        "summary": "Managers or current assignee: latest 100 review snapshots, newest first.",
+        "description": "Includes actor, assignment, notes, status, follow-up, version and time. Former assignees lose access after reassignment.",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "description": "Public job slug.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "{ \"data\": [] }"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "tags": [
+          "Team job reviews"
         ]
       }
     },
