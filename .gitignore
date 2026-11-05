@@ -275,3 +275,4 @@ extension/*.zip
 
 # Internal deployment source-catalog bootstrap binary.
 /hero-bootstrap
+/company-careers

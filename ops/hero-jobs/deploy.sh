@@ -11,7 +11,7 @@ exec 8>"$runtime/state/deploy.lock"
 flock -n 8 || { echo 'A deployment is already running' >&2; exit 1; }
 touch "$runtime/state/deploying"
 trap 'rm -f "$runtime/state/deploying"' EXIT HUP INT TERM
-for file in compose.yaml compose.override.yaml Caddyfile nginx.conf Dockerfile.tools build-tools.sh backup.sh refresh-jobs.sh index-jobs.sh refresh-stats.sh discover-boards.sh discovery-providers.txt enabled-providers.txt hero-jobs.cron logrotate.conf greenhouse-seeds.json add-source.sh import-sources.sh expand-tech-catalog.sh; do
+for file in next-collection.py compose.yaml compose.override.yaml Caddyfile nginx.conf Dockerfile.tools build-tools.sh backup.sh refresh-jobs.sh index-jobs.sh refresh-stats.sh discover-boards.sh discovery-providers.txt enabled-providers.txt hero-jobs.cron logrotate.conf greenhouse-seeds.json add-source.sh import-sources.sh expand-tech-catalog.sh; do
     install -m 644 "$config/$file" "$runtime/$file"
 done
 for file in "$runtime"/*.sh; do chmod 700 "$file"; done
@@ -33,6 +33,15 @@ docker stop -t 150 hero-jobs-collector >/dev/null 2>&1 || true
 docker compose up -d --no-build app web proxy
 docker compose run --rm -T --no-deps --entrypoint /app/hero-bootstrap tools > source-inventory.json
 docker compose run --rm -T --no-deps --entrypoint /app/hero-bootstrap tools --apply
+# Source onboarding is independent of service health: a third-party outage must
+# remain visible without failing an otherwise healthy application deployment.
+if [ ! -f state/career-shortlist-initialized ]; then
+    if docker compose run --rm -T --no-deps --entrypoint /app/company-careers tools --apply > logs/career-shortlist-bootstrap.log 2>&1; then
+        touch state/career-shortlist-initialized
+    else
+        echo 'Some career sources were not enabled; inspect logs/career-shortlist-bootstrap.log and the moderator source manager.' >&2
+    fi
+fi
 install -m 644 hero-jobs.cron /etc/cron.d/hero-jobs
 install -m 644 logrotate.conf /etc/logrotate.d/hero-jobs
 systemctl enable --now cron

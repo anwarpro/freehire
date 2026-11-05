@@ -203,7 +203,7 @@ var blocks = map[string][]string{
 	// of those are ATS platforms — and both are computed in-process on the READ path too
 	// (load.go), so they cannot be handed over in the snapshot.
 	"ingest": {
-		"adzunadesc", "applyform", "atsboard", "atsdetect", "boardcatalog", "boardresolve",
+		"adzunadesc", "applyform", "atsboard", "atsdetect", "boardcatalog", "boardresolve", "companycareer",
 		"catalogstats", "contribution", "directapply", "employer", "ingestsched", "jdresolve", "linkimport",
 		"linksource", "moderation", "pipeline", "screeninganswers", "sources", "sourcestats",
 		"submission", "telegram",

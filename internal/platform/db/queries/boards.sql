@@ -5,11 +5,11 @@
 -- 'pending'/'active' row on (provider, lower(board), region) — boards_identity_key — fails as a unique violation;
 -- the caller maps that to a duplicate-board error.
 INSERT INTO boards (provider, board, region, company, hub, tenants, url, status,
-                     submitted_by, surface, rejected_reason, activated_at)
+                     submitted_by, surface, rejected_reason, activated_at, career_config)
 VALUES (sqlc.arg(provider), sqlc.arg(board), sqlc.arg(region), sqlc.arg(company),
         sqlc.arg(hub), sqlc.arg(tenants), sqlc.arg(url), sqlc.arg(status),
         sqlc.arg(submitted_by), sqlc.arg(surface), sqlc.arg(rejected_reason),
-        sqlc.arg(activated_at))
+        sqlc.arg(activated_at), sqlc.narg(career_config))
 RETURNING *;
 
 -- name: ActivateBoard :execrows
@@ -91,3 +91,16 @@ UPDATE boards
 SET status = 'retired'
 WHERE provider = sqlc.arg(provider)
   AND status IN ('pending', 'active');
+
+-- name: ListCompanyCareerPages :many
+-- Moderator view, bounded independently of the job catalogue. Retired sources remain visible.
+SELECT b.*, h.last_run_at, h.last_success_at, h.last_error, h.last_ingested_count,
+       h.consecutive_failures, h.cooldown_until, h.quiet_until
+FROM boards b
+LEFT JOIN board_health h ON h.provider=b.provider AND lower(h.board)=lower(b.board) AND h.region=b.region
+WHERE b.surface='company-career'
+ORDER BY b.created_at DESC, b.id DESC
+LIMIT 201;
+
+-- name: GetCompanyCareerPage :one
+SELECT * FROM boards WHERE id=$1 AND surface='company-career';

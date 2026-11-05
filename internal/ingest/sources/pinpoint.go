@@ -3,6 +3,7 @@ package sources
 import (
 	"context"
 	"fmt"
+	"strings"
 )
 
 // pinpoint adapts the Pinpoint public postings API. Each board is its own subdomain and
@@ -19,7 +20,15 @@ func NewPinpoint(c JSONGetter) Source { return pinpoint{http: c} }
 func (pinpoint) Provider() string { return "pinpoint" }
 
 func (p pinpoint) Fetch(ctx context.Context, e CompanyEntry) ([]Job, error) {
-	url := fmt.Sprintf("https://%s.pinpointhq.com/postings.json", e.Board)
+	host := e.Board
+	if !strings.Contains(host, ".") {
+		host += ".pinpointhq.com"
+	}
+	canonical, err := CareerPageURL("https://" + host + "/postings.json")
+	if err != nil {
+		return nil, err
+	}
+	url := canonical
 
 	var resp struct {
 		Data []struct {
@@ -42,6 +51,9 @@ func (p pinpoint) Fetch(ctx context.Context, e CompanyEntry) ([]Job, error) {
 		return nil, fmt.Errorf("pinpoint: fetch board %s: %w", e.Board, err)
 	}
 
+	if resp.Data == nil {
+		return nil, fmt.Errorf("pinpoint: missing data array")
+	}
 	jobs := make([]Job, 0, len(resp.Data))
 	for _, d := range resp.Data {
 		// Pinpoint splits the body across separate HTML sections.

@@ -149,3 +149,13 @@ Keep `origin` pointing to your fork and `upstream` pointing to `strelov1/freehir
 Fetch upstream, merge its changes into your deployment branch, resolve conflicts,
 run the required checks, push to your fork, and redeploy. Do not reset the fork's
 branch to upstream: that would discard your integration commits.
+
+## Bangladesh company career pages
+
+See the [collection workflow and verified shortlist](../../docs/bangladesh-company-careers.md).
+Moderators can preview, enable and pause company career URLs from
+`/moderation?tab=careers`, including custom HTML configuration. Six supported
+methods and four explicit fallbacks are tracked separately. Managed company
+boards receive bounded priority in the existing five-minute collection rotation;
+raw failures retain per-board logs. The full deployment verifies/enables the
+supported shortlist and records initialization separately from service health.

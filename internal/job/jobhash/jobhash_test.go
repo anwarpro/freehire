@@ -160,6 +160,9 @@ func TestOfRow_CarriesEveryFieldTheHashReads(t *testing.T) {
 	base := OfRow(fullRow(), "the stored description")
 
 	mutations := map[string]func(*db.Job){
+		"application_deadline": func(j *db.Job) {
+			j.ApplicationDeadline = pgtype.Timestamptz{Time: time.Unix(2000000000, 0).UTC(), Valid: true}
+		},
 		"url":                  func(j *db.Job) { j.URL = "https://example.com/j/2" },
 		"title":                func(j *db.Job) { j.Title = "Frontend Engineer" },
 		"company":              func(j *db.Job) { j.Company = "Globex" },

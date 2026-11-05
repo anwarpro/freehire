@@ -497,6 +497,15 @@ export interface EmailBody extends EmailLinking {
  *  - SvelteKit server `load`: pass `event.fetch` and the internal API origin
  *    (`serverApi`), because a server-side relative `/api` would hit the Node app
  *    itself, not nginx→Go. `baseUrl` resolves that to a real server-to-server call. */
+export interface CareerPageConfig {
+  links?: string; title?: string; body?: string; location?: string; posted?: string;
+  next?: string; empty_text?: string; detail_hosts?: string[]; default_location?: string;
+}
+export interface CareerInput { company: string; url: string; config?: CareerPageConfig | null }
+export interface CareerPreview { provider: string; board: string; active: number; closed: number; samples: { title: string; url: string; closed: boolean }[] }
+export interface CareerSource { id: number; company: string; url: string; provider: string; board: string; status: string; state: string; last_run_at: string | null; last_success_at: string | null; last_ingested_count: number; failures: number; cooldown_until: string | null; quiet_until: string | null; config?: CareerPageConfig | null }
+export interface CareerCatalog { data: CareerSource[]; shortlist: (CareerInput & { provider?: string; fallback?: string })[] }
+
 export function createApi(
   fetchImpl: typeof fetch = fetch,
   baseUrl = '',
@@ -740,6 +749,13 @@ export function createApi(
     params.set('offset', '0');
     return toSlice(await request<Page<Job>>(`/api/v1/me/tracking/swipe?${params}`), 0);
   }
+
+  async function listCareerSources(): Promise<CareerCatalog> { return request<CareerCatalog>('/api/v1/moderation/career-pages'); }
+  async function previewCareerSource(input: CareerInput): Promise<CareerPreview> {
+    return (await request<{ data: CareerPreview }>('/api/v1/moderation/career-pages/preview', { method: 'POST', body: JSON.stringify(input) })).data;
+  }
+  async function enableCareerSource(input: CareerInput): Promise<void> { await request('/api/v1/moderation/career-pages', { method: 'POST', body: JSON.stringify(input) }); }
+  async function pauseCareerSource(id: number): Promise<void> { await call(`/api/v1/moderation/career-pages/${id}`, { method: 'DELETE' }); }
 
   /** Retained public closed jobs; pagination has no catalogue-wide total. */
   async function closedJobs(params: URLSearchParams, limit = 20): Promise<{ items: Job[]; nextCursor: string | null }> {
@@ -3206,6 +3222,7 @@ export function createApi(
     swipeDeck,
     facetCounts,
     closedJobs,
+    listCareerSources, previewCareerSource, enableCareerSource, pauseCareerSource,
     jobsActivity,
     userGrowth,
     engagementStats,

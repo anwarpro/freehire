@@ -36,6 +36,12 @@ func Of(p db.UpsertJobParams) string {
 	write(strconv.FormatBool(p.Remote))
 	write(p.Description)
 	write(timestamp(p.PostedAt))
+	// An unknown deadline preserves the historical fingerprint. Known deadlines must
+	// participate so a deadline-only source edit cannot take the cheap liveness write.
+	if p.ApplicationDeadline.Valid {
+		write("application_deadline")
+		write(timestamp(p.ApplicationDeadline))
+	}
 	write(p.PublicSlug)
 	write(strings.Join(p.Countries, "\x1f"))
 	write(strings.Join(p.Regions, "\x1f"))
@@ -64,25 +70,26 @@ func Of(p db.UpsertJobParams) string {
 // commands. TestOfRow_CarriesEveryFieldTheHashReads is what now fails instead.
 func OfRow(j db.Job, description string) string {
 	return Of(db.UpsertJobParams{
-		URL:                j.URL,
-		Title:              j.Title,
-		Company:            j.Company,
-		CompanySlug:        j.CompanySlug,
-		Location:           j.Location,
-		Remote:             j.Remote,
-		Description:        description,
-		PostedAt:           j.PostedAt,
-		PublicSlug:         j.PublicSlug,
-		Countries:          j.Countries,
-		Regions:            j.Regions,
-		WorkMode:           j.WorkMode,
-		Skills:             j.Skills,
-		Seniority:          j.Seniority,
-		Category:           j.Category,
-		PostingLanguage:    j.PostingLanguage,
-		EmploymentType:     j.EmploymentType,
-		EducationLevel:     j.EducationLevel,
-		ExperienceYearsMin: j.ExperienceYearsMin,
+		URL:                 j.URL,
+		Title:               j.Title,
+		Company:             j.Company,
+		CompanySlug:         j.CompanySlug,
+		Location:            j.Location,
+		Remote:              j.Remote,
+		Description:         description,
+		PostedAt:            j.PostedAt,
+		ApplicationDeadline: j.ApplicationDeadline,
+		PublicSlug:          j.PublicSlug,
+		Countries:           j.Countries,
+		Regions:             j.Regions,
+		WorkMode:            j.WorkMode,
+		Skills:              j.Skills,
+		Seniority:           j.Seniority,
+		Category:            j.Category,
+		PostingLanguage:     j.PostingLanguage,
+		EmploymentType:      j.EmploymentType,
+		EducationLevel:      j.EducationLevel,
+		ExperienceYearsMin:  j.ExperienceYearsMin,
 	})
 }
 

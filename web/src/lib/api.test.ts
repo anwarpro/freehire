@@ -257,3 +257,19 @@ describe('closed job archive', () => {
     expect(result).toEqual({items:[],nextCursor:'next'});
   });
 });
+
+describe('company career source API', () => {
+  it('uses authenticated JSON requests for preview, enable and pause', async () => {
+    const fetcher = vi.fn<typeof fetch>().mockResolvedValue(new Response(JSON.stringify({ data: { active: 2, closed: 0, samples: [] } })));
+    const client = createApi(fetcher);
+    const input = { company: 'Example BD', url: 'https://example.test/careers', config: { links: 'a.job', body: 'article' } };
+    await client.previewCareerSource(input);
+    expect(fetcher).toHaveBeenLastCalledWith('/api/v1/moderation/career-pages/preview', expect.objectContaining({ method: 'POST', credentials: 'include', body: JSON.stringify(input) }));
+    fetcher.mockResolvedValueOnce(new Response('{}'));
+    await client.enableCareerSource(input);
+    expect(fetcher).toHaveBeenLastCalledWith('/api/v1/moderation/career-pages', expect.objectContaining({ method: 'POST' }));
+    fetcher.mockResolvedValueOnce(new Response(null, { status: 204 }));
+    await client.pauseCareerSource(12);
+    expect(fetcher).toHaveBeenLastCalledWith('/api/v1/moderation/career-pages/12', expect.objectContaining({ method: 'DELETE' }));
+  });
+});

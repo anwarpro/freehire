@@ -163,6 +163,14 @@ func (r *QueriesRepository) InsertRow(ctx context.Context, in InsertInput, statu
 			return Board{}, err
 		}
 	}
+	var careerConfig []byte
+	if in.CareerPage != nil {
+		var err error
+		careerConfig, err = json.Marshal(in.CareerPage)
+		if err != nil {
+			return Board{}, err
+		}
+	}
 	activatedAt := pgtype.Timestamptz{}
 	if status == StatusActive {
 		activatedAt = pgtype.Timestamptz{Time: time.Now(), Valid: true}
@@ -172,6 +180,7 @@ func (r *QueriesRepository) InsertRow(ctx context.Context, in InsertInput, statu
 		surface = "curator"
 	}
 	row, err := r.q.InsertBoard(ctx, db.InsertBoardParams{
+		CareerConfig:   careerConfig,
 		Provider:       in.Provider,
 		Board:          in.Board,
 		Region:         in.Region,
@@ -258,6 +267,12 @@ func fromRows(rows []db.Board) ([]Board, error) {
 }
 
 func fromRow(row db.Board) (Board, error) {
+	var careerConfig *sources.CareerPageConfig
+	if len(row.CareerConfig) > 0 {
+		if err := json.Unmarshal(row.CareerConfig, &careerConfig); err != nil {
+			return Board{}, err
+		}
+	}
 	var tenants map[string]string
 	if len(row.Tenants) > 0 {
 		if err := json.Unmarshal(row.Tenants, &tenants); err != nil {
@@ -265,6 +280,7 @@ func fromRow(row db.Board) (Board, error) {
 		}
 	}
 	return Board{
+		CareerPage:     careerConfig,
 		ID:             row.ID,
 		Provider:       row.Provider,
 		Board:          row.Board,

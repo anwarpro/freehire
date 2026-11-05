@@ -66,6 +66,16 @@ func BoardDedupeKey(e CompanyEntry) (key string, ok bool) {
 func (c Config) Validate(registry map[string]Source) error {
 	for _, e := range c.Sources {
 		provider := e.Provider
+		if provider == "careerpage" {
+			if _, err := CareerPageURL(e.Board); err != nil {
+				return err
+			}
+			if e.CareerPage != nil {
+				if err := e.CareerPage.Validate(); err != nil {
+					return err
+				}
+			}
+		}
 		src, ok := registry[provider]
 		if !ok {
 			return fmt.Errorf("sources: unknown provider %q", provider)
