@@ -47,6 +47,7 @@
     exclude = [],
     railKeys,
     title = 'All filters',
+    openKey,
     applyLabel,
     onApply,
     canApply,
@@ -61,6 +62,9 @@
     minMatch = null,
     onMinMatchChange,
   }: {
+    // A list shortcut can request a section on every open without changing the
+    // default modal's remembered section.
+    openKey?: string;
     store?: FilterStore;
     seed?: JobFilters;
     counts?: FacetCounts | null;
@@ -441,6 +445,7 @@
   {entryCount}
   seed={seedStaged}
   initialKey={RAIL[0]?.key}
+  {openKey}
   {apply}
   onClear={clearDrafts}
   {applyDisabled}

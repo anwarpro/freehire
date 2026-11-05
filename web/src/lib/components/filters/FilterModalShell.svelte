@@ -43,6 +43,7 @@
     previewCount,
     countsFetch,
     initialKey,
+    openKey,
     pane,
     headerAction,
     titleHint,
@@ -79,6 +80,9 @@
     /** Rail entry to land on when the modal opens (defaults to the first entry) — lets a
      *  caller keep a lead tab (e.g. "My filters") in the rail without opening on it. */
     initialKey?: string;
+    /** Requested section for this opening, e.g. the job list's Source shortcut.
+     *  Ignored while already open; absent requests preserve the remembered section. */
+    openKey?: string;
     /** Renders the active entry's controls into the right pane, given the live staged
      *  facet counts (null until the first fetch resolves or when `countsFetch` is absent). */
     pane: Snippet<[RailEntry, FacetCounts | null]>;
@@ -129,7 +133,9 @@
   $effect(() => {
     if (open && !wasOpen) {
       seed();
-      if (!rail.some((e) => e.key === active)) {
+      if (openKey && rail.some((e) => e.key === openKey)) {
+        active = openKey;
+      } else if (!rail.some((e) => e.key === active)) {
         active = (initialKey && rail.some((e) => e.key === initialKey) ? initialKey : rail[0]?.key) ?? '';
       }
       // Focus the search on a wide screen only: on a phone it would raise the keyboard

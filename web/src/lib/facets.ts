@@ -361,6 +361,7 @@ function options(values: readonly string[], labels: Record<string, string> = {})
 // needs one. Used by sourceLabel for the dynamic (distribution-driven) source
 // select, so a source with a real job count renders with its proper name.
 export const SOURCE_LABELS: Record<string, string> = {
+  bdjobs: 'BDJobs', linkedin: 'LinkedIn',
   telegram: 'Telegram', greenhouse: 'Greenhouse', smartrecruiters: 'SmartRecruiters',
   bamboohr: 'BambooHR', successfactors: 'SAP SuccessFactors',
   workatastartup: 'Work at a Startup', remoteok: 'RemoteOK', arc: 'Arc',

@@ -20,7 +20,7 @@ const pane = createRawSnippet((entry: () => RailEntry) => ({
 function setup(props: Record<string, unknown> = {}) {
   const staged = { active: 0, params: () => new URLSearchParams(), clear: vi.fn() };
   const onClose = vi.fn();
-  render(FilterModalShell, {
+  const view = render(FilterModalShell, {
     props: {
       open: true,
       onClose,
@@ -34,10 +34,33 @@ function setup(props: Record<string, unknown> = {}) {
       ...props,
     },
   });
-  return { staged, onClose };
+  return { staged, onClose, view };
 }
 
 describe('FilterModalShell', () => {
+  it('opens a requested section again after the visitor browsed another section', async () => {
+    const { view } = setup({ openKey: 'salary' });
+    expect(screen.getByRole('region', { name: 'Salary' })).toBeTruthy();
+    await fireEvent.click(screen.getByRole('button', { name: /^Location/ }));
+    expect(screen.getByRole('region', { name: 'Location' })).toBeTruthy();
+    await view.rerender({ open: false });
+    await view.rerender({ open: true });
+    expect(screen.getByRole('region', { name: 'Salary' })).toBeTruthy();
+  });
+
+  it('keeps the remembered section when reopened without a shortcut request', async () => {
+    const { view } = setup({ openKey: 'salary' });
+    await fireEvent.click(screen.getByRole('button', { name: /^Location/ }));
+    await view.rerender({ open: false, openKey: undefined });
+    await view.rerender({ open: true, openKey: undefined });
+    expect(screen.getByRole('region', { name: 'Location' })).toBeTruthy();
+  });
+
+  it('ignores a requested section outside the visible rail', () => {
+    setup({ openKey: 'source', initialKey: 'salary' });
+    expect(screen.getByRole('region', { name: 'Salary' })).toBeTruthy();
+  });
+
   it('marks the open section and names the pane after it', async () => {
     setup();
     const location = screen.getByRole('button', { name: /^Location\s?,\s?3 selected$/ });

@@ -9,7 +9,7 @@ deployment branch until the fork establishes another integration branch.
 | Capability | Finding | Evidence | Next step |
 | --- | --- | --- | --- |
 | Manual job intake | Reusable backend and public submission form; direct moderator publishing, a job-page editor, posting-date controls, and application deadlines use the existing endpoints | [Moderation API](../internal/api/handler/jobs_moderation.go), [submission form](../web/src/lib/components/SubmitView.svelte), [job editor](../web/src/lib/components/ManualJobEditor.svelte) | Verify deadline migrations, expiry scheduling, and staff workflow after deployment |
-| Browsing and filtering | Reusable list, search, pagination, and job detail | [Jobs view](../web/src/lib/components/JobsView.svelte), [jobs route](../web/src/routes/jobs/+page.server.ts) | Verify the Bangladeshi source and curriculum workflow against actual stored jobs |
+| Browsing and filtering | Reusable list, search, pagination, job detail, and source picker under All filters; a direct source shortcut is being added | [Jobs view](../web/src/lib/components/JobsView.svelte), [jobs route](../web/src/routes/jobs/+page.server.ts) | Verify the Bangladeshi source and curriculum workflow against actual stored jobs |
 | Source ingestion | Reusable adapters, catalog registration, refresh, and indexing operations | [Source integration guide](../ops/hero-jobs/README.md), [source registry](../internal/ingest/sources/registry.go) | Verify selected Bangladeshi career pages and the feasible access method for BDJobs and LinkedIn before implementing collectors |
 | Accounts and roles | Reusable authentication and moderator authorization; school-team account management is additional scope | [Role middleware](../internal/identity/auth/middleware.go), [account services](../internal/identity/accounts/AGENTS.md) | Add a complete team account lifecycle, then a reviewer assignment feature |
 | Matching | Reusable candidate/job matching; school curriculum badges and school student links are additional scope | [Matching service](../internal/candidate/cvmatch/AGENTS.md), [job view](../internal/job/jobview/AGENTS.md) | Confirm course names/skills, then implement manually reviewed curriculum labels before automatic suggestions |
@@ -124,3 +124,31 @@ The concurrent-index migration documents recovery for an interrupted index build
 Coverage includes calendar boundaries, publication/editing/clearing, exact-time
 preservation, immediate projection, API body presence, real-Postgres persistence,
 idempotent closure/removal enqueue, and refusal to reopen through an edit.
+
+
+## Feature: source filtering above the job list
+
+The source filter already exists under **All filters → Source**. The new
+**Source** button beside the list's freshness and sort controls opens that
+section directly on desktop and mobile. Its badge counts included and excluded
+source choices; its accessible label and tooltip describe them by name.
+
+This reuses the existing picker, live source distribution, staged Apply/Cancel,
+URL serialization, saved filters, pagination reset, and source summary chips.
+Opening the shortcut repeatedly returns to Source even after visiting another
+section. Opening All filters normally retains the last visited section. A scope
+that fixes or hides the source facet also hides the shortcut.
+
+The picker offers indexed sources, with already selected values retained for
+removal even when their current count is zero. Display labels for manually
+recorded `bdjobs` and `linkedin` sources use BDJobs and LinkedIn. These labels do
+not install collectors or claim that either platform has been connected.
+
+Validation includes the requested-section reopening behavior, fallback for a
+section hidden by scope, accessible source descriptions, and selection updates.
+The live search API was verified to return only Greenhouse jobs for
+`source=greenhouse`. This feature changes only frontend code/documentation;
+no schema, API, worker, search-settings update, or reindex is needed.
+
+Q05 remains open for the active/closed browsing workflow, to be delivered as its
+own independent feature.
