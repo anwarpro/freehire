@@ -43,6 +43,7 @@
   import JobCompanyPanel from './JobCompanyPanel.svelte';
   import JobSourceRow from './JobSourceRow.svelte';
   import JobDescription from './JobDescription.svelte';
+  import ManualJobEditor from './ManualJobEditor.svelte';
   import JobMatch from './JobMatch.svelte';
   import { supersedesReality } from '#lib/ghost.js';
   import GhostChecklist from './GhostChecklist.svelte';
@@ -1016,6 +1017,9 @@
   <header class="flex flex-col gap-3 lg:col-start-2 lg:row-start-2">
     <div class="flex flex-wrap items-center gap-2.5">
       <h1 class="text-2xl font-semibold tracking-tight" lang={contentLang}>{job.title}</h1>
+      {#key job.public_slug}
+        <ManualJobEditor {job} onSaved={(updated) => (job = updated)} />
+      {/key}
       <!-- Applied stays with the title: it is a fact about THIS READER, not about the
            posting, so it does not belong on the provenance line above. -->
       {#if applied}

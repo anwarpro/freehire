@@ -652,6 +652,15 @@ export interface SubmissionInput {
   salary_period?: string;
 }
 
+/** Editable content of a moderator-authored job. Omitted fields stay unchanged. */
+export interface ManualJobUpdate {
+  title?: string;
+  company?: string;
+  location?: string;
+  remote?: boolean;
+  description?: string;
+}
+
 /** What freehire could parse from a pasted job URL, for the submit form to prefill —
  *  never persisted. A field freehire's own dictionaries derive better than any source
  *  page states it (skills, cities) is not included. */
