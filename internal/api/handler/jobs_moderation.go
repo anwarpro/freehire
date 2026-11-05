@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"encoding/json"
 	"errors"
 	"time"
 
@@ -15,14 +16,15 @@ import (
 // when absent); remote defaults to false when absent; posted_at is an optional RFC3339
 // timestamp.
 type createJobRequest struct {
-	URL         string     `json:"url"`
-	Source      string     `json:"source"`
-	Title       string     `json:"title"`
-	Company     string     `json:"company"`
-	Location    string     `json:"location"`
-	Remote      bool       `json:"remote"`
-	Description string     `json:"description"`
-	PostedAt    *time.Time `json:"posted_at"`
+	URL                 string     `json:"url"`
+	Source              string     `json:"source"`
+	Title               string     `json:"title"`
+	Company             string     `json:"company"`
+	Location            string     `json:"location"`
+	Remote              bool       `json:"remote"`
+	Description         string     `json:"description"`
+	PostedAt            *time.Time `json:"posted_at"`
+	ApplicationDeadline *time.Time `json:"application_deadline"`
 
 	// Optional structured facets: geography/work-mode/skills override dictionary
 	// derivation, and the salary fields become an authoritative manual salary. The
@@ -43,36 +45,38 @@ type createJobRequest struct {
 // moderator create path and the public submission path, which carry identical content.
 func (r createJobRequest) toCreateInput() moderation.CreateInput {
 	return moderation.CreateInput{
-		URL:            r.URL,
-		Source:         r.Source,
-		Title:          r.Title,
-		Company:        r.Company,
-		Location:       r.Location,
-		Remote:         r.Remote,
-		Description:    r.Description,
-		PostedAt:       r.PostedAt,
-		Skills:         r.Skills,
-		Regions:        r.Regions,
-		Cities:         r.Cities,
-		WorkMode:       r.WorkMode,
-		EmploymentType: r.EmploymentType,
-		Seniority:      r.Seniority,
-		SalaryMin:      r.SalaryMin,
-		SalaryMax:      r.SalaryMax,
-		SalaryCurrency: r.SalaryCurrency,
-		SalaryPeriod:   r.SalaryPeriod,
+		URL:                 r.URL,
+		Source:              r.Source,
+		Title:               r.Title,
+		Company:             r.Company,
+		Location:            r.Location,
+		Remote:              r.Remote,
+		Description:         r.Description,
+		PostedAt:            r.PostedAt,
+		ApplicationDeadline: r.ApplicationDeadline,
+		Skills:              r.Skills,
+		Regions:             r.Regions,
+		Cities:              r.Cities,
+		WorkMode:            r.WorkMode,
+		EmploymentType:      r.EmploymentType,
+		Seniority:           r.Seniority,
+		SalaryMin:           r.SalaryMin,
+		SalaryMax:           r.SalaryMax,
+		SalaryCurrency:      r.SalaryCurrency,
+		SalaryPeriod:        r.SalaryPeriod,
 	}
 }
 
 // updateJobRequest is the moderator edit body: every field is optional, and a field
 // left out (nil) is unchanged. The source identity (url) is not editable.
 type updateJobRequest struct {
-	Title       *string    `json:"title"`
-	Company     *string    `json:"company"`
-	Location    *string    `json:"location"`
-	Remote      *bool      `json:"remote"`
-	Description *string    `json:"description"`
-	PostedAt    *time.Time `json:"posted_at"`
+	Title               *string         `json:"title"`
+	Company             *string         `json:"company"`
+	Location            *string         `json:"location"`
+	Remote              *bool           `json:"remote"`
+	Description         *string         `json:"description"`
+	PostedAt            *time.Time      `json:"posted_at"`
+	ApplicationDeadline json.RawMessage `json:"application_deadline"`
 }
 
 // moderationError maps the moderation sentinels onto HTTP statuses. ErrInvalid carries a
@@ -128,13 +132,22 @@ func (h *jobsHandlers) UpdateJob(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusBadRequest, "invalid request body")
 	}
 
+	var deadline *time.Time
+	if len(in.ApplicationDeadline) > 0 {
+		if err := json.Unmarshal(in.ApplicationDeadline, &deadline); err != nil {
+			return fiber.NewError(fiber.StatusBadRequest, "application_deadline must be an RFC3339 timestamp or null")
+		}
+	}
+
 	domainJob, extras, err := h.moderation.Update(c.Context(), actorID, c.Params("slug"), moderation.UpdatePatch{
-		Title:       in.Title,
-		Company:     in.Company,
-		Location:    in.Location,
-		Remote:      in.Remote,
-		Description: in.Description,
-		PostedAt:    in.PostedAt,
+		Title:                  in.Title,
+		Company:                in.Company,
+		Location:               in.Location,
+		Remote:                 in.Remote,
+		Description:            in.Description,
+		PostedAt:               in.PostedAt,
+		ApplicationDeadline:    deadline,
+		ApplicationDeadlineSet: len(in.ApplicationDeadline) > 0,
 	})
 	if err != nil {
 		return moderationError(err)

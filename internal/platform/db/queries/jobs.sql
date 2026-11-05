@@ -1259,16 +1259,16 @@ WITH company_upsert AS (
         updated_at = now()
 )
 INSERT INTO jobs (
-    source, external_id, url, title, company, company_slug, company_slug_folded, location, remote, description, posted_at,
+    source, external_id, url, title, company, company_slug, company_slug_folded, location, remote, description, posted_at, application_deadline,
     public_slug, countries, regions, cities, metros, work_mode, skills, seniority, category, is_tech, requires_clearance,
     posting_language, employment_type, education_level, english_level, experience_years_min,
     salary_min_manual, salary_max_manual, salary_currency_manual, salary_period_manual, enrichment,
     content_hash, role_fingerprint, requirements_derived,
-    created_by
+    created_by, closed_at, closed_reason
 ) VALUES (
     sqlc.arg(source), sqlc.arg(external_id), sqlc.arg(url), sqlc.arg(title),
     sqlc.arg(company), sqlc.arg(company_slug), replace(sqlc.arg(company_slug), '-', ''), sqlc.arg(location), sqlc.arg(remote),
-    sqlc.arg(description), sqlc.arg(posted_at),
+    sqlc.arg(description), sqlc.arg(posted_at), sqlc.narg(application_deadline),
     sqlc.arg(public_slug),
     COALESCE(sqlc.arg(countries)::text[], '{}'), COALESCE(sqlc.arg(regions)::text[], '{}'), COALESCE(sqlc.arg(cities)::text[], '{}'), COALESCE(sqlc.arg(metros)::text[], '{}'),
     sqlc.arg(work_mode), COALESCE(sqlc.arg(skills)::text[], '{}'),
@@ -1292,7 +1292,9 @@ INSERT INTO jobs (
     -- (internal/job/job's withDerived), so a hand-curated posting is not the one kind
     -- of posting whose requirements never appear.
     COALESCE(sqlc.arg(requirements_derived)::jsonb, '[]'::jsonb),
-    sqlc.arg(created_by)::bigint
+    sqlc.arg(created_by)::bigint,
+    CASE WHEN sqlc.narg(application_deadline)::timestamptz <= now() THEN sqlc.narg(application_deadline)::timestamptz END,
+    CASE WHEN sqlc.narg(application_deadline)::timestamptz <= now() THEN 'application_deadline' ELSE '' END
 )
 ON CONFLICT (source, external_id) DO UPDATE SET
     url          = EXCLUDED.url,
@@ -1304,6 +1306,7 @@ ON CONFLICT (source, external_id) DO UPDATE SET
     remote       = EXCLUDED.remote,
     description  = EXCLUDED.description,
     posted_at    = EXCLUDED.posted_at,
+    application_deadline = EXCLUDED.application_deadline,
     countries    = EXCLUDED.countries,
     regions      = EXCLUDED.regions,
     cities       = EXCLUDED.cities,
@@ -1351,8 +1354,8 @@ ON CONFLICT (source, external_id) DO UPDATE SET
     updated_by   = sqlc.arg(updated_by)::bigint,
     -- A moderator re-create reopens the job; reset the strike count too so the
     -- two-strike liveness grace survives a reopen (see UpsertJob).
-    closed_at    = NULL,
-    closed_reason = '',
+    closed_at    = EXCLUDED.closed_at,
+    closed_reason = EXCLUDED.closed_reason,
     liveness_strikes = CASE WHEN jobs.closed_at IS NOT NULL THEN 0 ELSE jobs.liveness_strikes END,
     -- Same reasoning as UpsertJob: a moderator company correction invalidates this
     -- job's already-precomputed similar-jobs list (it may have been computed
@@ -1423,7 +1426,7 @@ RETURNING *;
 -- is deliberately NOT updatable here. The company row is upserted when a slug is present,
 -- so "a company's jobs" stays resolvable. updated_by records the acting moderator. Returns
 -- no row when the slug is missing or not a manual job (the caller maps that to 404).
--- closed_at is deliberately NOT touched: an edit is a content fix, not a lifecycle change.
+-- An edit preserves closure, including an elapsed deadline pending the sweep.
 -- Reopening a closed posting is the re-create (same-URL UpsertManualJob) path's job, so a
 -- content edit never resurrects a job the sweep/liveness worker closed.
 WITH company_upsert AS (
@@ -1443,6 +1446,15 @@ SET title        = sqlc.arg(title),
     remote       = sqlc.arg(remote),
     description  = sqlc.arg(description),
     posted_at    = sqlc.arg(posted_at),
+    application_deadline = sqlc.narg(application_deadline),
+    -- An elapsed deadline is already closed, even before the scheduled sweep.
+    -- Preserve that closure when a moderator clears or extends the date.
+    closed_at = COALESCE(jobs.closed_at,
+        CASE WHEN jobs.application_deadline <= now() THEN jobs.application_deadline END,
+        CASE WHEN sqlc.narg(application_deadline)::timestamptz <= now() THEN sqlc.narg(application_deadline)::timestamptz END),
+    closed_reason = CASE WHEN jobs.closed_at IS NULL AND
+        (jobs.application_deadline <= now() OR sqlc.narg(application_deadline)::timestamptz <= now())
+        THEN 'application_deadline' ELSE jobs.closed_reason END,
     countries    = COALESCE(sqlc.arg(countries)::text[], '{}'),
     regions      = COALESCE(sqlc.arg(regions)::text[], '{}'),
     cities       = COALESCE(sqlc.arg(cities)::text[], '{}'),
@@ -3191,6 +3203,23 @@ WITH closed AS (
     WHERE closed_at IS NULL
       AND source = sqlc.arg(source)
       AND external_id LIKE sqlc.arg(board_pattern)
+    RETURNING id
+), queued AS (
+    INSERT INTO search_delete_outbox (job_id)
+    SELECT id FROM closed
+    ON CONFLICT (job_id) DO NOTHING
+)
+SELECT count(*) FROM closed;
+
+-- name: CloseDeadlineExpiredJobs :one
+-- Run before search removals: close and enqueue atomically, including private rows
+-- without making them public. An edit never reopens a previously closed posting.
+WITH closed AS (
+    UPDATE jobs
+    SET closed_at = application_deadline,
+        closed_reason = 'application_deadline',
+        updated_at = now()
+    WHERE closed_at IS NULL AND application_deadline <= now()
     RETURNING id
 ), queued AS (
     INSERT INTO search_delete_outbox (job_id)

@@ -14,6 +14,7 @@ import (
 	"github.com/strelov1/freehire/internal/application/appevent"
 	"github.com/strelov1/freehire/internal/application/autoapply"
 	"github.com/strelov1/freehire/internal/platform/db"
+	"github.com/strelov1/freehire/internal/platform/pgconv"
 )
 
 // dbStore adapts the generated queries + pool to autoapply.Store. It is the only place the
@@ -43,12 +44,13 @@ func (s *dbStore) Claim(ctx context.Context, batch, leaseSeconds int) ([]autoapp
 	out := make([]autoapply.Claimed, 0, len(rows))
 	for _, r := range rows {
 		c := autoapply.Claimed{
-			QueueID:    r.ID,
-			UserID:     r.UserID,
-			JobID:      r.JobID,
-			Provider:   r.Source,
-			ExternalID: r.ExternalID,
-			JobURL:     r.URL,
+			QueueID:             r.ID,
+			UserID:              r.UserID,
+			JobID:               r.JobID,
+			Provider:            r.Source,
+			ExternalID:          r.ExternalID,
+			JobURL:              r.URL,
+			ApplicationDeadline: pgconv.TimePtr(r.ApplicationDeadline),
 		}
 		// Never nil in practice — ClaimAutoApplyBatch's WHERE requires tailored_cv_id IS
 		// NOT NULL — but a claim with no tailored CV degrades to a zero-value id rather

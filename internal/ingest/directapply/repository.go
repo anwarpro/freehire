@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgtype"
@@ -41,7 +42,7 @@ func (r *QueriesRepository) Vacancy(ctx context.Context, slug string) (Vacancy, 
 		Title:      row.Title,
 		Company:    row.Company,
 		EmployerID: row.CreatedBy.Int64,
-		Open:       !row.ClosedAt.Valid,
+		Open:       !row.ClosedAt.Valid && (!row.ApplicationDeadline.Valid || time.Now().Before(row.ApplicationDeadline.Time)),
 	}, nil
 }
 

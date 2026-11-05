@@ -47,9 +47,10 @@ type Salary struct {
 type Draft struct {
 	jobderive.Input
 
-	URL      string
-	Remote   bool
-	PostedAt *time.Time
+	URL                 string
+	Remote              bool
+	PostedAt            *time.Time
+	ApplicationDeadline *time.Time
 
 	ManualSalary *Salary
 
@@ -68,17 +69,18 @@ type Draft struct {
 // the wire projection and search indexing. A Fields can be freely constructed, but
 // it is not a Job and cannot be persisted, so the construction invariant holds.
 type Fields struct {
-	Source      string
-	ExternalID  string
-	URL         string
-	Title       string
-	Company     string
-	CompanySlug string
-	PublicSlug  string
-	Location    string
-	Remote      bool
-	Description string
-	PostedAt    *time.Time
+	Source              string
+	ExternalID          string
+	URL                 string
+	Title               string
+	Company             string
+	CompanySlug         string
+	PublicSlug          string
+	Location            string
+	Remote              bool
+	Description         string
+	PostedAt            *time.Time
+	ApplicationDeadline *time.Time
 
 	// deterministic dictionary facets
 	Countries []string
@@ -176,17 +178,18 @@ func New(d Draft) (Job, error) {
 		der.CompanySlug = d.CanonicalCompanySlug
 	}
 	return Job{f: Fields{
-		Source:      d.Source,
-		ExternalID:  d.ExternalID,
-		URL:         d.URL,
-		Title:       d.Title,
-		Company:     d.Company,
-		CompanySlug: der.CompanySlug,
-		PublicSlug:  der.PublicSlug,
-		Location:    in.Location,
-		Remote:      d.Remote,
-		Description: d.Description,
-		PostedAt:    d.PostedAt,
+		Source:              d.Source,
+		ExternalID:          d.ExternalID,
+		URL:                 d.URL,
+		Title:               d.Title,
+		Company:             d.Company,
+		CompanySlug:         der.CompanySlug,
+		PublicSlug:          der.PublicSlug,
+		Location:            in.Location,
+		Remote:              d.Remote,
+		Description:         d.Description,
+		PostedAt:            d.PostedAt,
+		ApplicationDeadline: d.ApplicationDeadline,
 
 		Countries: der.Countries,
 		Regions:   der.Regions,
@@ -328,26 +331,27 @@ func (f Fields) UpsertManualParams(actorID int64) db.UpsertManualJobParams {
 	}
 	derived := f.UpsertParams()
 	return db.UpsertManualJobParams{
-		Source:      f.Source,
-		ExternalID:  f.ExternalID,
-		URL:         f.URL,
-		Title:       f.Title,
-		Company:     f.Company,
-		CompanySlug: f.CompanySlug,
-		Location:    f.Location,
-		Remote:      f.Remote,
-		Description: f.Description,
-		PostedAt:    pgconv.Timestamptz(f.PostedAt),
-		PublicSlug:  f.PublicSlug,
-		Countries:   f.Countries,
-		Regions:     f.Regions,
-		Cities:      f.Cities,
-		Metros:      f.Metros,
-		WorkMode:    f.WorkMode,
-		Skills:      f.Skills,
-		Seniority:   f.Seniority,
-		Category:    f.Category,
-		IsTech:      pgconv.Bool(f.IsTech),
+		Source:              f.Source,
+		ExternalID:          f.ExternalID,
+		URL:                 f.URL,
+		Title:               f.Title,
+		Company:             f.Company,
+		CompanySlug:         f.CompanySlug,
+		Location:            f.Location,
+		Remote:              f.Remote,
+		Description:         f.Description,
+		PostedAt:            pgconv.Timestamptz(f.PostedAt),
+		ApplicationDeadline: pgconv.Timestamptz(f.ApplicationDeadline),
+		PublicSlug:          f.PublicSlug,
+		Countries:           f.Countries,
+		Regions:             f.Regions,
+		Cities:              f.Cities,
+		Metros:              f.Metros,
+		WorkMode:            f.WorkMode,
+		Skills:              f.Skills,
+		Seniority:           f.Seniority,
+		Category:            f.Category,
+		IsTech:              pgconv.Bool(f.IsTech),
 
 		RequiresClearance: pgconv.Bool(f.RequiresClearance),
 
@@ -396,22 +400,23 @@ func (f Fields) UpdateManualParams(slug string, actorID int64) db.UpdateManualJo
 	derived.PublicSlug = slug
 	derived = withDerived(derived)
 	return db.UpdateManualJobParams{
-		Title:       f.Title,
-		Company:     f.Company,
-		CompanySlug: f.CompanySlug,
-		Location:    f.Location,
-		Remote:      f.Remote,
-		Description: f.Description,
-		PostedAt:    pgconv.Timestamptz(f.PostedAt),
-		Countries:   f.Countries,
-		Regions:     f.Regions,
-		Cities:      f.Cities,
-		Metros:      f.Metros,
-		WorkMode:    f.WorkMode,
-		Skills:      f.Skills,
-		Seniority:   f.Seniority,
-		Category:    f.Category,
-		IsTech:      pgconv.Bool(f.IsTech),
+		Title:               f.Title,
+		Company:             f.Company,
+		CompanySlug:         f.CompanySlug,
+		Location:            f.Location,
+		Remote:              f.Remote,
+		Description:         f.Description,
+		PostedAt:            pgconv.Timestamptz(f.PostedAt),
+		ApplicationDeadline: pgconv.Timestamptz(f.ApplicationDeadline),
+		Countries:           f.Countries,
+		Regions:             f.Regions,
+		Cities:              f.Cities,
+		Metros:              f.Metros,
+		WorkMode:            f.WorkMode,
+		Skills:              f.Skills,
+		Seniority:           f.Seniority,
+		Category:            f.Category,
+		IsTech:              pgconv.Bool(f.IsTech),
 
 		RequiresClearance: pgconv.Bool(f.RequiresClearance),
 
@@ -520,5 +525,7 @@ func (f Fields) InsertPrivateParams(createdBy int64) db.InsertPrivateJobParams {
 	}
 }
 
-// IsOpen reports whether the job is live (not soft-closed).
-func (j Job) IsOpen() bool { return j.f.ClosedAt == nil }
+// IsOpen reports whether the job is neither soft-closed nor past its stated deadline.
+func (j Job) IsOpen() bool {
+	return j.f.ClosedAt == nil && (j.f.ApplicationDeadline == nil || time.Now().Before(*j.f.ApplicationDeadline))
+}

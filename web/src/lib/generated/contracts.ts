@@ -277,6 +277,10 @@ export interface Job {
    */
   auto_apply_available?: boolean;
   posted_at?: string;
+  /**
+   * ApplicationDeadline is the exclusive end of the application window, when known.
+   */
+  application_deadline?: string;
   created_at?: string;
   updated_at?: string;
   /**

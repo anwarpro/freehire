@@ -82,3 +82,9 @@ RETURNING failed_at;
 DELETE FROM search_delete_outbox
 WHERE failed_at IS NOT NULL
   AND failed_at < sqlc.arg(cutoff);
+
+-- name: EnqueueSearchDeleteOutbox :exec
+-- Called inside a manual-write transaction when that write closed the posting.
+INSERT INTO search_delete_outbox (job_id)
+VALUES ($1)
+ON CONFLICT (job_id) DO NOTHING;

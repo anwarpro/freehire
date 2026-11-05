@@ -3,8 +3,10 @@ package autoapply
 import (
 	"context"
 	"errors"
+	"fmt"
 	"slices"
 	"testing"
+	"time"
 )
 
 type fakeStore struct {
@@ -326,6 +328,30 @@ func TestRunDegradedOnDeadLetterOrTotalFailure(t *testing.T) {
 		t.Run(c.name, func(t *testing.T) {
 			if got := c.s.Degraded(); got != c.want {
 				t.Errorf("Degraded() = %v, want %v", got, c.want)
+			}
+		})
+	}
+}
+
+func TestQueuedAttemptRespectsDeadline(t *testing.T) {
+	for _, expired := range []bool{false, true} {
+		t.Run(fmt.Sprint(expired), func(t *testing.T) {
+			deadline := time.Now().Add(time.Hour)
+			if expired {
+				deadline = time.Now().Add(-time.Hour)
+			}
+			store := &fakeStore{waves: [][]Claimed{{{QueueID: 1, UserID: 10, JobID: 100, ApplicationDeadline: &deadline}}}}
+			sidecar := &fakeSidecar{result: SidecarResult{Status: StatusApplied}}
+			stats, err := Run(context.Background(), store, &fakeAnswers{}, sidecar, opts())
+			if err != nil {
+				t.Fatal(err)
+			}
+			if expired {
+				if sidecar.calls != 0 || stats.Blocked != 1 || len(store.parked) != 1 || len(store.submitted) != 0 {
+					t.Fatalf("expired attempt reached submit: %+v calls=%d", stats, sidecar.calls)
+				}
+			} else if sidecar.calls != 1 || stats.Applied != 1 {
+				t.Fatalf("future deadline blocked: %+v", stats)
 			}
 		})
 	}

@@ -8,7 +8,7 @@ deployment branch until the fork establishes another integration branch.
 
 | Capability | Finding | Evidence | Next step |
 | --- | --- | --- | --- |
-| Manual job intake | Reusable backend and public submission form; direct moderator publishing, a job-page editor, and posting-date controls use the existing endpoints | [Moderation API](../internal/api/handler/jobs_moderation.go), [submission form](../web/src/lib/components/SubmitView.svelte), [job editor](../web/src/lib/components/ManualJobEditor.svelte) | Verify each feature after deployment; add application-deadline persistence and expiry handling in a separate PR |
+| Manual job intake | Reusable backend and public submission form; direct moderator publishing, a job-page editor, posting-date controls, and application deadlines use the existing endpoints | [Moderation API](../internal/api/handler/jobs_moderation.go), [submission form](../web/src/lib/components/SubmitView.svelte), [job editor](../web/src/lib/components/ManualJobEditor.svelte) | Verify deadline migrations, expiry scheduling, and staff workflow after deployment |
 | Browsing and filtering | Reusable list, search, pagination, and job detail | [Jobs view](../web/src/lib/components/JobsView.svelte), [jobs route](../web/src/routes/jobs/+page.server.ts) | Verify the Bangladeshi source and curriculum workflow against actual stored jobs |
 | Source ingestion | Reusable adapters, catalog registration, refresh, and indexing operations | [Source integration guide](../ops/hero-jobs/README.md), [source registry](../internal/ingest/sources/registry.go) | Verify selected Bangladeshi career pages and the feasible access method for BDJobs and LinkedIn before implementing collectors |
 | Accounts and roles | Reusable authentication and moderator authorization; school-team account management is additional scope | [Role middleware](../internal/identity/auth/middleware.go), [account services](../internal/identity/accounts/AGENTS.md) | Add a complete team account lifecycle, then a reviewer assignment feature |
@@ -82,3 +82,45 @@ indexing consume the corrected timestamp.
 This feature has no Go/schema changes. Application deadlines are tracked
 separately: the current job model has no deadline field, and supporting one
 requires storage, editing/display, and expiry handling together.
+
+## Feature: application deadlines
+
+Moderators can set **Application deadline** when publishing and replace or clear
+it in **Edit job**. Blank means unknown. The date applies through the end of that
+calendar day in Bangladesh; the API stores the exclusive next midnight as an
+RFC3339 `application_deadline`. Historical deadlines are allowed for accurate
+records. The public review queue does not offer this moderator-only control.
+
+`PATCH /api/v1/jobs/:slug` preserves an omitted deadline, replaces a timestamp,
+and clears an explicit JSON `null`. An unrelated edit preserves the exact
+stored timestamp. Saving an elapsed deadline closes the job immediately. Changing
+or clearing an elapsed deadline preserves closure even before the scheduled
+sweep, following the existing editing lifecycle. A deliberate same-URL
+re-publication retains the existing reopen behavior.
+
+Job details show the last application day and withhold application controls when
+expired, including on a page left open (checked every 30 seconds). Fresh API
+projections expose an elapsed deadline as `closed_at` immediately. Direct-apply
+and new auto-apply requests also check the deadline before proceeding. Queued
+auto-apply attempts also check the deadline before invoking the submission driver
+and park when expired. SEO uses the
+stated deadline rather than estimating a rolling expiry for these jobs.
+
+The existing `search-drain` worker closes due rows before processing removals;
+the close and search removal enqueue are one SQL transaction and repeated runs
+are idempotent. PH Jobs schedules it every two minutes. Active lists and indexed
+results converge on that sweep; an unavailable scheduler/search service can
+delay removal, while detail projection and new-application guards still apply.
+This does not parse deadlines automatically from collected job descriptions.
+
+Apply migrations 0207–0209 **before** deploying the new API and search worker,
+using the [full deployment procedure](../ops/hero-jobs/README.md). They add a
+nullable column, widen the closure-reason constraint, and build a partial index
+concurrently. Rebuild the app and worker-tools images as well as the frontend.
+No search-settings change or catalogue-wide reindex is required. On rollback,
+keep the expansive schema; older code tolerates it, but no longer honors deadlines.
+The concurrent-index migration documents recovery for an interrupted index build.
+
+Coverage includes calendar boundaries, publication/editing/clearing, exact-time
+preservation, immediate projection, API body presence, real-Postgres persistence,
+idempotent closure/removal enqueue, and refusal to reopen through an edit.

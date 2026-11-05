@@ -8,6 +8,7 @@ package main
 import (
 	"context"
 	"testing"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -261,4 +262,26 @@ func TestDBStore_ClaimForPreviewAndSetPreview(t *testing.T) {
 			t.Errorf("notifications = %d, want 0 — an already-decided entry must not notify", notifCount)
 		}
 	})
+}
+
+func TestDBStoreClaimCarriesApplicationDeadline(t *testing.T) {
+	pool := testdb.Pool(t)
+	ctx := context.Background()
+	user := insertUserForTest(t, pool, "deadline-queue@example.test")
+	job := insertJobForTest(t, pool, "deadline-queue-job")
+	queue := insertTailoredQueueRowForTest(t, pool, user, job)
+	deadline := time.Now().Add(-time.Hour).UTC().Truncate(time.Second)
+	if _, err := pool.Exec(ctx, `UPDATE jobs SET application_deadline=$1 WHERE id=$2`, deadline, job); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := pool.Exec(ctx, `UPDATE auto_apply_queue SET review_decision='approved' WHERE id=$1`, queue); err != nil {
+		t.Fatal(err)
+	}
+	claimed, err := newDBStore(pool).Claim(ctx, 10, 300)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(claimed) != 1 || claimed[0].ApplicationDeadline == nil || !claimed[0].ApplicationDeadline.Equal(deadline) {
+		t.Fatalf("claim lost deadline: %+v", claimed)
+	}
 }

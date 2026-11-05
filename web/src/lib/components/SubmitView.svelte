@@ -33,6 +33,8 @@
   import NoteEditor from './NoteEditor.svelte';
   import TokenInput from './facets/TokenInput.svelte';
   import PostingDateField from './PostingDateField.svelte';
+  import ApplicationDeadlineField from './ApplicationDeadlineField.svelte';
+  import { applicationDeadlineError, applicationDeadlineTimestamp } from '#lib/applicationDeadline.js';
 
   let { mode = 'review' }: { mode?: 'review' | 'publish' } = $props();
   const publishing = $derived(mode === 'publish');
@@ -52,6 +54,7 @@
   let location = $state('');
   let source = $state('');
   let postingDate = $state('');
+  let deadline = $state('');
 
   // The description is authored as markdown in the shared tracker editor and converted
   // to HTML on submit (the catalogue renders descriptions as sanitized HTML).
@@ -126,7 +129,7 @@
       title.trim() !== '' &&
       company.trim() !== '' &&
       existingSlug === null &&
-      postingDateError(postingDate) === null &&
+      postingDateError(postingDate) === null && (!publishing || applicationDeadlineError(deadline) === null) &&
       !submitting,
   );
 
@@ -190,6 +193,7 @@
   function resetForm() {
     url = title = company = location = source = '';
     postingDate = '';
+    deadline = '';
     descriptionMarkdown = '';
     region = workMode = employmentType = seniority = currency = period = '';
     cities = [];
@@ -217,6 +221,7 @@
         description: descriptionHtml || undefined,
         source: source.trim() || undefined,
         posted_at: postingDateTimestamp(postingDate),
+        ...(publishing ? { application_deadline: applicationDeadlineTimestamp(deadline) } : {}),
         skills: skills.length ? skills : undefined,
         regions: region ? [region] : undefined,
         cities: cities.length ? cities : undefined,
@@ -405,6 +410,7 @@
 
         <div class="py-6">
           <PostingDateField bind:value={postingDate} help="Optional: use the date on the original posting. Leave blank when it is unknown." />
+          {#if publishing}<ApplicationDeadlineField bind:value={deadline} />{/if}
         </div>
 
         <!-- Details: the structured facets that make the vacancy searchable. -->

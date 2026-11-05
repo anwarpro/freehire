@@ -23,9 +23,10 @@ import (
 
 // Claimed is one submission attempt leased to this run.
 type Claimed struct {
-	QueueID int64
-	UserID  int64
-	JobID   int64
+	ApplicationDeadline *time.Time
+	QueueID             int64
+	UserID              int64
+	JobID               int64
 	// Provider is the ATS this posting came from (jobs.source), the sidecar's routing key
 	// — the same vocabulary internal/applyform's Provider field already uses.
 	Provider string
@@ -263,9 +264,14 @@ func (rn *run) process(ctx context.Context, c Claimed) outbox.Outcome {
 		defer cancel()
 	}
 
-	result, err := rn.sidecar.Submit(callCtx, c, answers)
-	if err != nil {
-		return rn.fail(ctx, c, err)
+	// A queued attempt may outlive its application window. Check immediately
+	// before handing it to the submission driver, including before the expiry sweep.
+	result := SidecarResult{Status: StatusParked, Reason: "the application deadline has passed"}
+	if c.ApplicationDeadline == nil || time.Now().Before(*c.ApplicationDeadline) {
+		result, err = rn.sidecar.Submit(callCtx, c, answers)
+		if err != nil {
+			return rn.fail(ctx, c, err)
+		}
 	}
 
 	switch result.Status {

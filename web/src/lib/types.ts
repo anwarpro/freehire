@@ -638,6 +638,8 @@ export interface SubmissionInput {
   description?: string;
   source?: string;
   posted_at?: string;
+  // Accepted on direct moderator publication; the public review queue has no deadline field.
+  application_deadline?: string | null;
   // Structured facets the submitter can state explicitly. The backend sanitizes them
   // (unknown work_mode/regions dropped) and applies them as overrides on the minted job;
   // salary becomes an authoritative manual salary.
@@ -661,6 +663,7 @@ export interface ManualJobUpdate {
   remote?: boolean;
   description?: string;
   posted_at?: string;
+  application_deadline?: string | null;
 }
 
 /** What freehire could parse from a pasted job URL, for the submit form to prefill —

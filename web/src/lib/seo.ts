@@ -404,6 +404,8 @@ export function jobPostingJsonLd(job: Job, origin: string): Record<string, unkno
   // apply its own default expiry assumption to a posting that's still live.
   if (job.closed_at) {
     ld.validThrough = job.closed_at;
+  } else if (job.application_deadline) {
+    ld.validThrough = job.application_deadline;
   } else {
     const validThrough = estimatedValidThrough(job);
     if (validThrough) ld.validThrough = validThrough;

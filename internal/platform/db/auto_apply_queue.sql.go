@@ -94,7 +94,7 @@ SET claimed_at = now()
 FROM claimable c
 JOIN jobs j ON j.id = c.job_id
 WHERE q.id = c.id
-RETURNING q.id, q.user_id, q.job_id, q.tailored_cv_id, j.source, j.external_id, j.url
+RETURNING q.id, q.user_id, q.job_id, q.tailored_cv_id, j.source, j.external_id, j.url, j.application_deadline
 `
 
 type ClaimAutoApplyBatchParams struct {
@@ -103,13 +103,14 @@ type ClaimAutoApplyBatchParams struct {
 }
 
 type ClaimAutoApplyBatchRow struct {
-	ID           int64      `json:"id"`
-	UserID       int64      `json:"user_id"`
-	JobID        int64      `json:"job_id"`
-	TailoredCvID *uuid.UUID `json:"tailored_cv_id"`
-	Source       string     `json:"source"`
-	ExternalID   string     `json:"external_id"`
-	URL          string     `json:"url"`
+	ID                  int64              `json:"id"`
+	UserID              int64              `json:"user_id"`
+	JobID               int64              `json:"job_id"`
+	TailoredCvID        *uuid.UUID         `json:"tailored_cv_id"`
+	Source              string             `json:"source"`
+	ExternalID          string             `json:"external_id"`
+	URL                 string             `json:"url"`
+	ApplicationDeadline pgtype.Timestamptz `json:"application_deadline"`
 }
 
 // Claim a batch of live, unleased submission attempts by stamping claimed_at. Mirrors
@@ -148,6 +149,7 @@ func (q *Queries) ClaimAutoApplyBatch(ctx context.Context, arg ClaimAutoApplyBat
 			&i.Source,
 			&i.ExternalID,
 			&i.URL,
+			&i.ApplicationDeadline,
 		); err != nil {
 			return nil, err
 		}

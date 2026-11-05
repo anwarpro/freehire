@@ -94,7 +94,7 @@ It also registers the available boardless sources through the upstream catalog
 writer. Repeated initialization does not duplicate live entries.
 
 - Collection: every five minutes, one provider per run, oldest attempt first.
-- Incremental search indexing: every two minutes.
+- Application-deadline closure and incremental search indexing: every two minutes.
 - Supported board discovery: every two hours, one provider per run.
 - Statistics/company index: every six hours.
 - Tech-company catalog expansion: daily at 22:45 UTC (04:45 Bangladesh).

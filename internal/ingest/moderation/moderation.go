@@ -53,15 +53,16 @@ const defaultSource = "manual"
 // dropped, non-positive salary dropped), so a malformed value degrades to derivation
 // rather than corrupting the job.
 type CreateInput struct {
-	URL         string
-	ExternalID  string
-	Source      string
-	Title       string
-	Company     string
-	Location    string
-	Remote      bool
-	Description string
-	PostedAt    *time.Time
+	URL                 string
+	ExternalID          string
+	Source              string
+	Title               string
+	Company             string
+	Location            string
+	Remote              bool
+	Description         string
+	PostedAt            *time.Time
+	ApplicationDeadline *time.Time
 
 	Skills         []string
 	Regions        []string
@@ -115,6 +116,9 @@ type UpdatePatch struct {
 	Remote      *bool
 	Description *string
 	PostedAt    *time.Time
+	// Set distinguishes omission (preserve) from an explicit nil deadline (clear).
+	ApplicationDeadline    *time.Time
+	ApplicationDeadlineSet bool
 }
 
 // validate rejects an edit that would blank a required field: a supplied (non-nil)
@@ -187,6 +191,7 @@ func (s *Service) Create(ctx context.Context, actorID int64, in CreateInput) (jo
 	f.URL = in.URL
 	f.Remote = in.Remote
 	f.PostedAt = in.PostedAt
+	f.ApplicationDeadline = in.ApplicationDeadline
 	return s.repo.Create(ctx, f, actorID)
 }
 
@@ -230,6 +235,10 @@ func (s *Service) Update(ctx context.Context, actorID int64, slug string, p Upda
 	}
 	f.Remote = remote
 	f.PostedAt = postedAt
+	f.ApplicationDeadline = curF.ApplicationDeadline
+	if p.ApplicationDeadlineSet {
+		f.ApplicationDeadline = p.ApplicationDeadline
+	}
 	return s.repo.Update(ctx, slug, f, actorID)
 }
 

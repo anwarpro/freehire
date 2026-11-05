@@ -802,6 +802,9 @@ type Querier interface {
 	CloseChronicProviderJobs(ctx context.Context, arg CloseChronicProviderJobsParams) (int64, error)
 	// Moderator close: the thread leaves the open listing and rejects new replies.
 	CloseCommunityThread(ctx context.Context, id int64) error
+	// Run before search removals: close and enqueue atomically, including private rows
+	// without making them public. An edit never reopens a previously closed posting.
+	CloseDeadlineExpiredJobs(ctx context.Context) (int64, error)
 	// Soft-close, the employer-self-service analogue of CloseJobByID: scoped to the actor's own
 	// employer-authored posting (created_by = actor_id AND source = 'employer'), never any other
 	// job. closed_reason = 'employer_closed' (migration 0175) keeps this mechanism distinguishable
@@ -2051,6 +2054,8 @@ type Querier interface {
 	// within seconds by the poller in internal/job/recentfeed, so there is nothing to
 	// reconcile beyond "don't queue the same job twice while it's still pending".
 	EnqueueRecentFeedOutbox(ctx context.Context, jobID int64) error
+	// Called inside a manual-write transaction when that write closed the posting.
+	EnqueueSearchDeleteOutbox(ctx context.Context, jobID int64) error
 	// Queue a job for the live facet index. Called by cmd/ingest inside the same
 	// transaction as the job's upsert, only when the write inserted or changed indexed
 	// content (mirrors the gate the old inline SubmitJobs push used). ON CONFLICT keeps
@@ -7586,7 +7591,7 @@ type Querier interface {
 	// is deliberately NOT updatable here. The company row is upserted when a slug is present,
 	// so "a company's jobs" stays resolvable. updated_by records the acting moderator. Returns
 	// no row when the slug is missing or not a manual job (the caller maps that to 404).
-	// closed_at is deliberately NOT touched: an edit is a content fix, not a lifecycle change.
+	// An edit preserves closure, including an elapsed deadline pending the sweep.
 	// Reopening a closed posting is the re-create (same-URL UpsertManualJob) path's job, so a
 	// content edit never resurrects a job the sweep/liveness worker closed.
 	UpdateManualJob(ctx context.Context, arg UpdateManualJobParams) (Job, error)

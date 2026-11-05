@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/jackc/pgx/v5"
@@ -184,6 +185,9 @@ func (h *assistantHandlers) startAutoApply(ctx context.Context, userID int64, sl
 	job, err := h.queries.GetJobBySlug(ctx, slug)
 	if err != nil {
 		return err
+	}
+	if job.ClosedAt.Valid || (job.ApplicationDeadline.Valid && !time.Now().Before(job.ApplicationDeadline.Time)) {
+		return fiber.NewError(fiber.StatusGone, "this position is no longer accepting applications")
 	}
 	if !autoApplyEnqueueSources[job.Source] {
 		return fiber.NewError(fiber.StatusBadRequest, "auto-apply cannot queue an attempt against this posting's ATS")

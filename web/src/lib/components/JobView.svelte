@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
+  import { applicationDeadlineDate } from '#lib/applicationDeadline.js';
   import { goto } from '$app/navigation';
   import { resolve } from '$app/paths';
   import { page } from '$app/state';
@@ -73,7 +75,12 @@
   // and every control that would start one — Apply, auto-apply, Tailor my CV, the phone's
   // sticky bar that carries them — is withheld rather than left to lead somewhere dead.
   // Save stays: keeping a closed posting for reference is still a reasonable thing to do.
-  const closed = $derived(job.closed_at != null);
+  let deadlineClock = $state(Date.now());
+  onMount(() => {
+    const timer = setInterval(() => { deadlineClock = Date.now(); }, 30_000);
+    return () => clearInterval(timer);
+  });
+  const closed = $derived(job.closed_at != null || (!!job.application_deadline && Date.parse(job.application_deadline) <= deadlineClock));
 
   // Both facets live under `enrichment` on the wire (jobview sets them from the
   // dictionary columns), and either can be absent.
@@ -1033,8 +1040,11 @@
          posting's first fact is that it is closed. It sat below the tab row once, under
          live Apply buttons that led to a dead page — the controls are withheld now (see
          `closed`), and the reader is pointed at the open postings the route lists below. -->
-    {#if job.closed_at}
-      {@const closedOn = formatDate(job.closed_at, locale())}
+    {#if job.application_deadline}
+      <p class="text-sm font-medium">Application deadline: {applicationDeadlineDate(job.application_deadline)} (end of day, Bangladesh time).</p>
+    {/if}
+    {#if closed}
+      {@const closedOn = formatDate(job.closed_at ?? job.application_deadline ?? null, locale())}
       <div
         class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 rounded-lg border border-border bg-secondary px-4 py-3 text-sm"
       >
