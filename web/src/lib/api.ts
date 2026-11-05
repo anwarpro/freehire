@@ -81,6 +81,7 @@ import type {
   DiscordStatus,
   Submission,
   SubmissionInput,
+  ManualJobUpdate,
   PrefillResult,
   EmployerAccount,
   EmployerCompany,
@@ -2268,6 +2269,11 @@ export function createApi(
     return requestData<Job>('/api/v1/jobs', jsonBody('POST', input));
   }
 
+  /** Edit a manually added public job. The server requires the moderator role. */
+  async function updateManualJob(slug: string, input: ManualJobUpdate): Promise<Job> {
+    return requestData<Job>(`/api/v1/jobs/${encodeURIComponent(slug)}`, jsonBody('PATCH', input));
+  }
+
   /** The caller's own submissions with their review status. */
   async function listMySubmissions(): Promise<Submission[]> {
     return requestData<Submission[]>('/api/v1/me/submissions');
@@ -3359,6 +3365,7 @@ export function createApi(
     telegramUnlink,
     submitJob,
     publishJob,
+    updateManualJob,
     listMySubmissions,
     prefillSubmission,
     findJobByUrl,

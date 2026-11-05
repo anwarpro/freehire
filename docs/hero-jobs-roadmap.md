@@ -8,7 +8,7 @@ deployment branch until the fork establishes another integration branch.
 
 | Capability | Finding | Evidence | Next step |
 | --- | --- | --- | --- |
-| Manual job intake | Reusable backend and public submission form; direct moderator publishing now uses the same form | [Moderation API](../internal/api/handler/jobs_moderation.go), [submission form](../web/src/lib/components/SubmitView.svelte), [moderation page](../web/src/lib/components/ModerationView.svelte) | Verify the publishing flow on staging; implement manual editing and date/deadline support as separate features |
+| Manual job intake | Reusable backend and public submission form; direct moderator publishing and a job-page editor use the existing endpoints | [Moderation API](../internal/api/handler/jobs_moderation.go), [submission form](../web/src/lib/components/SubmitView.svelte), [job editor](../web/src/lib/components/ManualJobEditor.svelte) | Verify each feature after deployment; add posting/deadline controls in a separate PR |
 | Browsing and filtering | Reusable list, search, pagination, and job detail | [Jobs view](../web/src/lib/components/JobsView.svelte), [jobs route](../web/src/routes/jobs/+page.server.ts) | Verify the Bangladeshi source and curriculum workflow against actual stored jobs |
 | Source ingestion | Reusable adapters, catalog registration, refresh, and indexing operations | [Source integration guide](../ops/hero-jobs/README.md), [source registry](../internal/ingest/sources/registry.go) | Verify selected Bangladeshi career pages and the feasible access method for BDJobs and LinkedIn before implementing collectors |
 | Accounts and roles | Reusable authentication and moderator authorization; school-team account management is additional scope | [Role middleware](../internal/identity/auth/middleware.go), [account services](../internal/identity/accounts/AGENTS.md) | Add a complete team account lifecycle, then a reviewer assignment feature |
@@ -36,3 +36,24 @@ workflow. Live end-to-end verification is still required before deployment.
 
 Manual editing, posting/deadline controls, curriculum badges, reviewer assignment,
 student follow-ups, source collectors, and bot changes are separate PRs.
+
+## Feature: moderators edit a manually added job
+
+A moderator opening a manually added public job can choose **Edit job** beside
+the title. The editor fetches the latest posting, then allows corrections to the
+title, company, location, remote flag, and description. URL and source identity
+stay fixed. The description uses the shared Markdown editor with a sanitized
+preview. Saving sends only changed fields to the existing PATCH endpoint, so an
+untouched HTML description does not pass through a Markdown conversion.
+
+The page uses the returned job immediately after a successful save. Failed saves
+retain the draft for retry; cancellation discards it without a request. While
+saving, controls and dismissal are disabled. A response arriving after navigation
+does not replace another job's content. The editor is loaded only on demand and
+is not offered to visitors, ordinary members, or crawler-owned jobs. The server's
+existing authorization and private-job checks remain authoritative.
+
+The existing backend recalculates search tags from the edited text and location,
+queues indexing, and keeps closed jobs closed. The form explains those effects.
+This PR changes no database schema or Go behavior. Posting/deadline controls and
+structured skill/facet editing remain separate features.

@@ -79,6 +79,27 @@ describe('moderator job publishing', () => {
   });
 });
 
+describe('manual job editing', () => {
+  it('patches only the supplied fields using the session cookie and an encoded slug', async () => {
+    const job = { public_slug: 'a/b?c', title: 'Corrected title' };
+    const fetcher = vi.fn<typeof fetch>().mockResolvedValue(
+      new Response(JSON.stringify({ data: job }), { status: 200 }),
+    );
+    expect(await createApi(fetcher).updateManualJob(job.public_slug, { title: job.title })).toEqual(job);
+    expect(fetcher).toHaveBeenCalledWith('/api/v1/jobs/a%2Fb%3Fc', expect.objectContaining({
+      method: 'PATCH', credentials: 'include', body: JSON.stringify({ title: job.title }),
+    }));
+  });
+
+  it.each([401, 403, 404])('surfaces a %s refusal without returning a saved job', async (status) => {
+    const fetcher = vi.fn<typeof fetch>().mockResolvedValue(
+      new Response(JSON.stringify({ error: 'edit refused' }), { status }),
+    );
+    await expect(createApi(fetcher).updateManualJob('a-job', { title: 'Corrected title' }))
+      .rejects.toMatchObject({ status, message: 'edit refused' });
+  });
+});
+
 describe('job path segment encoding', () => {
   // getJob/saveJob/recordJobView/voteJob/reportJob used to interpolate `slug` raw,
   // unlike their siblings a few hundred lines away (trackApplication,
