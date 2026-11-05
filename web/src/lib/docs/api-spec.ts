@@ -193,8 +193,37 @@ export const GROUPS: Group[] = [
       'Public, unauthenticated reads. Jobs are returned in one wire shape ' +
       '(addressed by `public_slug`, never an internal id) shared by the list, ' +
       'detail, company, and search responses. Closed postings are excluded from ' +
-      'lists and search and served only by the detail endpoint.',
+      'active lists and search. Retained closed postings are available through the archive and detail endpoints.',
     endpoints: [
+      {
+        method: 'GET',
+        path: '/jobs/closed',
+        auth: 'none',
+        summary: 'Browse retained public closed jobs by source, skills and country.',
+        description:
+          'Newest closure first, with stable cursor pagination and no total count. ' +
+          'Private jobs and duplicate reposts are excluded. Source and country includes ' +
+          'match any value; skills can match any or all. Exclusions are supported. ' +
+          'Send comma-separated or repeated values, up to 20 per filter. ' +
+          'Unsupported filters and invalid cursors return 400. Use `meta.next_cursor` ' +
+          'as `before` on the next request, keeping the same filters.',
+        query: [
+          { name: 'limit', type: 'integer', description: 'Page size, 1–100.', example: '20' },
+          { name: 'before', type: 'string', description: 'Opaque cursor from the preceding page.' },
+          { name: 'source', type: 'string', description: 'Included source slugs.', example: 'bdjobs,greenhouse' },
+          { name: 'source_exclude', type: 'string', description: 'Excluded source slugs.' },
+          { name: 'skills', type: 'string', description: 'Included skill tags.', example: 'python,react' },
+          { name: 'skills_exclude', type: 'string', description: 'Excluded skill tags.' },
+          { name: 'skills_mode', type: 'string', description: '`or` (default) or `and` for included skills.' },
+          { name: 'countries', type: 'string', description: 'Included two-letter country codes.', example: 'bd' },
+          { name: 'countries_exclude', type: 'string', description: 'Excluded two-letter country codes.' },
+        ],
+        curl: `curl "${BASE_URL}/jobs/closed?source=bdjobs&skills=python&countries=bd"`,
+        responseExample: `{
+  "data": [{ "public_slug": "python-engineer-example-1a2b3c4d", "title": "Python Engineer", "closed_at": "2026-11-05T00:00:00Z" }],
+  "meta": { "limit": 20, "has_more": false, "next_cursor": "" }
+}`,
+      },
       {
         method: 'GET',
         path: '/jobs',
@@ -726,7 +755,7 @@ data: {"kind":"final","analysis":{"overall_score":82,"verdict":"Strong Fit","...
         summary: 'A company’s closed postings — the company page’s Closed tab.',
         description:
           'A page of the postings the company has closed, most recently closed first. Closed ' +
-          'postings are not in search, so this is the only list of them. There is no total: ' +
+          'postings are not in active search; the global archive is `/jobs/closed`. There is no total: ' +
           '`meta.has_more` says whether another page follows. Paging reaches the first 2000 ' +
           'rows (`offset + limit` ≤ 2000); a deeper page is a `400`. An unknown slug is a ' +
           '`404`; a slug retired by a company merge redirects `301` to the canonical one.',

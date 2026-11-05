@@ -2723,6 +2723,139 @@ func (q *Queries) ListBoardJobURLs(ctx context.Context, arg ListBoardJobURLsPara
 	return items, nil
 }
 
+const listClosedCatalogueJobs = `-- name: ListClosedCatalogueJobs :many
+SELECT id, source, external_id, url, title, company, location, remote, description, posted_at, created_at, updated_at, company_slug, enrichment, enriched_at, enrichment_version, public_slug, last_seen_at, closed_at, countries, regions, work_mode, liveness_strikes, skills, seniority, category, created_by, updated_by, posting_language, employment_type, education_level, experience_years_min, collections, content_hash, english_level, cities, view_count, applied_count, role_fingerprint, semantic_embedded_model, semantic_embedded_hash, duplicate_of, is_tech, semantic_embedding, salary_min_manual, salary_max_manual, salary_currency_manual, salary_period_manual, upvote_count, downvote_count, ats_absent_at, closed_reason, is_private, similar_job_ids, similar_computed_at, salary_min_source, salary_max_source, salary_currency_source, salary_period_source, company_slug_folded, duplicate_of_aggregator, duplicate_of_role, duplicate_of_fuzzy, requires_clearance, requirements_derived, hydrated_at, ai_interview_reports, metros, semantic_embedded_input_hash, application_deadline FROM jobs
+WHERE closed_at IS NOT NULL AND duplicate_of IS NULL AND NOT is_private
+  AND ($1::timestamptz IS NULL
+       OR (closed_at, public_slug) < ($1::timestamptz, $2::text))
+  AND (COALESCE(cardinality($3::text[]), 0) = 0 OR source = ANY($3::text[]))
+  AND source <> ALL(COALESCE($4::text[], '{}'))
+  AND (COALESCE(cardinality($5::text[]), 0) = 0 OR
+       CASE WHEN $6::boolean THEN skills @> $5::text[]
+            ELSE skills && $5::text[] END)
+  AND NOT (skills && COALESCE($7::text[], '{}'))
+  AND (COALESCE(cardinality($8::text[]), 0) = 0 OR countries && $8::text[])
+  AND NOT (countries && COALESCE($9::text[], '{}'))
+ORDER BY closed_at DESC, public_slug DESC
+LIMIT $10
+`
+
+type ListClosedCatalogueJobsParams struct {
+	BeforeClosedAt    pgtype.Timestamptz `json:"before_closed_at"`
+	BeforeSlug        string             `json:"before_slug"`
+	Sources           []string           `json:"sources"`
+	ExcludedSources   []string           `json:"excluded_sources"`
+	Skills            []string           `json:"skills"`
+	AllSkills         bool               `json:"all_skills"`
+	ExcludedSkills    []string           `json:"excluded_skills"`
+	Countries         []string           `json:"countries"`
+	ExcludedCountries []string           `json:"excluded_countries"`
+	PageLimit         int32              `json:"page_limit"`
+}
+
+// Public archive only. Fetch limit+1 for has_more, never COUNT the retained catalogue.
+func (q *Queries) ListClosedCatalogueJobs(ctx context.Context, arg ListClosedCatalogueJobsParams) ([]Job, error) {
+	rows, err := q.db.Query(ctx, listClosedCatalogueJobs,
+		arg.BeforeClosedAt,
+		arg.BeforeSlug,
+		arg.Sources,
+		arg.ExcludedSources,
+		arg.Skills,
+		arg.AllSkills,
+		arg.ExcludedSkills,
+		arg.Countries,
+		arg.ExcludedCountries,
+		arg.PageLimit,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Job{}
+	for rows.Next() {
+		var i Job
+		if err := rows.Scan(
+			&i.ID,
+			&i.Source,
+			&i.ExternalID,
+			&i.URL,
+			&i.Title,
+			&i.Company,
+			&i.Location,
+			&i.Remote,
+			&i.Description,
+			&i.PostedAt,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.CompanySlug,
+			&i.Enrichment,
+			&i.EnrichedAt,
+			&i.EnrichmentVersion,
+			&i.PublicSlug,
+			&i.LastSeenAt,
+			&i.ClosedAt,
+			&i.Countries,
+			&i.Regions,
+			&i.WorkMode,
+			&i.LivenessStrikes,
+			&i.Skills,
+			&i.Seniority,
+			&i.Category,
+			&i.CreatedBy,
+			&i.UpdatedBy,
+			&i.PostingLanguage,
+			&i.EmploymentType,
+			&i.EducationLevel,
+			&i.ExperienceYearsMin,
+			&i.Collections,
+			&i.ContentHash,
+			&i.EnglishLevel,
+			&i.Cities,
+			&i.ViewCount,
+			&i.AppliedCount,
+			&i.RoleFingerprint,
+			&i.SemanticEmbeddedModel,
+			&i.SemanticEmbeddedHash,
+			&i.DuplicateOf,
+			&i.IsTech,
+			&i.SemanticEmbedding,
+			&i.SalaryMinManual,
+			&i.SalaryMaxManual,
+			&i.SalaryCurrencyManual,
+			&i.SalaryPeriodManual,
+			&i.UpvoteCount,
+			&i.DownvoteCount,
+			&i.AtsAbsentAt,
+			&i.ClosedReason,
+			&i.IsPrivate,
+			&i.SimilarJobIds,
+			&i.SimilarComputedAt,
+			&i.SalaryMinSource,
+			&i.SalaryMaxSource,
+			&i.SalaryCurrencySource,
+			&i.SalaryPeriodSource,
+			&i.CompanySlugFolded,
+			&i.DuplicateOfAggregator,
+			&i.DuplicateOfRole,
+			&i.DuplicateOfFuzzy,
+			&i.RequiresClearance,
+			&i.RequirementsDerived,
+			&i.HydratedAt,
+			&i.AiInterviewReports,
+			&i.Metros,
+			&i.SemanticEmbeddedInputHash,
+			&i.ApplicationDeadline,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listClosedJobsByCompany = `-- name: ListClosedJobsByCompany :many
 SELECT id, source, external_id, url, title, company, location, remote, description, posted_at, created_at, updated_at, company_slug, enrichment, enriched_at, enrichment_version, public_slug, last_seen_at, closed_at, countries, regions, work_mode, liveness_strikes, skills, seniority, category, created_by, updated_by, posting_language, employment_type, education_level, experience_years_min, collections, content_hash, english_level, cities, view_count, applied_count, role_fingerprint, semantic_embedded_model, semantic_embedded_hash, duplicate_of, is_tech, semantic_embedding, salary_min_manual, salary_max_manual, salary_currency_manual, salary_period_manual, upvote_count, downvote_count, ats_absent_at, closed_reason, is_private, similar_job_ids, similar_computed_at, salary_min_source, salary_max_source, salary_currency_source, salary_period_source, company_slug_folded, duplicate_of_aggregator, duplicate_of_role, duplicate_of_fuzzy, requires_clearance, requirements_derived, hydrated_at, ai_interview_reports, metros, semantic_embedded_input_hash, application_deadline
 FROM jobs

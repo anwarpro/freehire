@@ -170,7 +170,40 @@ Every facet below supports repeat-OR, `_mode=and`, and `_exclude` as described a
 
 ## Jobs
 
-Public, unauthenticated reads. Jobs are returned in one wire shape (addressed by `public_slug`, never an internal id) shared by the list, detail, company, and search responses. Closed postings are excluded from lists and search and served only by the detail endpoint.
+Public, unauthenticated reads. Jobs are returned in one wire shape (addressed by `public_slug`, never an internal id) shared by the list, detail, company, and search responses. Closed postings are excluded from active lists and search. Retained closed postings are available through the archive and detail endpoints.
+
+### `GET /jobs/closed`
+
+**Auth:** Public
+
+Browse retained public closed jobs by source, skills and country.
+
+Newest closure first, with stable cursor pagination and no total count. Private jobs and duplicate reposts are excluded. Source and country includes match any value; skills can match any or all. Exclusions are supported. Send comma-separated or repeated values, up to 20 per filter. Unsupported filters and invalid cursors return 400. Use `meta.next_cursor` as `before` on the next request, keeping the same filters.
+
+**Query parameters**
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `limit` | integer | no | Page size, 1–100. (e.g. `20`) |
+| `before` | string | no | Opaque cursor from the preceding page. |
+| `source` | string | no | Included source slugs. (e.g. `bdjobs,greenhouse`) |
+| `source_exclude` | string | no | Excluded source slugs. |
+| `skills` | string | no | Included skill tags. (e.g. `python,react`) |
+| `skills_exclude` | string | no | Excluded skill tags. |
+| `skills_mode` | string | no | `or` (default) or `and` for included skills. |
+| `countries` | string | no | Included two-letter country codes. (e.g. `bd`) |
+| `countries_exclude` | string | no | Excluded two-letter country codes. |
+
+```bash
+curl "https://freehire.me/api/v1/jobs/closed?source=bdjobs&skills=python&countries=bd"
+```
+
+```json
+{
+  "data": [{ "public_slug": "python-engineer-example-1a2b3c4d", "title": "Python Engineer", "closed_at": "2026-11-05T00:00:00Z" }],
+  "meta": { "limit": 20, "has_more": false, "next_cursor": "" }
+}
+```
 
 ### `GET /jobs`
 
@@ -802,7 +835,7 @@ curl "https://freehire.me/api/v1/companies/acme"
 
 A company’s closed postings — the company page’s Closed tab.
 
-A page of the postings the company has closed, most recently closed first. Closed postings are not in search, so this is the only list of them. There is no total: `meta.has_more` says whether another page follows. Paging reaches the first 2000 rows (`offset + limit` ≤ 2000); a deeper page is a `400`. An unknown slug is a `404`; a slug retired by a company merge redirects `301` to the canonical one.
+A page of the postings the company has closed, most recently closed first. Closed postings are not in active search; the global archive is `/jobs/closed`. There is no total: `meta.has_more` says whether another page follows. Paging reaches the first 2000 rows (`offset + limit` ≤ 2000); a deeper page is a `400`. An unknown slug is a `404`; a slug retired by a company merge redirects `301` to the canonical one.
 
 **Path parameters**
 

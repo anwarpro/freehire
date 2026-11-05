@@ -152,3 +152,41 @@ no schema, API, worker, search-settings update, or reindex is needed.
 
 Q05 remains open for the active/closed browsing workflow, to be delivered as its
 own independent feature.
+
+
+## Feature: browse active and closed jobs
+
+The standalone job feed now links **Active jobs** and **Closed / expired jobs**.
+The archive at `/jobs/closed` reads retained public canonical postings from
+PostgreSQL; it does not put expired vacancies back into the active search index.
+Private pasted descriptions and duplicate repost rows are excluded.
+
+The archive supports source, skill-tag and country-code includes/exclusions,
+plus Any/All skill matching. Controls use a normal GET form, so filters, reloads,
+and page links work without JavaScript. Switching status carries only these
+shared filters and resets paging. The page explains that other active-search
+filters are not carried over; the archive API returns 400 for unsupported filters
+rather than pretending to apply them. It does not provide active search's full
+keyword, geography, matching, or salary vocabulary.
+
+Jobs are ordered by closure time and public slug. **Older closed jobs** uses an
+opaque cursor over those public fields, retaining timestamp precision; **Newest
+closed jobs** resets it. The endpoint fetches one extra row to detect another
+page and never counts the entire retained catalogue. The shared public-read
+budget and a five-second database deadline bound requests. Existing job cards
+show the closed state and withhold Apply controls; the archive adds an explicit
+validated HTTP(S) original-posting link. Detail links keep their existing behavior.
+
+Apply migrations 0210–0211 before deploying the new API. They build the public
+archive ordering index and the skill/country GIN index concurrently; their
+headers explain recovery after an interrupted build. Use the full app/web/tools
+[deployment procedure](../ops/hero-jobs/README.md). No Meilisearch settings change
+or reindex is needed. Existing closed jobs require no data backfill; deadline
+expiry joins the archive after the existing scheduled close persists it.
+
+The [API reference](API.md) documents `/jobs/closed`. Coverage includes private,
+active and duplicate exclusion, combined filters, Any/All skills, empty results,
+original links, equal-timestamp pagination without duplicate rows, cursor
+validation/precision, and status navigation that clears stale pagination.
+Built-app SSR smoke checks also verified populated and empty archives, original
+links, withheld Apply controls, cursor navigation, and 400/503 error handling.

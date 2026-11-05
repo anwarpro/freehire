@@ -181,6 +181,78 @@ tags:
   - name: Geography
     description: Canonical city vocabulary for the cities facet.
 paths:
+  /jobs/closed:
+    get:
+      operationId: closedJobs
+      tags: [Jobs]
+      summary: Browse retained public closed jobs
+      description: |
+        Closed and expired postings, newest closure first. Excludes private jobs and
+        duplicate reposts. This archive is separate from active search: only source,
+        skills and country filters are supported; other parameters return 400.
+        Values are comma-separated or repeated. No total count is computed.
+        Use next_cursor as before for the next page with the same filters.
+      parameters:
+        - name: limit
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 100, default: 20 }
+        - name: before
+          in: query
+          schema: { type: string }
+          description: Opaque cursor from the previous page.
+        - name: source
+          in: query
+          schema: { type: string, maxLength: 1024 }
+          description: Included source slugs, matched as any. Up to 20 values.
+        - name: source_exclude
+          in: query
+          schema: { type: string, maxLength: 1024 }
+          description: Excluded source slugs. Up to 20 values.
+        - name: skills
+          in: query
+          schema: { type: string, maxLength: 1024 }
+          description: Included skill tags. Up to 20 values.
+        - name: skills_exclude
+          in: query
+          schema: { type: string, maxLength: 1024 }
+          description: Excluded skill tags. Up to 20 values.
+        - name: countries
+          in: query
+          schema: { type: string, maxLength: 1024 }
+          description: Included two-letter country codes, matched as any. Up to 20 values.
+        - name: countries_exclude
+          in: query
+          schema: { type: string, maxLength: 1024 }
+          description: Excluded two-letter country codes. Up to 20 values.
+        - name: skills_mode
+          in: query
+          schema: { type: string, enum: [or, and], default: or }
+      responses:
+        '200':
+          description: A page of closed postings.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, meta]
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Job'
+                  meta:
+                    type: object
+                    required: [limit, has_more, next_cursor]
+                    properties:
+                      limit: { type: integer }
+                      has_more: { type: boolean }
+                      next_cursor:
+                        type: string
+                        description: Empty when there is no next page.
+        '400':
+          description: Invalid cursor, unsupported parameter, or invalid filter.
+        '429':
+          description: Public read budget exhausted.
   /jobs/search:
     get:
       operationId: searchJobs
@@ -656,7 +728,7 @@ paths:
       description: |
         Full detail for one posting: the verbatim stored description (HTML) and
         the `ghost` signal, which `agentSearchJobs` does not carry. This is the
-        only endpoint that serves a **closed** posting; `closed_at` is non-null
+        detail endpoint for a **closed** posting (the archive is `/jobs/closed`); `closed_at` is non-null
         when the role is no longer open.
       x-openai-isConsequential: false
       parameters:

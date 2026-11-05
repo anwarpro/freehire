@@ -57,6 +57,7 @@ func (h *jobsHandlers) register(api fiber.Router, mw middleware) {
 	api.Get("/jobs", readLimit, h.ListJobs)
 	// Static route registered before /jobs/:slug so it isn't captured as a slug.
 	api.Get("/jobs/find", readLimit, h.FindJob)
+	api.Get("/jobs/closed", readLimit, h.ClosedJobs)
 	api.Get("/jobs/:slug", readLimit, mw.optional, h.GetJob)
 	api.Get("/jobs/:slug/copies", readLimit, h.JobCopies)
 	api.Get("/jobs/:slug/apply-form", readLimit, h.JobApplyForm)

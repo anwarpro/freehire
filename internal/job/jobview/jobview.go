@@ -116,8 +116,8 @@ type Job struct {
 	// JobPosting.validThrough for an open job (seo.ts), since most sources carry
 	// no real listing-expiry date of their own.
 	LastSeenAt *string `json:"last_seen_at"`
-	// ClosedAt is non-null when the posting is no longer open. Lists and the
-	// search index never contain closed jobs; only the detail endpoint serves
+	// ClosedAt is non-null when the posting is no longer open. Active lists and
+	// search exclude closed jobs; the detail and closed archive endpoints serve
 	// them, and the SPA renders the closed state from this field.
 	ClosedAt          *string           `json:"closed_at"`
 	Enrichment        enrich.Enrichment `json:"enrichment"`
