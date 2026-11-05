@@ -55,6 +55,30 @@ describe('createApi request timeout', () => {
   });
 });
 
+describe('moderator job publishing', () => {
+  it('posts the draft to the job endpoint using the session cookie and unwraps the job', async () => {
+    const job = { public_slug: 'python-engineer', title: 'Python Engineer', company: 'Example BD' };
+    const fetcher = vi.fn<typeof fetch>().mockResolvedValue(
+      new Response(JSON.stringify({ data: job }), { status: 201 }),
+    );
+    const input = { url: 'https://example.com/jobs/python', title: job.title, company: job.company };
+
+    expect(await createApi(fetcher).publishJob(input)).toEqual(job);
+    expect(fetcher).toHaveBeenCalledWith('/api/v1/jobs', expect.objectContaining({
+      method: 'POST', credentials: 'include', body: JSON.stringify(input),
+    }));
+  });
+
+  it('surfaces the server role refusal', async () => {
+    const fetcher = vi.fn<typeof fetch>().mockResolvedValue(
+      new Response(JSON.stringify({ error: 'forbidden' }), { status: 403 }),
+    );
+    await expect(createApi(fetcher).publishJob({
+      url: 'https://example.com/jobs/python', title: 'Python Engineer', company: 'Example BD',
+    })).rejects.toMatchObject({ status: 403, message: 'forbidden' });
+  });
+});
+
 describe('job path segment encoding', () => {
   // getJob/saveJob/recordJobView/voteJob/reportJob used to interpolate `slug` raw,
   // unlike their siblings a few hundred lines away (trackApplication,

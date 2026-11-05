@@ -18,12 +18,14 @@
   import EmployerClaimsQueue from './EmployerClaimsQueue.svelte';
   import ConversationReportsQueue from './ConversationReportsQueue.svelte';
   import States from './States.svelte';
+  import SubmitView from './SubmitView.svelte';
 
   const isModerator = $derived(currentUser()?.role === 'moderator');
 
-  type View = 'queue' | 'reports' | 'feedback' | 'referrals' | 'mentors' | 'employer' | 'conversations';
+  type View = 'queue' | 'publish' | 'reports' | 'feedback' | 'referrals' | 'mentors' | 'employer' | 'conversations';
   const sections: { value: View; label: string; icon: LucideIcon }[] = [
     { value: 'queue', label: 'Moderation queue', icon: FileText },
+    { value: 'publish', label: 'Publish a job', icon: Briefcase },
     { value: 'reports', label: 'Reported jobs', icon: Flag },
     { value: 'feedback', label: 'Reported feedback', icon: Star },
     { value: 'referrals', label: 'Referral offers', icon: Handshake },
@@ -191,7 +193,9 @@
       </aside>
 
       <div class="min-w-0 flex-1">
-    {#if view === 'queue'}
+    {#if view === 'publish'}
+      <SubmitView mode="publish" />
+    {:else if view === 'queue'}
       <div class="flex flex-col gap-6">
         <p class="text-sm text-muted-foreground">
           Submissions awaiting review. Approving mints a live vacancy; rejecting records a reason.
