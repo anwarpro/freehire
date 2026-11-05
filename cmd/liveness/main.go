@@ -200,7 +200,9 @@ func run() int {
 	// The candidate set is "every open job whose source is not a registered ATS
 	// provider" — the registry keys are the exclusion list, so a new adapter never
 	// silently becomes a probe target.
-	registry := sources.All(sources.NewClient())
+	// Lifecycle ownership must not change when crawl credentials are absent.
+	// This worker classifies providers; its dedicated judges fetch independently.
+	registry := sources.Taxonomy()
 	atsProviders := providerKeys(registry)
 	// Guard: `source <> ALL('{}')` is vacuously TRUE in Postgres, so an empty
 	// exclusion list would select EVERY open job — including board jobs the ingest
@@ -237,7 +239,7 @@ func run() int {
 	// expireDespiteRegisteredPrefixes), so a newly onboarded whatjobs market is covered this
 	// run without being named anywhere. That construction is why the list holds prefixes,
 	// and it is a complete answer for a member being ADDED — but not for one being ABSENT,
-	// which is what a missing crawl credential produces. Guard that case explicitly.
+	// which would let an adapter rename silently change lifecycle ownership. Guard that case explicitly.
 	if missing := unmatchedPrefixes(atsProviders, expireDespiteRegisteredPrefixes); len(missing) > 0 {
 		log.Printf("liveness: %q matches no registered ATS provider — refusing to run (a source that cannot be age-expired would silently fall to the URL probe instead)",
 			strings.Join(missing, ", "))
