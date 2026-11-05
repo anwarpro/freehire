@@ -22,6 +22,7 @@ Base URL: `https://freehire.me/api/v1`
 - [In-app assistant](#in-app-assistant)
 - [Job submissions](#job-submissions)
 - [Team job reviews](#team-job-reviews)
+- [Student job follow-ups](#student-job-follow-ups)
 - [Curriculum matching](#curriculum-matching)
 - [Company career pages](#company-career-pages)
 - [Job reports](#job-reports)
@@ -774,6 +775,182 @@ Includes actor, assignment, notes, status, follow-up, version and time. Former a
 
 ```bash
 curl "https://freehire.me/api/v1/team/jobs/python-engineer/history" -b cookies.txt
+```
+
+```json
+{ "data": [] }
+```
+
+## Student job follow-ups
+
+Private, session-cookie-only references to students in an existing school system. Managers and the current job assignee may use this workflow; ordinary/inactive accounts and API keys cannot. No student directory, account, automated message or inferred eligibility is created. Private pasted jobs are excluded. All responses are private/no-store.
+
+### `GET /team/student-followups`
+
+**Auth:** Session only
+
+Search authorized student references across jobs, with outcome and overdue filters.
+
+Fixed 50-row pages ordered by last update/id. References and names use literal case-insensitive substring search. No full catalogue count. Reassignment/deactivation revoke access.
+
+**Query parameters**
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `q` | string | no | Student reference or name, maximum 300 characters. |
+| `status` | string | no | suggested, informed, interested, applied, interview, offer, or closed. |
+| `overdue` | boolean | no | Follow-up before today in Bangladesh, excluding offer/closed. |
+| `offset` | integer | no | 0–100000; meta.has_more indicates another page. |
+
+```bash
+curl "https://freehire.me/api/v1/team/student-followups?status=informed&overdue=true" -b cookies.txt
+```
+
+```json
+{ "data": [], "meta": { "limit": 50, "offset": 0, "has_more": false } }
+```
+
+### `GET /team/jobs/{slug}/students`
+
+**Auth:** Session only
+
+List a job’s student follow-ups with the same q/status/overdue/offset filters.
+
+**Path parameters**
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `slug` | string | yes | Public job slug. |
+
+```bash
+curl "https://freehire.me/api/v1/team/jobs/react-developer/students" -b cookies.txt
+```
+
+```json
+{ "data": [], "meta": { "limit": 50, "offset": 0, "has_more": false } }
+```
+
+### `POST /team/jobs/{slug}/students`
+
+**Auth:** Session only
+
+Link a student reference to an active public job. Returns 201.
+
+Starts at suggested/version 1 and records an audit snapshot. Duplicate references on this job (case-insensitive, trimmed) return 409. A closed posting refuses new links. Reference is immutable; close a mistaken link with a note.
+
+**Path parameters**
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `slug` | string | yes | Public job slug. |
+
+**Body**
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `student_ref` | string | yes | Stable student ID or profile reference, 1–300 characters. |
+| `student_name` | string | no | Optional name, maximum 120 characters. |
+| `profile_url` | string | no | Optional HTTP/HTTPS school profile URL, no credentials, maximum 1000 characters. |
+| `reason` | string | yes | Why this job may fit; 1–2000 characters. |
+
+```bash
+curl -X POST "https://freehire.me/api/v1/team/jobs/react-developer/students" -b cookies.txt -H 'Content-Type: application/json' -d '{"student_ref":"PH-42","reason":"Relevant React practice"}'
+```
+
+### `GET /team/jobs/{slug}/students/{id}`
+
+**Auth:** Session only
+
+Read the latest follow-up, original job URL, closure state, contact count and version.
+
+**Path parameters**
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `slug` | string | yes | Public job slug. |
+| `id` | integer | yes | Follow-up record ID scoped to this job. |
+
+```bash
+curl "https://freehire.me/api/v1/team/jobs/react-developer/students/1" -b cookies.txt
+```
+
+### `PUT /team/jobs/{slug}/students/{id}`
+
+**Auth:** Session only
+
+Update outcome, context and follow-up date with an atomic audit snapshot.
+
+Stale expected_version returns 409; unchanged saves add no event. informed requires a recorded manual contact. Other outcomes can be entered directly and corrected. Closed postings retain editable outcomes.
+
+**Path parameters**
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `slug` | string | yes | Public job slug. |
+| `id` | integer | yes | Follow-up record ID. |
+
+**Body**
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `student_name` | string | yes | Optional name or empty string, maximum 120 characters. |
+| `profile_url` | string | yes | Optional HTTP/HTTPS URL or empty string, maximum 1000 characters. |
+| `reason` | string | yes | 1–2000 characters. |
+| `status` | string | yes | suggested, informed, interested, applied, interview, offer, or closed. |
+| `notes` | string | yes | Private follow-up notes, maximum 2000 characters. |
+| `follow_up` | string | yes | YYYY-MM-DD or null. |
+| `expected_version` | integer | yes | Loaded version. |
+
+```bash
+curl -X PUT "https://freehire.me/api/v1/team/jobs/react-developer/students/1" -b cookies.txt -H 'Content-Type: application/json' --data-binary @student-outcome.json
+```
+
+### `POST /team/jobs/{slug}/students/{id}/contacts`
+
+**Auth:** Session only
+
+Record manual contact already made by the signed-in staff member. Sends no message.
+
+Adds channel/contact time/note to audit and moves suggested to informed while preserving other outcomes. Closed postings/follow-ups refuse contacts. UUID retries by the same actor/payload add no event, even after later edits. Changed retry content or a stale new request returns 409.
+
+**Path parameters**
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `slug` | string | yes | Public job slug. |
+| `id` | integer | yes | Follow-up record ID. |
+
+**Body**
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `channel` | string | yes | email, phone, whatsapp, messenger, or other. |
+| `contacted_at` | string | yes | RFC3339 contact time with timezone; year 1900 or later, no more than five minutes in the future. |
+| `note` | string | no | Contact context, maximum 2000 characters. |
+| `request_id` | string | yes | Nonzero UUID unique per manual contact; preserve it for identical network retries. |
+| `expected_version` | integer | yes | Loaded version, checked for new requests. |
+
+```bash
+curl -X POST "https://freehire.me/api/v1/team/jobs/react-developer/students/1/contacts" -b cookies.txt -H 'Content-Type: application/json' --data-binary @student-contact.json
+```
+
+### `GET /team/jobs/{slug}/students/{id}/history`
+
+**Auth:** Session only
+
+Latest 100 immutable follow-up/contact snapshots, newest version first.
+
+Includes actor, name/profile/reason/outcome/notes/date snapshot, channel, actual contact time, contact note and recorded time. Older events remain stored. An inaccessible or cross-job ID returns 404.
+
+**Path parameters**
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `slug` | string | yes | Public job slug. |
+| `id` | integer | yes | Follow-up record ID. |
+
+```bash
+curl "https://freehire.me/api/v1/team/jobs/react-developer/students/1/history" -b cookies.txt
 ```
 
 ```json

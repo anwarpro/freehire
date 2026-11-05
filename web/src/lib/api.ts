@@ -1,3 +1,4 @@
+import type { StudentFollowup, StudentFollowupCreate, StudentFollowupUpdate, StudentContactInput, StudentFollowupEvent, StudentFollowupQueue, StudentFollowupFilter } from './studentFollowups.js';
 import type { CurriculumSettings, CurriculumDetail, CurriculumReviewInput, CurriculumQueue, CurriculumFilter, CurriculumEvent, CurriculumConfigEvent } from './curriculum.js';
 import type { TeamAccess, TeamMember, TeamMemberInput, TeamMemberUpdate, TeamMemberEvent, TeamReview, TeamReviewInput, TeamReviewEvent, TeamQueue, TeamQueueFilter } from './teamReview.js';
 // The only module that knows the API base URL and wire shapes. Views call the
@@ -3204,6 +3205,20 @@ export function createApi(
     );
   }
 
+  async function studentFollowups(filter: StudentFollowupFilter = {}, slug?: string): Promise<StudentFollowupQueue> {
+    const params = new URLSearchParams();
+    if (filter.status) params.set('status', filter.status);
+    if (filter.q) params.set('q', filter.q);
+    if (filter.overdue) params.set('overdue', 'true');
+    if (filter.offset) params.set('offset', String(filter.offset));
+    const path = slug ? `/api/v1/team/jobs/${encodeURIComponent(slug)}/students` : '/api/v1/team/student-followups';
+    return request(`${path}?${params}`);
+  }
+  async function studentFollowup(slug: string, id: number): Promise<StudentFollowup> { return requestData(`/api/v1/team/jobs/${encodeURIComponent(slug)}/students/${id}`); }
+  async function createStudentFollowup(slug: string, input: StudentFollowupCreate): Promise<Pick<StudentFollowup, 'id' | 'version'>> { return requestData(`/api/v1/team/jobs/${encodeURIComponent(slug)}/students`, { method: 'POST', body: JSON.stringify(input) }); }
+  async function updateStudentFollowup(slug: string, id: number, input: StudentFollowupUpdate): Promise<Pick<StudentFollowup, 'id' | 'version'>> { return requestData(`/api/v1/team/jobs/${encodeURIComponent(slug)}/students/${id}`, { method: 'PUT', body: JSON.stringify(input) }); }
+  async function recordStudentContact(slug: string, id: number, input: StudentContactInput): Promise<Pick<StudentFollowup, 'id' | 'version'>> { return requestData(`/api/v1/team/jobs/${encodeURIComponent(slug)}/students/${id}/contacts`, { method: 'POST', body: JSON.stringify(input) }); }
+  async function studentFollowupHistory(slug: string, id: number): Promise<StudentFollowupEvent[]> { return requestData(`/api/v1/team/jobs/${encodeURIComponent(slug)}/students/${id}/history`); }
   async function teamAccess(): Promise<TeamAccess> { return requestData('/api/v1/team/me'); }
   async function teamMembers(): Promise<TeamMember[]> { return requestData('/api/v1/team/members'); }
   async function createTeamMember(input: TeamMemberInput): Promise<{ id: number }> { return requestData('/api/v1/team/members', { method: 'POST', body: JSON.stringify(input) }); }
@@ -3234,6 +3249,7 @@ export function createApi(
   async function curriculumHistory(slug: string): Promise<CurriculumEvent[]> { return requestData(`/api/v1/team/curriculum/jobs/${encodeURIComponent(slug)}/history`); }
 
   return {
+    studentFollowups, studentFollowup, createStudentFollowup, updateStudentFollowup, recordStudentContact, studentFollowupHistory,
     teamAccess,
     curriculumSettings, saveCurriculumSettings, curriculumConfigHistory, curriculumJobs, curriculumJob, reviewCurriculum, curriculumHistory, teamMembers, createTeamMember, updateTeamMember, teamMemberHistory, teamReviews, teamReview, saveTeamReview, teamReviewHistory,
     listJobs,

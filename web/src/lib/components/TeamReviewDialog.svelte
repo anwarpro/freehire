@@ -3,6 +3,7 @@
   import { ApiError, api } from '#lib/api.js';
   import { reviewStatuses, reviewStatusLabel } from '#lib/teamReview.js';
   import type { TeamAccess, TeamMember, TeamReview, TeamReviewEvent, ReviewStatus } from '#lib/teamReview.js';
+  import StudentFollowups from './StudentFollowups.svelte';
   import CurriculumJobReview from './CurriculumJobReview.svelte';
   import { Button, Dialog } from '#lib/ui/index.js';
 
@@ -21,6 +22,7 @@
   let conflict = $state(false);
   let history = $state.raw<TeamReviewEvent[]>([]);
   let historyOpen = $state(false);
+  let studentsOpen = $state(false);
   let curriculumOpen = $state(false);
   let historyError = $state('');
   let alive = false;
@@ -33,6 +35,7 @@
     error = '';
     conflict = false;
     current = null;
+    studentsOpen = false;
     history = [];
     historyOpen = false;
     try {
@@ -130,6 +133,10 @@
       <div class="border-t border-border pt-4">
         <Button variant="outline" onclick={() => (curriculumOpen = !curriculumOpen)}>{curriculumOpen ? 'Hide curriculum badges' : 'Curriculum badges'}</Button>
         {#if curriculumOpen}<div class="mt-4"><CurriculumJobReview {slug} {onSaved} /></div>{/if}
+      </div>
+      <div class="border-t border-border pt-4">
+        <Button variant="outline" onclick={() => (studentsOpen = !studentsOpen)}>{studentsOpen ? 'Hide student follow-ups' : 'Student follow-ups'}</Button>
+        {#if studentsOpen}<div class="mt-4"><StudentFollowups {slug} closed={Boolean(current.closed_at)} /></div>{/if}
       </div>
       <div class="border-t border-border pt-4">
         <Button variant="ghost" onclick={showHistory} disabled={saving}>{historyOpen ? 'Hide history' : 'View change history'}</Button>
