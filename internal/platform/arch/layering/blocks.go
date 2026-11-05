@@ -206,7 +206,7 @@ var blocks = map[string][]string{
 		"adzunadesc", "applyform", "atsboard", "atsdetect", "boardcatalog", "boardresolve", "companycareer",
 		"catalogstats", "contribution", "directapply", "employer", "ingestsched", "jdresolve", "linkimport",
 		"linksource", "moderation", "pipeline", "screeninganswers", "sources", "sourcestats",
-		"submission", "telegram",
+		"submission", "telegram", "teamreview",
 	},
 	// socialdigest is here and not in ingest because it is outbound engagement — the
 	// same shape as broadcast and notify, differing only in that its audience is the

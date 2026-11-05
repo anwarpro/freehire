@@ -8,6 +8,7 @@
   import { openedOverlay, closedOverlay } from '#lib/headerOverlay.js';
   import { cn } from '#lib/ui/index.js';
   import { menuNav } from '#lib/actions/menuNav.js';
+  import { teamRole } from '#lib/teamReview.js';
   import { accountLinks } from '#lib/headerAccountLinks.js';
 
   // Desktop-only: the profile icon doubles as a second, independent dropdown
@@ -22,6 +23,7 @@
 
   const email = $derived(currentUser()?.email ?? '');
   const isModerator = $derived(currentUser()?.role === 'moderator');
+  const staffRole = $derived(teamRole(currentUser()));
   // Drives the trigger's tier badge — see header-navigation's "Paying-tier badge on
   // the desktop profile icon" requirement. 'free' shows nothing.
   const tier = $derived(currentUser()?.tier ?? 'free');
@@ -124,6 +126,12 @@
           <SquarePlus class="size-4 shrink-0" />
           Submit a job
         </a>
+        {#if staffRole}
+          <a href={resolve('/team')} role="menuitem" onclick={() => (open = false)} class={rowBase}>
+            <ShieldCheck class="size-4 shrink-0" />
+            {staffRole === 'admin' ? 'Team workspace' : 'My assignments'}
+          </a>
+        {/if}
         {#if isModerator}
           <a href={resolve('/moderation')} role="menuitem" onclick={() => (open = false)} class={rowBase}>
             <ShieldCheck class="size-4 shrink-0" />

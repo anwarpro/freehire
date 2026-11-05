@@ -1436,6 +1436,7 @@ type Querier interface {
 	// is ever deleted the row loses its job_id, and the flag is what keeps it a tailored copy instead of
 	// joining the pool the base is chosen from. Returns the metadata the detail response needs.
 	CreateTailoredCV(ctx context.Context, arg CreateTailoredCVParams) (CreateTailoredCVRow, error)
+	CreateTeamMember(ctx context.Context, arg CreateTeamMemberParams) (TeamMember, error)
 	// Register a new account. email is stored as given (the handler lowercases it);
 	// the unique index on lower(email) rejects duplicates regardless of case. role is
 	// returned so the new account's wire shape carries it (always 'user' at creation).
@@ -2881,6 +2882,11 @@ type Querier interface {
 	// TRUE AND NULL is NULL, so a member in that state used to 500 the settings read. Not
 	// listed is the answer, the same one the catalogue already gives by excluding them.
 	GetTalentNetworkVisibility(ctx context.Context, id int64) (GetTalentNetworkVisibilityRow, error)
+	GetTeamAccess(ctx context.Context, id int64) (GetTeamAccessRow, error)
+	GetTeamJob(ctx context.Context, publicSlug string) (int64, error)
+	GetTeamJobReview(ctx context.Context, arg GetTeamJobReviewParams) (GetTeamJobReviewRow, error)
+	GetTeamMember(ctx context.Context, userID int64) (GetTeamMemberRow, error)
+	GetTeamReviewRecord(ctx context.Context, jobID int64) (JobReview, error)
 	// The caller's linked Telegram chat (link-status endpoint + delivery resolution).
 	GetTelegramLink(ctx context.Context, userID int64) (TelegramLink, error)
 	// Today's counter for one feature, read without a lock, for a surface that wants to say
@@ -3267,6 +3273,8 @@ type Querier interface {
 	// browsable_jobs is NULL when Meilisearch could not be reached. Never 0: see the
 	// migration's comment.
 	InsertSourceStat(ctx context.Context, arg InsertSourceStatParams) error
+	InsertTeamMemberEvent(ctx context.Context, arg InsertTeamMemberEventParams) error
+	InsertTeamReviewEvent(ctx context.Context, arg InsertTeamReviewEventParams) error
 	// Crawl write path: store a fetched post once. ON CONFLICT DO NOTHING makes
 	// re-crawling idempotent — a stored post (pending, done, or dead-lettered) is
 	// never reset. extracted_at is non-NULL when the ingest prefilter already
@@ -4853,6 +4861,10 @@ type Querier interface {
 	// two members sharing a timestamp would otherwise order arbitrarily, and an arbitrary
 	// order across pages silently drops some people and repeats others.
 	ListTalentNetworkMembers(ctx context.Context) ([]ListTalentNetworkMembersRow, error)
+	ListTeamMemberEvents(ctx context.Context, memberID pgtype.Int8) ([]ListTeamMemberEventsRow, error)
+	ListTeamMembers(ctx context.Context) ([]ListTeamMembersRow, error)
+	ListTeamReviewEvents(ctx context.Context, arg ListTeamReviewEventsParams) ([]ListTeamReviewEventsRow, error)
+	ListTeamReviews(ctx context.Context, arg ListTeamReviewsParams) ([]ListTeamReviewsRow, error)
 	ListThreadRepliesAfter(ctx context.Context, arg ListThreadRepliesAfterParams) ([]ListThreadRepliesAfterRow, error)
 	// First page of a thread's replies, oldest first. LEFT JOIN so an authorless reply
 	// still returns — a future AI reply, or one whose author deleted their account.
@@ -5093,6 +5105,9 @@ type Querier interface {
 	// snapshot missing the other's user_jobs row, permanently undercounting the target
 	// until the next uncontended vote. Called first in the vote transaction.
 	LockJobForVote(ctx context.Context, id int64) error
+	// Every team write locks users in the same order before touching a job/member.
+	// Deactivation and assignment therefore cannot race a stale authorization read.
+	LockTeamUsers(ctx context.Context, dollar_1 []int64) ([]int64, error)
 	// Same shape and same reasoning as SearchOutboxMetrics.
 	//
 	// This queue was the one of the four that nothing measured, and it is the one that failed
@@ -6639,6 +6654,7 @@ type Querier interface {
 	// Save (bookmark) a job for a user. Idempotent and independent of a prior view:
 	// it inserts the row (viewed_at defaults) or refreshes saved_at in place.
 	SaveJob(ctx context.Context, arg SaveJobParams) (SaveJobRow, error)
+	SaveTeamReview(ctx context.Context, arg SaveTeamReviewParams) (JobReview, error)
 	// Same shape and same reasoning as SearchOutboxMetrics, over the removal side of the
 	// facet index.
 	//
@@ -7614,6 +7630,7 @@ type Querier interface {
 	// query string is a real value (not NULL), so "save the unfiltered view" is honored.
 	// No matching owner-scoped row returns no row (the handler maps that to 404).
 	UpdateSavedSearch(ctx context.Context, arg UpdateSavedSearchParams) (SavedSearch, error)
+	UpdateTeamMember(ctx context.Context, arg UpdateTeamMemberParams) (TeamMember, error)
 	// Set the account's preferred interface language. The handler validates the code
 	// against the curated set before this runs (also enforced by the DB CHECK
 	// constraint as a second line of defense) — the query itself trusts its input,

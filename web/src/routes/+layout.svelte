@@ -7,6 +7,7 @@
   import { initTheme } from '#lib/theme.svelte.js';
   import { currentUser, isAuthenticated } from '#lib/auth.svelte.js';
   import { confirmTailorDialog, settleConfirmTailorDialog } from '#lib/confirmTailorDialog.svelte.js';
+  import { teamRole } from '#lib/teamReview.js';
   import { onboardingGate, onboardingUrl } from '#lib/onboardingGate.svelte.js';
   import { isFullBleedRoute } from '#lib/shellLayout.js';
   import { safeRedirect } from '#lib/safeRedirect.js';
@@ -111,7 +112,7 @@
   // wait for. `onboardingGate.dismissed` is what keeps this from re-firing within one
   // visit for someone who navigated away without finishing; they are asked again next
   // visit, which is the same behaviour the CV rule had.
-  const needsOnboarding = $derived(currentUser()?.onboarding_completed_at == null);
+  const needsOnboarding = $derived(currentUser()?.onboarding_completed_at == null && teamRole(currentUser()) === null);
   $effect(() => {
     if (isAuthenticated() && needsOnboarding && !onboardingGate.dismissed && page.url.pathname !== '/onboarding') {
       // eslint-disable-next-line svelte/no-navigation-without-resolve -- onboardingUrl() wraps resolve('/onboarding'); the rule can't see through the appended ?returnTo= query

@@ -942,6 +942,31 @@ type JobReport struct {
 	CreatedAt       pgtype.Timestamptz `json:"created_at"`
 }
 
+type JobReview struct {
+	JobID      int64              `json:"job_id"`
+	AssigneeID pgtype.Int8        `json:"assignee_id"`
+	Status     string             `json:"status"`
+	Notes      string             `json:"notes"`
+	FollowUp   pgtype.Date        `json:"follow_up"`
+	Version    int64              `json:"version"`
+	UpdatedBy  pgtype.Int8        `json:"updated_by"`
+	CreatedAt  pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt  pgtype.Timestamptz `json:"updated_at"`
+}
+
+type JobReviewEvent struct {
+	ID         int64              `json:"id"`
+	JobID      int64              `json:"job_id"`
+	ActorID    pgtype.Int8        `json:"actor_id"`
+	AssigneeID pgtype.Int8        `json:"assignee_id"`
+	Action     string             `json:"action"`
+	Status     string             `json:"status"`
+	Notes      string             `json:"notes"`
+	FollowUp   pgtype.Date        `json:"follow_up"`
+	Version    int64              `json:"version"`
+	CreatedAt  pgtype.Timestamptz `json:"created_at"`
+}
+
 type JobSearchPing struct {
 	JobID    int64              `json:"job_id"`
 	Engine   string             `json:"engine"`
@@ -1422,6 +1447,24 @@ type SubscriptionMatch struct {
 	FailedAt       pgtype.Timestamptz `json:"failed_at"`
 	LastError      string             `json:"last_error"`
 	ExpiredAt      pgtype.Timestamptz `json:"expired_at"`
+}
+
+type TeamMember struct {
+	UserID    int64              `json:"user_id"`
+	Name      string             `json:"name"`
+	Active    bool               `json:"active"`
+	Version   int64              `json:"version"`
+	CreatedBy pgtype.Int8        `json:"created_by"`
+	CreatedAt pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt pgtype.Timestamptz `json:"updated_at"`
+}
+
+type TeamMemberEvent struct {
+	ID        int64              `json:"id"`
+	MemberID  pgtype.Int8        `json:"member_id"`
+	ActorID   pgtype.Int8        `json:"actor_id"`
+	Action    string             `json:"action"`
+	CreatedAt pgtype.Timestamptz `json:"created_at"`
 }
 
 type TelegramChannel struct {

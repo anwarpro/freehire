@@ -16,6 +16,7 @@
   import HeaderProfileMenu from './HeaderProfileMenu.svelte';
   import { ensureAccountSetupLoaded, setupOutstanding } from '#lib/accountSetup.svelte.js';
   import { NAV } from '#lib/siteNav.js';
+  import { teamRole } from '#lib/teamReview.js';
   import { accountLinks } from '#lib/headerAccountLinks.js';
 
   // This menu carries the site nav and the theme toggle on every viewport; on
@@ -50,6 +51,7 @@
   const isDark = $derived(themeStore.isDark);
   const email = $derived(currentUser()?.email ?? '');
   const isModerator = $derived(currentUser()?.role === 'moderator');
+  const staffRole = $derived(teamRole(currentUser()));
 
   // Static nav (always shown) and the signed-in account items (shown only when
   // authenticated). Moderation is gated on the moderator role at render time.
@@ -302,6 +304,12 @@
               <SquarePlus class="size-4 shrink-0" />
               Submit a job
             </a>
+            {#if staffRole}
+              <a href={resolve('/team')} role="menuitem" onclick={() => (open = false)} class={linkClass('/team')}>
+                <ShieldCheck class="size-4 shrink-0" />
+                {staffRole === 'admin' ? 'Team workspace' : 'My assignments'}
+              </a>
+            {/if}
             {#if isModerator}
               <a
                 href={resolve('/moderation')}
