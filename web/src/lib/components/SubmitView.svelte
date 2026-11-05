@@ -16,7 +16,7 @@
   import { resolve } from '$app/paths';
   import { tablist } from '#lib/actions/tablist.js';
   import { api, ApiError } from '#lib/api.js';
-  import { isAuthenticated } from '#lib/auth.svelte.js';
+  import { currentUser, isAuthenticated } from '#lib/auth.svelte.js';
   import { htmlToMarkdown } from '#lib/htmlToMarkdown.js';
   import { renderMarkdown } from '#lib/markdown.js';
   import {
@@ -26,11 +26,15 @@
     SENIORITY_OPTIONS,
     EMPLOYMENT_TYPE_OPTIONS,
   } from '#lib/facets.js';
-  import type { Submission } from '#lib/types.js';
+  import type { Job, Submission, SubmissionInput } from '#lib/types.js';
   import { Button, Input, cn } from '#lib/ui/index.js';
   import JobPreview from './JobPreview.svelte';
   import NoteEditor from './NoteEditor.svelte';
   import TokenInput from './facets/TokenInput.svelte';
+
+  let { mode = 'review' }: { mode?: 'review' | 'publish' } = $props();
+  const publishing = $derived(mode === 'publish');
+  const allowed = $derived(isAuthenticated() && (!publishing || currentUser()?.role === 'moderator'));
 
   // Details/Preview tabs, hand-rolled with the shared tablist action rather than a
   // generic Tabs primitive — the pattern this codebase already uses (ReferralsView,
@@ -83,6 +87,7 @@
   let formError = $state<string | null>(null);
   // The just-submitted vacancy, shown as a confirmation that it is awaiting review.
   let submitted = $state.raw<Submission | null>(null);
+  let published = $state.raw<Job | null>(null);
 
   // The Preview tab's rendered description. Unlike submit()'s descriptionHtml (which the
   // server sanitizes on the way in, per moderation.Create), this renders straight to
@@ -189,14 +194,15 @@
 
   async function submit(e: SubmitEvent) {
     e.preventDefault();
-    if (!canSubmit) return;
+    if (!allowed || !canSubmit) return;
     submitting = true;
     formError = null;
     submitted = null;
+    published = null;
     try {
       const md = descriptionMarkdown.trim();
       const descriptionHtml = md ? await marked.parse(md) : undefined;
-      submitted = await api.submitJob({
+      const input: SubmissionInput = {
         url: url.trim(),
         title: title.trim(),
         company: company.trim(),
@@ -215,13 +221,18 @@
         salary_max: salaryMax ?? undefined,
         salary_currency: currency || undefined,
         salary_period: period || undefined,
-      });
+      };
+      if (publishing) {
+        published = await api.publishJob(input);
+      } else {
+        submitted = await api.submitJob(input);
+      }
       resetForm();
     } catch (err) {
       // 409 means the URL is already awaiting review or already in the catalogue;
       // surface the backend message.
       formError =
-        err instanceof ApiError ? err.message : 'Could not submit the job. Please try again.';
+        err instanceof ApiError ? err.message : `Could not ${publishing ? 'publish' : 'submit'} the job. Please try again.`;
     } finally {
       submitting = false;
     }
@@ -230,20 +241,42 @@
 
 {#if !isAuthenticated()}
   <p class="py-12 text-center text-sm text-muted-foreground">Sign in to submit a job.</p>
+{:else if !allowed}
+  <p class="py-12 text-center text-sm text-muted-foreground">Only moderators can publish jobs directly.</p>
 {:else}
   <div class="flex flex-col gap-8">
     <header class="flex flex-col gap-2 border-b border-border pb-6">
       <p class="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-brand-strong">
-        <Briefcase class="size-3.5" /> For employers
+        <Briefcase class="size-3.5" /> {publishing ? 'For moderators' : 'For employers'}
       </p>
-      <h1 class="text-3xl font-semibold tracking-tight">Post your opening</h1>
+      {#if publishing}
+        <h2 class="text-3xl font-semibold tracking-tight">Publish a job</h2>
+      {:else}
+        <h1 class="text-3xl font-semibold tracking-tight">Post your opening</h1>
+      {/if}
       <p class="max-w-2xl text-sm text-muted-foreground">
         Add the skills, location, work format and salary — the right candidates find it faster.
-        A moderator reviews every submission before it goes live in the catalogue.
+        {#if publishing}
+          Publishing adds this job to the catalogue immediately. Check the preview before publishing.
+        {:else}
+          A moderator reviews every submission before it goes live in the catalogue.
+        {/if}
       </p>
     </header>
 
-    {#if submitted}
+    {#if published}
+      <div
+        class="flex items-start gap-3 rounded-lg border border-border bg-secondary/40 p-4 text-sm"
+        role="status"
+      >
+        <CheckCircle2 class="mt-0.5 size-5 shrink-0 text-brand-strong" />
+        <div>
+          <span class="font-medium">{published.title}</span> at
+          <span class="font-medium">{published.company}</span> is published.
+          <a href={resolve('/jobs/[slug]', { slug: published.public_slug })} class="underline">Open published job</a>.
+        </div>
+      </div>
+    {:else if submitted}
       <div
         class="flex items-start gap-3 rounded-lg border border-border bg-secondary/40 p-4 text-sm"
         role="status"
@@ -530,11 +563,11 @@
 
         <div class="flex flex-col gap-3 py-6">
           {#if formError}
-            <p class="text-sm text-destructive">{formError}</p>
+            <p role="alert" class="text-sm text-destructive">{formError}</p>
           {/if}
           <div>
             <Button variant="primary" size="lg" type="submit" disabled={!canSubmit}>
-              {submitting ? 'Submitting…' : 'Submit for review'}
+              {publishing ? (submitting ? 'Publishing…' : 'Publish job') : (submitting ? 'Submitting…' : 'Submit for review')}
             </Button>
           </div>
         </div>

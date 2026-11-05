@@ -2263,6 +2263,11 @@ export function createApi(
     return requestData<Submission>('/api/v1/submissions', jsonBody('POST', input));
   }
 
+  /** Publish a curated vacancy immediately. The server requires the moderator role. */
+  async function publishJob(input: SubmissionInput): Promise<Job> {
+    return requestData<Job>('/api/v1/jobs', jsonBody('POST', input));
+  }
+
   /** The caller's own submissions with their review status. */
   async function listMySubmissions(): Promise<Submission[]> {
     return requestData<Submission[]>('/api/v1/me/submissions');
@@ -3353,6 +3358,7 @@ export function createApi(
     telegramLink,
     telegramUnlink,
     submitJob,
+    publishJob,
     listMySubmissions,
     prefillSubmission,
     findJobByUrl,
