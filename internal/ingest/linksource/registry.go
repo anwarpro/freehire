@@ -51,6 +51,7 @@ type PerLinkSource interface {
 // destination is a new adapter plus one line here.
 func All(c Client) []Source {
 	return []Source{
+		NewLinkedIn(c),
 		NewHabrCareer(c),
 		NewRemoteYeah(c),
 		NewGeekjob(c),

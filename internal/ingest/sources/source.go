@@ -273,7 +273,9 @@ type aggregator interface{ aggregator() }
 // Removed set, emitted from its stream) and therefore must be excluded from the post-run
 // unseen sweep. Such a source re-reports only changed postings each run, so the sweep's
 // last_seen_at cutoff would wrongly close every still-open posting it did not touch; the
-// stream's removal events are the authoritative close signal instead. See SelfClosingProviders.
+// stream's removal events are the authoritative close signal instead. LinkedIn's
+// bounded search uses this marker for the same no-absence-evidence rule: explicit
+// detail removals and its dedicated stale-job probes own closure. See SelfClosingProviders.
 type selfClosing interface{ selfClosing() }
 
 // fullCatalog marks an aggregator whose every crawl lists the WHOLE catalogue in one run —

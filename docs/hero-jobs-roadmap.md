@@ -230,3 +230,16 @@ Cookie authentication and current membership checks enforce manager/reviewer
 boundaries. Optimistic versions prevent concurrent edits from overwriting each
 other. Public posting/search data is unchanged. Migration 0215 must precede the
 app/web deployment. Student profiles and notifications remain separate work.
+
+
+## Major feature: LinkedIn collection
+
+The [LinkedIn collection workflow](linkedin-collection.md) adds automated, bounded
+worldwide discovery through public guest search/details. Bangladesh is optional.
+Location, keyword and page budgets are configurable. Canonical native identity
+unifies automated and single-link intake; edits, explicit closure, reopening and
+search indexing use the shared pipeline. A separate paced liveness check covers
+a rotating sample outside discovery without closing jobs merely because they
+disappear from search. Existing source health and logs expose access failures.
+See the workflow for measured evidence and JobSpy/Apify alternatives. Deployment
+and production collection remain separate verification steps.

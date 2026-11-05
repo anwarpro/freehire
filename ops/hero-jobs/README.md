@@ -83,10 +83,12 @@ stays on the server under `state/tech-seeds`, outside Git.
 Implement a source adapter under `internal/ingest/sources`, register it in
 `sources.All`, and follow that package's instructions and tests. Commit the
 integration to this fork and redeploy. A new adapter still needs its catalog
-entries and any required API credentials. LinkedIn and Indeed are not
-made available merely by registering their names. The [BDJobs collector](../../docs/bdjobs-collection.md)
+entries and any required API credentials. Indeed is not made available merely by registering its name. The [BDJobs collector](../../docs/bdjobs-collection.md)
 reads the public IT/Telecommunication category through the site’s own search and
 detail API; bootstrap registers it and the enabled-provider policy schedules it.
+The [LinkedIn collector](../../docs/linkedin-collection.md) reads public guest
+search and details worldwide, with optional location/keyword configuration and
+bounded discovery. Bootstrap registers it and the same provider rotation runs it.
 
 ## Collector coverage and schedules
 
@@ -99,6 +101,8 @@ writer. Repeated initialization does not duplicate live entries.
 - Application-deadline closure and incremental search indexing: every two minutes.
 - Supported board discovery: every two hours, one provider per run.
 - Statistics/company index: every six hours.
+- LinkedIn stale-job verification: every six hours at minute 47 UTC, up to 100
+  postings per run, using the collection lock.
 - Tech-company catalog expansion: daily at 22:45 UTC (04:45 Bangladesh).
 - Database backup: daily at 20:15 UTC (02:15 the following day in Bangladesh).
 
