@@ -10,12 +10,13 @@ import (
 // pipeline.Runner — the same CompanyEntry a parsed sources/*.yml entry used to produce.
 func (b Board) CompanyEntry() sources.CompanyEntry {
 	return sources.CompanyEntry{
-		Company:  b.Company,
-		Provider: b.Provider,
-		Board:    b.Board,
-		Region:   b.Region,
-		Hub:      b.Hub,
-		Tenants:  b.Tenants,
+		Company:    b.Company,
+		Provider:   b.Provider,
+		Board:      b.Board,
+		Region:     b.Region,
+		Hub:        b.Hub,
+		Tenants:    b.Tenants,
+		CareerPage: b.CareerPage,
 	}
 }
 

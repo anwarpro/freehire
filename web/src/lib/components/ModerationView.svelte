@@ -19,13 +19,15 @@
   import ConversationReportsQueue from './ConversationReportsQueue.svelte';
   import States from './States.svelte';
   import SubmitView from './SubmitView.svelte';
+  import CareerSourcesView from './CareerSourcesView.svelte';
 
   const isModerator = $derived(currentUser()?.role === 'moderator');
 
-  type View = 'queue' | 'publish' | 'reports' | 'feedback' | 'referrals' | 'mentors' | 'employer' | 'conversations';
+  type View = 'careers' | 'queue' | 'publish' | 'reports' | 'feedback' | 'referrals' | 'mentors' | 'employer' | 'conversations';
   const sections: { value: View; label: string; icon: LucideIcon }[] = [
     { value: 'queue', label: 'Moderation queue', icon: FileText },
     { value: 'publish', label: 'Publish a job', icon: Briefcase },
+    { value: 'careers', label: 'Company career pages', icon: Briefcase },
     { value: 'reports', label: 'Reported jobs', icon: Flag },
     { value: 'feedback', label: 'Reported feedback', icon: Star },
     { value: 'referrals', label: 'Referral offers', icon: Handshake },
@@ -260,6 +262,8 @@
         </p>
         <EmployerClaimsQueue />
       </div>
+    {:else if view === 'careers'}
+      <CareerSourcesView />
     {:else if view === 'conversations'}
       <ConversationReportsQueue />
     {:else}

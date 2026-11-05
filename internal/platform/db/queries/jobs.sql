@@ -372,7 +372,7 @@ company_upsert AS (
     WHERE companies.name IS DISTINCT FROM EXCLUDED.name
 )
 INSERT INTO jobs (
-    source, external_id, url, title, company, company_slug, company_slug_folded, location, remote, description, posted_at,
+    source, external_id, url, title, company, company_slug, company_slug_folded, location, remote, description, posted_at, application_deadline,
     public_slug, countries, regions, cities, metros, work_mode, skills, seniority, category, is_tech, requires_clearance,
     posting_language, employment_type, education_level, english_level, experience_years_min,
     salary_min_source, salary_max_source, salary_currency_source, salary_period_source,
@@ -380,7 +380,7 @@ INSERT INTO jobs (
 ) VALUES (
     sqlc.arg(source), sqlc.arg(external_id), sqlc.arg(url), sqlc.arg(title),
     sqlc.arg(company), sqlc.arg(company_slug), replace(sqlc.arg(company_slug), '-', ''), sqlc.arg(location), sqlc.arg(remote),
-    sqlc.arg(description), sqlc.arg(posted_at),
+    sqlc.arg(description), sqlc.arg(posted_at), sqlc.narg(application_deadline),
     sqlc.arg(public_slug),
     COALESCE(sqlc.arg(countries)::text[], '{}'), COALESCE(sqlc.arg(regions)::text[], '{}'), COALESCE(sqlc.arg(cities)::text[], '{}'), COALESCE(sqlc.arg(metros)::text[], '{}'),
     sqlc.arg(work_mode), COALESCE(sqlc.arg(skills)::text[], '{}'), sqlc.arg(seniority), sqlc.arg(category), sqlc.arg(is_tech), sqlc.arg(requires_clearance),
@@ -418,6 +418,7 @@ ON CONFLICT (source, external_id) DO UPDATE SET
     -- rebuilds its doc from the RETURNING row, which carries this preserved value.)
     description  = COALESCE(NULLIF(EXCLUDED.description, ''), jobs.description),
     posted_at    = EXCLUDED.posted_at,
+    application_deadline = COALESCE(EXCLUDED.application_deadline, jobs.application_deadline),
     countries    = EXCLUDED.countries,
     regions      = EXCLUDED.regions,
     cities       = EXCLUDED.cities,

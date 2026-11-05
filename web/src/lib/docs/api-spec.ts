@@ -1896,6 +1896,49 @@ data: {"type":"result","stop_reason":"completed"}
     ],
   },
   {
+    title: 'Company career pages',
+    intro: 'Moderator-managed company collection. Preview verifies a public HTTPS source before enabling it in the board catalogue. Unsupported sites remain explicit manual fallbacks. Jobs are collected and indexed asynchronously by the existing workers.',
+    endpoints: [
+      {
+        method: 'GET', path: '/moderation/career-pages', auth: 'moderator',
+        summary: 'Managed career sources, collection health and the Bangladesh shortlist.',
+        description: 'Bounded to 200 managed rows. Raw upstream errors are withheld. States distinguish awaiting first collection, healthy, collection_failed and paused; last attempt/success, cooldown and saved counts remain visible.',
+        curl: `curl "${BASE_URL}/moderation/career-pages" -b cookies.txt`,
+        responseExample: `{ "data": [], "shortlist": [{ "company": "Example BD", "url": "https://example.com/careers" }] }`,
+      },
+      {
+        method: 'POST', path: '/moderation/career-pages/preview', auth: 'moderator',
+        summary: 'Verify a source and preview up to five job samples without enabling it.',
+        description: 'Verification has a 30-second deadline. Custom HTML is capped at 20 pages and 200 jobs. Private/internal targets are refused by the HTTP guard. Invalid or unreadable feeds return 422. Selectors never execute JavaScript.',
+        body: [
+          { name: 'company', type: 'string', required: true, description: 'Company display name, maximum 200 characters.' },
+          { name: 'url', type: 'string', required: true, description: 'Public HTTPS career URL, maximum 2048 characters; no credentials or nonstandard port.' },
+          { name: 'config', type: 'object', description: 'Optional CSS selectors: links, title, body, location, posted, next. empty_text is the verified empty-list notice; detail_hosts allows up to five additional job-detail hosts; default_location is a source-confirmed fallback. Blank selectors use JobPosting structured data. Selectors have a 512-character limit.' },
+        ],
+        curl: `curl -X POST "${BASE_URL}/moderation/career-pages/preview" -b cookies.txt -H 'Content-Type: application/json' -d '{"company":"Example BD","url":"https://example.com/careers"}'`,
+        responseExample: `{ "data": { "provider": "careerpage", "board": "https://example.com/careers", "active": 2, "closed": 0, "samples": [] } }`,
+      },
+      {
+        method: 'POST', path: '/moderation/career-pages', auth: 'moderator',
+        summary: 'Reverify and enable collection; returns 201 with a pending board.',
+        description: 'Uses the same company/url/config body as preview. A live duplicate returns 409. A retired source may be configured again. Saving does not synchronously import jobs.',
+        body: [
+          { name: 'company', type: 'string', required: true, description: 'Company display name.' },
+          { name: 'url', type: 'string', required: true, description: 'Public HTTPS career URL.' },
+          { name: 'config', type: 'object', description: 'Optional custom HTML configuration, as in preview.' },
+        ],
+        curl: `curl -X POST "${BASE_URL}/moderation/career-pages" -b cookies.txt -H 'Content-Type: application/json' -d '{"company":"Example BD","url":"https://example.com/careers"}'`,
+        responseExample: `{ "data": { "id": 1, "preview": { "provider": "careerpage", "active": 2, "closed": 0, "samples": [] } } }`,
+      },
+      {
+        method: 'DELETE', path: '/moderation/career-pages/{id}', auth: 'moderator',
+        summary: 'Pause collection by retiring the board; job records are retained. Returns 204.',
+        pathParams: [{ name: 'id', type: 'integer', required: true, description: 'Managed career-source id.' }],
+        curl: `curl -X DELETE "${BASE_URL}/moderation/career-pages/1" -b cookies.txt`,
+      },
+    ],
+  },
+  {
     title: 'Job reports',
     intro:
       'Any signed-in user can flag a problem with a live vacancy. Review actions ' +

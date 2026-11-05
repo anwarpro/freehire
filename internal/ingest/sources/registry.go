@@ -142,6 +142,9 @@ func All(c HTTPClient) map[string]Source {
 	// see NewRussianTrustedRootClient for why the scope is these adapters and not the fleet.
 	russianRoot := NewRussianTrustedRootClient()
 	registry := reg(
+		NewCompanyCareerPage(c),
+		NewVivasoft(c),
+		NewCefalo(c),
 		NewGreenhouse(c),
 		NewLever(c),
 		NewAshby(c),

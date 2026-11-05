@@ -232,6 +232,7 @@ type Board struct {
 	RejectedReason pgtype.Text        `json:"rejected_reason"`
 	CreatedAt      pgtype.Timestamptz `json:"created_at"`
 	ActivatedAt    pgtype.Timestamptz `json:"activated_at"`
+	CareerConfig   []byte             `json:"career_config"`
 }
 
 type BoardHealth struct {

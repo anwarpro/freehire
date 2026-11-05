@@ -33,26 +33,28 @@ const DefaultSweepGrace = 48 * time.Hour
 // transforming the key, because a plausible-but-wrong employer reads worse in the catalogue than
 // the parent brand. Optional and adapter-specific, exactly as Hub and Region are.
 type CompanyEntry struct {
-	Company  string            `yaml:"company"`
-	Provider string            `yaml:"provider"`
-	Board    string            `yaml:"board"`
-	Region   string            `yaml:"region"`
-	Hub      bool              `yaml:"hub"`
-	Tenants  map[string]string `yaml:"tenants"`
+	CareerPage *CareerPageConfig `yaml:"career_page,omitempty"`
+	Company    string            `yaml:"company"`
+	Provider   string            `yaml:"provider"`
+	Board      string            `yaml:"board"`
+	Region     string            `yaml:"region"`
+	Hub        bool              `yaml:"hub"`
+	Tenants    map[string]string `yaml:"tenants"`
 }
 
 // Job is a raw posting as an adapter yields it, before the pipeline normalizes it
 // into the catalogue. ExternalID carries the platform's native posting id; the
 // pipeline namespaces it by board before persisting.
 type Job struct {
-	ExternalID  string
-	URL         string
-	Title       string
-	Company     string
-	Location    string
-	Description string
-	Remote      bool
-	PostedAt    *time.Time
+	ApplicationDeadline *time.Time
+	ExternalID          string
+	URL                 string
+	Title               string
+	Company             string
+	Location            string
+	Description         string
+	Remote              bool
+	PostedAt            *time.Time
 	// WorkMode is the work arrangement when the platform states it in a STRUCTURED
 	// field (a workplace-type enum or an explicit remote flag) — "remote",
 	// "hybrid", or "onsite", else "". It is left empty for adapters that only

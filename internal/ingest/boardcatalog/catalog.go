@@ -29,6 +29,8 @@ const (
 
 // InsertInput is a candidate board, before validation and persistence.
 type InsertInput struct {
+	CareerPage *sources.CareerPageConfig
+
 	Provider string
 	Board    string
 	Region   string
@@ -45,6 +47,8 @@ type InsertInput struct {
 
 // Board is a stored catalog row.
 type Board struct {
+	CareerPage *sources.CareerPageConfig
+
 	ID             int64
 	Provider       string
 	Board          string
@@ -68,12 +72,13 @@ func Validate(in InsertInput, registry map[string]sources.Source) error {
 	cfg := sources.Config{
 		Provider: in.Provider,
 		Sources: []sources.CompanyEntry{{
-			Company:  in.Company,
-			Provider: in.Provider,
-			Board:    in.Board,
-			Region:   in.Region,
-			Hub:      in.Hub,
-			Tenants:  in.Tenants,
+			Company:    in.Company,
+			Provider:   in.Provider,
+			Board:      in.Board,
+			Region:     in.Region,
+			Hub:        in.Hub,
+			Tenants:    in.Tenants,
+			CareerPage: in.CareerPage,
 		}},
 	}
 	return cfg.Validate(registry)

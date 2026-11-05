@@ -190,3 +190,19 @@ original links, equal-timestamp pagination without duplicate rows, cursor
 validation/precision, and status navigation that clears stale pagination.
 Built-app SSR smoke checks also verified populated and empty archives, original
 links, withheld Apply controls, cursor navigation, and 400/503 error handling.
+
+
+## Major feature: Bangladesh company career collection
+
+The [company collection workflow](bangladesh-company-careers.md) bundles verified
+source onboarding, collection, source deadlines, repeat-import identity, scheduling,
+health visibility and moderator source management into one independent delivery.
+The initial ten-company shortlist has six supported collection paths and four
+explicit manual fallbacks. The source manager previews jobs before enabling a
+source and supports additional recognized ATS, structured-data or configured HTML
+career pages without a code change.
+
+See the workflow for current verification evidence, access limitations, API and
+schema changes, source lifecycle behavior, and deployment/initialization steps.
+BDJobs, LinkedIn, team assignment, curriculum badges and student follow-up remain
+separate major workflows.

@@ -6754,7 +6754,7 @@ company_upsert AS (
     WHERE companies.name IS DISTINCT FROM EXCLUDED.name
 )
 INSERT INTO jobs (
-    source, external_id, url, title, company, company_slug, company_slug_folded, location, remote, description, posted_at,
+    source, external_id, url, title, company, company_slug, company_slug_folded, location, remote, description, posted_at, application_deadline,
     public_slug, countries, regions, cities, metros, work_mode, skills, seniority, category, is_tech, requires_clearance,
     posting_language, employment_type, education_level, english_level, experience_years_min,
     salary_min_source, salary_max_source, salary_currency_source, salary_period_source,
@@ -6762,18 +6762,18 @@ INSERT INTO jobs (
 ) VALUES (
     $1, $2, $3, $4,
     $5, $6, replace($6, '-', ''), $7, $8,
-    $9, $10,
-    $11,
-    COALESCE($12::text[], '{}'), COALESCE($13::text[], '{}'), COALESCE($14::text[], '{}'), COALESCE($15::text[], '{}'),
-    $16, COALESCE($17::text[], '{}'), $18, $19, $20, $21,
-    $22, $23, $24, $25, $26,
-    $27, $28, $29, $30,
-    $31, $32,
+    $9, $10, $11,
+    $12,
+    COALESCE($13::text[], '{}'), COALESCE($14::text[], '{}'), COALESCE($15::text[], '{}'), COALESCE($16::text[], '{}'),
+    $17, COALESCE($18::text[], '{}'), $19, $20, $21, $22,
+    $23, $24, $25, $26, $27,
+    $28, $29, $30, $31,
+    $32, $33,
     -- The requirements the posting states as a list under a recognized heading
     -- (internal/job/reqextract), derived from the same description the dictionary
     -- facets above are. COALESCE keeps the column NOT NULL when a posting yields
     -- none: an empty array and "never processed" are the same fact here.
-    COALESCE($33::jsonb, '[]'::jsonb),
+    COALESCE($34::jsonb, '[]'::jsonb),
     -- A first ingest reads the posting's body, so the row starts out freshly hydrated. NULL
     -- is reserved for the rows that predate the column (see 0144), which read as stale.
     now()
@@ -6796,6 +6796,7 @@ ON CONFLICT (source, external_id) DO UPDATE SET
     -- rebuilds its doc from the RETURNING row, which carries this preserved value.)
     description  = COALESCE(NULLIF(EXCLUDED.description, ''), jobs.description),
     posted_at    = EXCLUDED.posted_at,
+    application_deadline = COALESCE(EXCLUDED.application_deadline, jobs.application_deadline),
     countries    = EXCLUDED.countries,
     regions      = EXCLUDED.regions,
     cities       = EXCLUDED.cities,
@@ -6857,7 +6858,7 @@ ON CONFLICT (source, external_id) DO UPDATE SET
     updated_at   = now()
 RETURNING jobs.id, jobs.source, jobs.external_id, jobs.url, jobs.title, jobs.company, jobs.location, jobs.remote, jobs.description, jobs.posted_at, jobs.created_at, jobs.updated_at, jobs.company_slug, jobs.enrichment, jobs.enriched_at, jobs.enrichment_version, jobs.public_slug, jobs.last_seen_at, jobs.closed_at, jobs.countries, jobs.regions, jobs.work_mode, jobs.liveness_strikes, jobs.skills, jobs.seniority, jobs.category, jobs.created_by, jobs.updated_by, jobs.posting_language, jobs.employment_type, jobs.education_level, jobs.experience_years_min, jobs.collections, jobs.content_hash, jobs.english_level, jobs.cities, jobs.view_count, jobs.applied_count, jobs.role_fingerprint, jobs.semantic_embedded_model, jobs.semantic_embedded_hash, jobs.duplicate_of, jobs.is_tech, jobs.semantic_embedding, jobs.salary_min_manual, jobs.salary_max_manual, jobs.salary_currency_manual, jobs.salary_period_manual, jobs.upvote_count, jobs.downvote_count, jobs.ats_absent_at, jobs.closed_reason, jobs.is_private, jobs.similar_job_ids, jobs.similar_computed_at, jobs.salary_min_source, jobs.salary_max_source, jobs.salary_currency_source, jobs.salary_period_source, jobs.company_slug_folded, jobs.duplicate_of_aggregator, jobs.duplicate_of_role, jobs.duplicate_of_fuzzy, jobs.requires_clearance, jobs.requirements_derived, jobs.hydrated_at, jobs.ai_interview_reports, jobs.metros, jobs.semantic_embedded_input_hash, jobs.application_deadline,
     NOT COALESCE((SELECT existed FROM existing), false) AS inserted,
-    ((SELECT old_hash FROM existing) IS DISTINCT FROM $31) AS changed
+    ((SELECT old_hash FROM existing) IS DISTINCT FROM $32) AS changed
 `
 
 type UpsertJobParams struct {
@@ -6871,6 +6872,7 @@ type UpsertJobParams struct {
 	Remote               bool               `json:"remote"`
 	Description          string             `json:"description"`
 	PostedAt             pgtype.Timestamptz `json:"posted_at"`
+	ApplicationDeadline  pgtype.Timestamptz `json:"application_deadline"`
 	PublicSlug           string             `json:"public_slug"`
 	Countries            []string           `json:"countries"`
 	Regions              []string           `json:"regions"`
@@ -6934,6 +6936,7 @@ func (q *Queries) UpsertJob(ctx context.Context, arg UpsertJobParams) (UpsertJob
 		arg.Remote,
 		arg.Description,
 		arg.PostedAt,
+		arg.ApplicationDeadline,
 		arg.PublicSlug,
 		arg.Countries,
 		arg.Regions,

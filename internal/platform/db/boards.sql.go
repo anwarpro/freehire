@@ -33,14 +33,41 @@ func (q *Queries) ActivateBoard(ctx context.Context, arg ActivateBoardParams) (i
 	return result.RowsAffected(), nil
 }
 
+const getCompanyCareerPage = `-- name: GetCompanyCareerPage :one
+SELECT id, provider, board, region, company, hub, tenants, url, status, submitted_by, surface, rejected_reason, created_at, activated_at, career_config FROM boards WHERE id=$1 AND surface='company-career'
+`
+
+func (q *Queries) GetCompanyCareerPage(ctx context.Context, id int64) (Board, error) {
+	row := q.db.QueryRow(ctx, getCompanyCareerPage, id)
+	var i Board
+	err := row.Scan(
+		&i.ID,
+		&i.Provider,
+		&i.Board,
+		&i.Region,
+		&i.Company,
+		&i.Hub,
+		&i.Tenants,
+		&i.URL,
+		&i.Status,
+		&i.SubmittedBy,
+		&i.Surface,
+		&i.RejectedReason,
+		&i.CreatedAt,
+		&i.ActivatedAt,
+		&i.CareerConfig,
+	)
+	return i, err
+}
+
 const insertBoard = `-- name: InsertBoard :one
 INSERT INTO boards (provider, board, region, company, hub, tenants, url, status,
-                     submitted_by, surface, rejected_reason, activated_at)
+                     submitted_by, surface, rejected_reason, activated_at, career_config)
 VALUES ($1, $2, $3, $4,
         $5, $6, $7, $8,
         $9, $10, $11,
-        $12)
-RETURNING id, provider, board, region, company, hub, tenants, url, status, submitted_by, surface, rejected_reason, created_at, activated_at
+        $12, $13)
+RETURNING id, provider, board, region, company, hub, tenants, url, status, submitted_by, surface, rejected_reason, created_at, activated_at, career_config
 `
 
 type InsertBoardParams struct {
@@ -56,6 +83,7 @@ type InsertBoardParams struct {
 	Surface        string             `json:"surface"`
 	RejectedReason pgtype.Text        `json:"rejected_reason"`
 	ActivatedAt    pgtype.Timestamptz `json:"activated_at"`
+	CareerConfig   []byte             `json:"career_config"`
 }
 
 // Insert a board row. Callers that pass status='active' also pass a non-null
@@ -77,6 +105,7 @@ func (q *Queries) InsertBoard(ctx context.Context, arg InsertBoardParams) (Board
 		arg.Surface,
 		arg.RejectedReason,
 		arg.ActivatedAt,
+		arg.CareerConfig,
 	)
 	var i Board
 	err := row.Scan(
@@ -94,12 +123,13 @@ func (q *Queries) InsertBoard(ctx context.Context, arg InsertBoardParams) (Board
 		&i.RejectedReason,
 		&i.CreatedAt,
 		&i.ActivatedAt,
+		&i.CareerConfig,
 	)
 	return i, err
 }
 
 const listActiveBoardsForProvider = `-- name: ListActiveBoardsForProvider :many
-SELECT id, provider, board, region, company, hub, tenants, url, status, submitted_by, surface, rejected_reason, created_at, activated_at FROM boards
+SELECT id, provider, board, region, company, hub, tenants, url, status, submitted_by, surface, rejected_reason, created_at, activated_at, career_config FROM boards
 WHERE provider = $1 AND status IN ('pending', 'active')
 ORDER BY id
 `
@@ -130,6 +160,7 @@ func (q *Queries) ListActiveBoardsForProvider(ctx context.Context, provider stri
 			&i.RejectedReason,
 			&i.CreatedAt,
 			&i.ActivatedAt,
+			&i.CareerConfig,
 		); err != nil {
 			return nil, err
 		}
@@ -142,7 +173,7 @@ func (q *Queries) ListActiveBoardsForProvider(ctx context.Context, provider stri
 }
 
 const listBoardsBySubmitter = `-- name: ListBoardsBySubmitter :many
-SELECT id, provider, board, region, company, hub, tenants, url, status, submitted_by, surface, rejected_reason, created_at, activated_at FROM boards
+SELECT id, provider, board, region, company, hub, tenants, url, status, submitted_by, surface, rejected_reason, created_at, activated_at, career_config FROM boards
 WHERE submitted_by = $1
 ORDER BY created_at DESC
 `
@@ -173,6 +204,86 @@ func (q *Queries) ListBoardsBySubmitter(ctx context.Context, submittedBy pgtype.
 			&i.RejectedReason,
 			&i.CreatedAt,
 			&i.ActivatedAt,
+			&i.CareerConfig,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listCompanyCareerPages = `-- name: ListCompanyCareerPages :many
+SELECT b.id, b.provider, b.board, b.region, b.company, b.hub, b.tenants, b.url, b.status, b.submitted_by, b.surface, b.rejected_reason, b.created_at, b.activated_at, b.career_config, h.last_run_at, h.last_success_at, h.last_error, h.last_ingested_count,
+       h.consecutive_failures, h.cooldown_until, h.quiet_until
+FROM boards b
+LEFT JOIN board_health h ON h.provider=b.provider AND lower(h.board)=lower(b.board) AND h.region=b.region
+WHERE b.surface='company-career'
+ORDER BY b.created_at DESC, b.id DESC
+LIMIT 201
+`
+
+type ListCompanyCareerPagesRow struct {
+	ID                  int64              `json:"id"`
+	Provider            string             `json:"provider"`
+	Board               string             `json:"board"`
+	Region              string             `json:"region"`
+	Company             string             `json:"company"`
+	Hub                 bool               `json:"hub"`
+	Tenants             []byte             `json:"tenants"`
+	URL                 pgtype.Text        `json:"url"`
+	Status              string             `json:"status"`
+	SubmittedBy         pgtype.Int8        `json:"submitted_by"`
+	Surface             string             `json:"surface"`
+	RejectedReason      pgtype.Text        `json:"rejected_reason"`
+	CreatedAt           pgtype.Timestamptz `json:"created_at"`
+	ActivatedAt         pgtype.Timestamptz `json:"activated_at"`
+	CareerConfig        []byte             `json:"career_config"`
+	LastRunAt           pgtype.Timestamptz `json:"last_run_at"`
+	LastSuccessAt       pgtype.Timestamptz `json:"last_success_at"`
+	LastError           pgtype.Text        `json:"last_error"`
+	LastIngestedCount   pgtype.Int4        `json:"last_ingested_count"`
+	ConsecutiveFailures pgtype.Int4        `json:"consecutive_failures"`
+	CooldownUntil       pgtype.Timestamptz `json:"cooldown_until"`
+	QuietUntil          pgtype.Timestamptz `json:"quiet_until"`
+}
+
+// Moderator view, bounded independently of the job catalogue. Retired sources remain visible.
+func (q *Queries) ListCompanyCareerPages(ctx context.Context) ([]ListCompanyCareerPagesRow, error) {
+	rows, err := q.db.Query(ctx, listCompanyCareerPages)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []ListCompanyCareerPagesRow{}
+	for rows.Next() {
+		var i ListCompanyCareerPagesRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Provider,
+			&i.Board,
+			&i.Region,
+			&i.Company,
+			&i.Hub,
+			&i.Tenants,
+			&i.URL,
+			&i.Status,
+			&i.SubmittedBy,
+			&i.Surface,
+			&i.RejectedReason,
+			&i.CreatedAt,
+			&i.ActivatedAt,
+			&i.CareerConfig,
+			&i.LastRunAt,
+			&i.LastSuccessAt,
+			&i.LastError,
+			&i.LastIngestedCount,
+			&i.ConsecutiveFailures,
+			&i.CooldownUntil,
+			&i.QuietUntil,
 		); err != nil {
 			return nil, err
 		}

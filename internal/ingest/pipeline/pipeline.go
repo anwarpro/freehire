@@ -52,7 +52,7 @@ type FormSaver interface {
 	SaveWithApplyForm(ctx context.Context, j job.Job, form applyform.Form) error
 }
 
-// Closer is the optional Store capability a self-closing streaming source needs: closing a
+// Closer is the optional Store capability a source with explicit removals needs: closing a
 // posting by its (source, external_id) identity when the feed reports it removed. Only the
 // ingest dbStore implements it; ingestStream type-asserts for it and skips removals when a
 // Store lacks it, so other Store implementations (and test fakes) are unaffected.
@@ -803,6 +803,12 @@ func (r Runner) ingestOne(ctx context.Context, e sources.CompanyEntry, j sources
 		t.st.Unreadable++
 		return
 	}
+	// Buffered feeds may also state explicit removals (for example an expired
+	// role still present in a company API). They must never reach the upsert.
+	if j.Removed {
+		r.closeOne(ctx, e, j, &t.st, &t.firstErr)
+		return
+	}
 	// A HydratingSource marks an already-ingested posting it re-listed but did not
 	// re-fetch: refresh its liveness by identity instead of re-upserting content-less
 	// (which would wipe the description/facets hydrated when it was new).
@@ -830,6 +836,23 @@ func (r Runner) ingestOne(ctx context.Context, e sources.CompanyEntry, j sources
 		return
 	}
 	r.saveOne(ctx, e, j, covered, canon, &t.st, &t.rej, &t.firstErr)
+}
+
+// closeOne shares the explicit-removal path between buffered and streaming
+// feeds. Missing rows remain a no-op and close failures contribute to the board's
+// skipped count, withholding a clean sweep exactly like failed saves.
+func (r Runner) closeOne(ctx context.Context, e sources.CompanyEntry, j sources.Job, st *Stats, firstErr *error) {
+	closer, ok := r.Store.(Closer)
+	if !ok {
+		return
+	}
+	source, id := jobIdentity(e, j)
+	if err := closer.Close(ctx, source, id); err != nil {
+		st.Skipped++
+		if *firstErr == nil {
+			*firstErr = err
+		}
+	}
 }
 
 // saveOne normalizes one posting, puts it through the catalogue filter, and saves what
@@ -1319,19 +1342,7 @@ func (r Runner) ingestStream(ctx context.Context, e sources.CompanyEntry, ss sou
 		// upserting. The Store must implement Closer (the ingest dbStore does); a Store
 		// without it simply drops the removal (e.g. a test fake that never sees them).
 		if j.Removed {
-			c, ok := r.Store.(Closer)
-			if !ok {
-				return
-			}
-			source, externalID := jobIdentity(e, j)
-			if err := c.Close(ctx, source, externalID); err != nil {
-				st.Skipped++
-				if firstErr == nil {
-					firstErr = err
-				}
-				return
-			}
-			// A close is not counted as ingested — Stats.Ingested is saved jobs only.
+			r.closeOne(ctx, e, j, &st, &firstErr)
 			return
 		}
 		r.saveOne(ctx, e, j, covered, canon, &st, &rej, &firstErr)
@@ -1415,8 +1426,9 @@ func normalizeJob(e sources.CompanyEntry, j sources.Job, canon companyCanonical)
 			SalaryPeriod:       j.SalaryPeriod,
 			IsTechHint:         j.IsTechHint,
 		},
-		URL:      j.URL,
-		Remote:   j.Remote,
-		PostedAt: j.PostedAt,
+		URL:                 j.URL,
+		Remote:              j.Remote,
+		PostedAt:            j.PostedAt,
+		ApplicationDeadline: j.ApplicationDeadline,
 	})
 }

@@ -2430,6 +2430,7 @@ type Querier interface {
 	// capability check reads this and then inspects status itself, rather than a second query
 	// per status, since a pending/revoked account needs to be distinguishable in the refusal.
 	GetCompanyAccountByUserID(ctx context.Context, userID int64) (CompanyAccount, error)
+	GetCompanyCareerPage(ctx context.Context, id int64) (Board, error)
 	// The company_slug for a review id, read (unlocked) BEFORE HideCompanyFeedback so
 	// Service.Hide can take LockCompanyForVote before it touches the feedback row —
 	// the same company-then-feedback lock order Upsert/Delete already use, needed to
@@ -3836,6 +3837,8 @@ type Querier interface {
 	// absence is evidence only where we looked, and without the gate the signal would
 	// report our own blind spots as the employer's fault.
 	ListCompanyBoardTitles(ctx context.Context, arg ListCompanyBoardTitlesParams) ([]string, error)
+	// Moderator view, bounded independently of the job catalogue. Retired sources remain visible.
+	ListCompanyCareerPages(ctx context.Context) ([]ListCompanyCareerPagesRow, error)
 	// All companies with their current collection membership. cmd/import-collections
 	// reads this to know the existing company slugs (the match target) and each
 	// company's current tags (so it can reconcile only the tags it manages, leaving any

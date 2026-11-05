@@ -1116,6 +1116,7 @@ func Register(app *fiber.App, cfg Config) {
 
 	// Link contributions (see contributionHandlers).
 	contributionsH.register(api, mw)
+	newCompanyCareerHandlers(queries).register(api, mw)
 	jdResolveH.register(api, mw)
 
 	// Employee referrals (see referralHandlers).

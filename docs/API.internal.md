@@ -21,6 +21,7 @@ Base URL: `https://freehire.me/api/v1`
 - [Job interactions](#job-interactions)
 - [In-app assistant](#in-app-assistant)
 - [Job submissions](#job-submissions)
+- [Company career pages](#company-career-pages)
 - [Job reports](#job-reports)
 - [Moderator jobs](#moderator-jobs)
 - [Profile & résumé](#profile--rsum)
@@ -575,6 +576,90 @@ curl -X POST "https://freehire.me/api/v1/submissions/9/reject" \
 
 ```json
 { "data": { "id": 9, "status": "rejected", "review_reason": "duplicate" } }
+```
+
+## Company career pages
+
+Moderator-managed company collection. Preview verifies a public HTTPS source before enabling it in the board catalogue. Unsupported sites remain explicit manual fallbacks. Jobs are collected and indexed asynchronously by the existing workers.
+
+### `GET /moderation/career-pages`
+
+**Auth:** Moderator
+
+Managed career sources, collection health and the Bangladesh shortlist.
+
+Bounded to 200 managed rows. Raw upstream errors are withheld. States distinguish awaiting first collection, healthy, collection_failed and paused; last attempt/success, cooldown and saved counts remain visible.
+
+```bash
+curl "https://freehire.me/api/v1/moderation/career-pages" -b cookies.txt
+```
+
+```json
+{ "data": [], "shortlist": [{ "company": "Example BD", "url": "https://example.com/careers" }] }
+```
+
+### `POST /moderation/career-pages/preview`
+
+**Auth:** Moderator
+
+Verify a source and preview up to five job samples without enabling it.
+
+Verification has a 30-second deadline. Custom HTML is capped at 20 pages and 200 jobs. Private/internal targets are refused by the HTTP guard. Invalid or unreadable feeds return 422. Selectors never execute JavaScript.
+
+**Body**
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `company` | string | yes | Company display name, maximum 200 characters. |
+| `url` | string | yes | Public HTTPS career URL, maximum 2048 characters; no credentials or nonstandard port. |
+| `config` | object | no | Optional CSS selectors: links, title, body, location, posted, next. empty_text is the verified empty-list notice; detail_hosts allows up to five additional job-detail hosts; default_location is a source-confirmed fallback. Blank selectors use JobPosting structured data. Selectors have a 512-character limit. |
+
+```bash
+curl -X POST "https://freehire.me/api/v1/moderation/career-pages/preview" -b cookies.txt -H 'Content-Type: application/json' -d '{"company":"Example BD","url":"https://example.com/careers"}'
+```
+
+```json
+{ "data": { "provider": "careerpage", "board": "https://example.com/careers", "active": 2, "closed": 0, "samples": [] } }
+```
+
+### `POST /moderation/career-pages`
+
+**Auth:** Moderator
+
+Reverify and enable collection; returns 201 with a pending board.
+
+Uses the same company/url/config body as preview. A live duplicate returns 409. A retired source may be configured again. Saving does not synchronously import jobs.
+
+**Body**
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `company` | string | yes | Company display name. |
+| `url` | string | yes | Public HTTPS career URL. |
+| `config` | object | no | Optional custom HTML configuration, as in preview. |
+
+```bash
+curl -X POST "https://freehire.me/api/v1/moderation/career-pages" -b cookies.txt -H 'Content-Type: application/json' -d '{"company":"Example BD","url":"https://example.com/careers"}'
+```
+
+```json
+{ "data": { "id": 1, "preview": { "provider": "careerpage", "active": 2, "closed": 0, "samples": [] } } }
+```
+
+### `DELETE /moderation/career-pages/{id}`
+
+**Auth:** Moderator
+
+Pause collection by retiring the board; job records are retained. Returns 204.
+
+**Path parameters**
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `id` | integer | yes | Managed career-source id. |
+
+```bash
+curl -X DELETE "https://freehire.me/api/v1/moderation/career-pages/1" -b cookies.txt
 ```
 
 ## Job reports
