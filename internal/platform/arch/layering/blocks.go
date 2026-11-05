@@ -147,7 +147,7 @@ var blocks = map[string][]string{
 		"talentnetwork",
 	},
 	"job": {
-		"applydate", "collections",
+		"applydate", "collections", "curriculum",
 		// dictgap turns LLM enrichment facts already in the catalogue into ranked
 		// candidate gaps for the deterministic dict/skilltag and dict/classify
 		// dictionaries — a fact about postings' recorded facets, not an AI/enrichment

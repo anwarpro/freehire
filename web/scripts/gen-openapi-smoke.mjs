@@ -134,6 +134,9 @@ async function main() {
   assert('external description cross-links to the internal reference', ext.info.description.includes('freehire.me/docs/api/internal'));
   assert('internal description cross-links back to the external reference', int.info.description.includes('freehire.me/docs/api'));
 
+  const tracks = int.paths['/team/curriculum/jobs/{slug}']?.put?.requestBody?.content?.['application/json']?.schema?.properties?.tracks;
+  assert('curriculum review accepts a string array or explicit null reset', Array.isArray(tracks?.type) && tracks.type.includes('array') && tracks.type.includes('null') && tracks.items?.type === 'string');
+
   let failed = 0;
   for (const c of checks) {
     if (!c.ok) failed++;

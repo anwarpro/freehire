@@ -470,6 +470,65 @@ type CreditLedger struct {
 	CreatedAt pgtype.Timestamptz `json:"created_at"`
 }
 
+type CurriculumConfig struct {
+	Singleton bool               `json:"singleton"`
+	Version   int64              `json:"version"`
+	Payload   json.RawMessage    `json:"payload"`
+	UpdatedBy pgtype.Int8        `json:"updated_by"`
+	UpdatedAt pgtype.Timestamptz `json:"updated_at"`
+}
+
+type CurriculumConfigEvent struct {
+	Version   int64              `json:"version"`
+	Payload   json.RawMessage    `json:"payload"`
+	ActorID   pgtype.Int8        `json:"actor_id"`
+	CreatedAt pgtype.Timestamptz `json:"created_at"`
+}
+
+type CurriculumMatch struct {
+	JobID                  int64              `json:"job_id"`
+	MappingVersion         int64              `json:"mapping_version"`
+	InputHash              string             `json:"input_hash"`
+	Evidence               json.RawMessage    `json:"evidence"`
+	SuggestedTracks        []string           `json:"suggested_tracks"`
+	ReviewedTracks         []string           `json:"reviewed_tracks"`
+	EffectiveTracks        []string           `json:"effective_tracks"`
+	ReviewedBy             pgtype.Int8        `json:"reviewed_by"`
+	ReviewedAt             pgtype.Timestamptz `json:"reviewed_at"`
+	ReviewedHash           pgtype.Text        `json:"reviewed_hash"`
+	ReviewedMappingVersion pgtype.Int8        `json:"reviewed_mapping_version"`
+	ReviewNotes            string             `json:"review_notes"`
+	ReviewVersion          int64              `json:"review_version"`
+	ComputedAt             pgtype.Timestamptz `json:"computed_at"`
+}
+
+type CurriculumOutbox struct {
+	JobID int64 `json:"job_id"`
+}
+
+type CurriculumReviewEvent struct {
+	ID             int64              `json:"id"`
+	JobID          int64              `json:"job_id"`
+	ActorID        pgtype.Int8        `json:"actor_id"`
+	Tracks         []string           `json:"tracks"`
+	Notes          string             `json:"notes"`
+	InputHash      string             `json:"input_hash"`
+	MappingVersion int64              `json:"mapping_version"`
+	Version        int64              `json:"version"`
+	CreatedAt      pgtype.Timestamptz `json:"created_at"`
+}
+
+type CurriculumScanState struct {
+	Singleton      bool               `json:"singleton"`
+	MappingVersion int64              `json:"mapping_version"`
+	CursorID       int64              `json:"cursor_id"`
+	UpperID        int64              `json:"upper_id"`
+	Complete       bool               `json:"complete"`
+	Processed      int64              `json:"processed"`
+	LastRunAt      pgtype.Timestamptz `json:"last_run_at"`
+	LastError      string             `json:"last_error"`
+}
+
 type Cv struct {
 	UserID             int64              `json:"user_id"`
 	Title              string             `json:"title"`

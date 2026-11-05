@@ -45,6 +45,7 @@ const noTxMarker = "migrate: no-transaction"
 // advisory-lock users, which is the list a fourth one should read before picking its own:
 //
 //	728391      internal/platform/migrate     — this one, a blocking pg_advisory_lock
+//	0x637572726963 internal/job/curriculum — "curric", serializes projection workers
 //	0x66686c76  cmd/liveness         — "fhlv", a non-blocking pg_try_advisory_lock
 //	0x66686763  cmd/ghost-crosscheck — "fhgc", likewise
 //	0x66687363  cmd/ingest-scheduler — "fhsc", likewise; it makes the fleet's concurrency

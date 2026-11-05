@@ -7,9 +7,10 @@
   import type { Job } from '#lib/types.js';
   import { Button } from '#lib/ui/index.js';
   import TeamMembersView from './TeamMembersView.svelte';
+  import CurriculumWorkspace from './CurriculumWorkspace.svelte';
   import TeamReviewButton from './TeamReviewButton.svelte';
   let access = $state.raw<TeamAccess | null>(null);
-  let view = $state<'assignments' | 'members'>('assignments');
+  let view = $state<'assignments' | 'members' | 'curriculum'>('assignments');
   let scope = $state<'all' | 'mine' | 'unassigned'>('mine');
   let status = $state('');
   let overdue = $state(false);
@@ -69,13 +70,13 @@
   {#if loading && !access}<p role="status">Checking team access…</p>{/if}
   {#if access?.role === 'none'}<p>Team access is required. Ask a team manager to add or reactivate your account.</p>{/if}
   {#if access && access.role !== 'none'}
-    {#if access.role === 'admin'}
       <nav class="flex flex-wrap gap-2" aria-label="Team workspace sections">
         <Button variant={view === 'assignments' ? 'primary' : 'outline'} onclick={() => (view = 'assignments')}>Assignments</Button>
-        <Button variant={view === 'members' ? 'primary' : 'outline'} onclick={() => (view = 'members')}>Team members</Button>
+        <Button variant={view === 'curriculum' ? 'primary' : 'outline'} onclick={() => (view = 'curriculum')}>Curriculum jobs</Button>
+        {#if access.role === 'admin'}<Button variant={view === 'members' ? 'primary' : 'outline'} onclick={() => (view = 'members')}>Team members</Button>{/if}
       </nav>
-    {/if}
-    {#if view === 'members' && access.role === 'admin'}<TeamMembersView />
+    {#if view === 'curriculum'}<CurriculumWorkspace role={access.role} />
+    {:else if view === 'members' && access.role === 'admin'}<TeamMembersView />
     {:else}
       {#if access.role === 'admin'}
         <section class="space-y-3 rounded-lg border border-border p-4" aria-label="Assign a job">

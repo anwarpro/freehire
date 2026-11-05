@@ -22,6 +22,7 @@ Base URL: `https://freehire.me/api/v1`
 - [In-app assistant](#in-app-assistant)
 - [Job submissions](#job-submissions)
 - [Team job reviews](#team-job-reviews)
+- [Curriculum matching](#curriculum-matching)
 - [Company career pages](#company-career-pages)
 - [Job reports](#job-reports)
 - [Moderator jobs](#moderator-jobs)
@@ -773,6 +774,151 @@ Includes actor, assignment, notes, status, follow-up, version and time. Former a
 
 ```bash
 curl "https://freehire.me/api/v1/team/jobs/python-engineer/history" -b cookies.txt
+```
+
+```json
+{ "data": [] }
+```
+
+## Curriculum matching
+
+Private, session-cookie-only taught-skill matching. Managers configure mappings and browse all public postings; reviewers see only current assignments. Suggestions and evidence are deterministic and use no model calls. Reviewer labels take precedence and survive refreshes. Background matching is incremental; progress distinguishes an incomplete catalogue scan from no matches.
+
+### `GET /team/curriculum`
+
+**Auth:** Session only
+
+Active staff: current curriculum rules and worker progress.
+
+Approved editable defaults: L1 frontend, L2 backend, Python/software engineering, AI/ML, data analysis and competitive programming. Each track has a stable id, label, enabled flag, minimum distinct skills and literal skill aliases. Progress reports initial scan state, checks processed, last run and sanitized error.
+
+```bash
+curl "https://freehire.me/api/v1/team/curriculum" -b cookies.txt
+```
+
+```json
+{ "data": { "version": 1, "config": { "tracks": [] }, "progress": { "mapping_version": 1, "complete": false, "processed": 0, "last_run_at": null, "last_error": "" } } }
+```
+
+### `PUT /team/curriculum`
+
+**Auth:** Session only
+
+Managers only: save an editable mapping and queue a bounded catalogue rebuild.
+
+Choose 1–12 tracks, each with 1–30 distinct skills and 1–8 literal aliases per skill. IDs are stable and cannot be removed; disable retired tracks. Label limit 100 characters, skill name 80 and alias 64. Aliases cannot contain comma or pipe separators. Minimum is 1 through the skill count. Changes increment the mapping version and append an audit snapshot. Unchanged saves do not rebuild. A stale expected_version returns 409.
+
+**Body**
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `expected_version` | integer | yes | Loaded mapping version. |
+| `config` | object | yes | Full { tracks: [{ id, label, enabled, minimum, skills: [{ name, aliases: [...] }] }] } mapping; preserve all existing track IDs. |
+
+```bash
+curl -X PUT "https://freehire.me/api/v1/team/curriculum" -b cookies.txt -H 'Content-Type: application/json' --data-binary @curriculum-mapping.json
+```
+
+### `GET /team/curriculum/history`
+
+**Auth:** Session only
+
+Managers only: latest 30 mapping snapshots, including initial defaults.
+
+```bash
+curl "https://freehire.me/api/v1/team/curriculum/history" -b cookies.txt
+```
+
+```json
+{ "data": [] }
+```
+
+### `GET /team/curriculum/jobs`
+
+**Auth:** Session only
+
+Filter projected jobs by effective course labels, review state, source and posting state.
+
+Fixed page size 50, newest job id first. Reviewer labels override automatic suggestions, including an explicitly reviewed empty set. Only projections for the current mapping are listed; jobs appear as background processing finishes. update_pending flags a source edit queued for reprocessing. No exact catalogue count is performed. Former assignees and deactivated staff cannot retain access.
+
+**Query parameters**
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `track` | string | no | Optional stable track ID. |
+| `review` | string | no | unreviewed, reviewed, or needs_review (reviewed input/mapping changed or update queued). |
+| `source` | string | no | Optional source key, e.g. linkedin or bdjobs. |
+| `state` | string | no | active (default), closed, or all. |
+| `offset` | integer | no | 0–100000; meta.has_more indicates another page. |
+
+```bash
+curl "https://freehire.me/api/v1/team/curriculum/jobs?track=python&review=unreviewed" -b cookies.txt
+```
+
+```json
+{ "data": [], "meta": { "limit": 50, "offset": 0, "has_more": false } }
+```
+
+### `GET /team/curriculum/jobs/{slug}`
+
+**Auth:** Session only
+
+Managers/current assignee: refresh one job immediately and read suggested/reviewed labels with evidence.
+
+Returns mapping_version, input_hash, review_version, suggested_tracks, reviewed_tracks (null when unreviewed), effective_tracks, review_notes, reviewed, review_stale, tracks and evidence. Evidence is { matches: [{ track_id, evidence: [{ skill, alias, kind, text }] }], truncated }. Kinds are required, preferred, title and mentioned. Only standard explicit qualifiers/headings are inferred; unqualified mentions never become required. Matching is capped at the first 50000 description characters and reports truncation. Private pasted jobs return 404.
+
+**Path parameters**
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `slug` | string | yes | Public job slug. |
+
+```bash
+curl "https://freehire.me/api/v1/team/curriculum/jobs/python-engineer" -b cookies.txt
+```
+
+### `PUT /team/curriculum/jobs/{slug}`
+
+**Auth:** Session only
+
+Managers/current assignee: confirm or correct course labels with an atomic audit snapshot.
+
+tracks=[] records reviewed no-fit; tracks=null restores automatic suggestions. Enabled tracks only. expected_version, mapping_version and input_hash must all match fresh evidence, otherwise 409 preserves the existing review. Refreshes retain manual labels and flag review_stale after requirement/mapping changes. Unchanged saves add no events. Notes and decisions never enter public job data or search.
+
+**Path parameters**
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `slug` | string | yes | Public job slug. |
+
+**Body**
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `tracks` | string[] (nullable) | yes | Unique enabled track IDs; [] for reviewed no-fit, null to reset. |
+| `notes` | string | yes | Private rationale, maximum 2000 characters. |
+| `expected_version` | integer | yes | Loaded review_version, initially 0. |
+| `mapping_version` | integer | yes | Loaded mapping_version. |
+| `input_hash` | string | yes | Loaded input_hash; guards edits to job requirements. |
+
+```bash
+curl -X PUT "https://freehire.me/api/v1/team/curriculum/jobs/python-engineer" -b cookies.txt -H 'Content-Type: application/json' --data-binary @curriculum-review.json
+```
+
+### `GET /team/curriculum/jobs/{slug}/history`
+
+**Auth:** Session only
+
+Managers/current assignee: latest 100 curriculum review snapshots.
+
+**Path parameters**
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `slug` | string | yes | Public job slug. |
+
+```bash
+curl "https://freehire.me/api/v1/team/curriculum/jobs/python-engineer/history" -b cookies.txt
 ```
 
 ```json

@@ -11,7 +11,7 @@ exec 8>"$runtime/state/deploy.lock"
 flock -n 8 || { echo 'A deployment is already running' >&2; exit 1; }
 touch "$runtime/state/deploying"
 trap 'rm -f "$runtime/state/deploying"' EXIT HUP INT TERM
-for file in next-collection.py check-linkedin.sh compose.yaml compose.override.yaml Caddyfile nginx.conf Dockerfile.tools build-tools.sh backup.sh refresh-jobs.sh index-jobs.sh refresh-stats.sh discover-boards.sh discovery-providers.txt enabled-providers.txt hero-jobs.cron logrotate.conf greenhouse-seeds.json add-source.sh import-sources.sh expand-tech-catalog.sh; do
+for file in next-collection.py match-curriculum.sh check-linkedin.sh compose.yaml compose.override.yaml Caddyfile nginx.conf Dockerfile.tools build-tools.sh backup.sh refresh-jobs.sh index-jobs.sh refresh-stats.sh discover-boards.sh discovery-providers.txt enabled-providers.txt hero-jobs.cron logrotate.conf greenhouse-seeds.json add-source.sh import-sources.sh expand-tech-catalog.sh; do
     install -m 644 "$config/$file" "$runtime/$file"
 done
 for file in "$runtime"/*.sh; do chmod 700 "$file"; done

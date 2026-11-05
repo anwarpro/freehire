@@ -21,6 +21,13 @@ func newTeamReviewHandlers(pool *pgxpool.Pool, q *db.Queries) *teamReviewHandler
 func (h *teamReviewHandlers) register(api fiber.Router, mw middleware) {
 	group := api.Group("/team", mw.cookie, func(c *fiber.Ctx) error { c.Set("Cache-Control", "private, no-store"); return c.Next() })
 	group.Get("/me", h.Me)
+	group.Get("/curriculum", h.curriculumSettings)
+	group.Put("/curriculum", h.saveCurriculumSettings)
+	group.Get("/curriculum/history", h.curriculumConfigHistory)
+	group.Get("/curriculum/jobs", h.curriculumJobs)
+	group.Get("/curriculum/jobs/:slug", h.curriculumJob)
+	group.Put("/curriculum/jobs/:slug", h.reviewCurriculum)
+	group.Get("/curriculum/jobs/:slug/history", h.curriculumHistory)
 	group.Get("/members", h.Members)
 	group.Post("/members", ratelimit.Middleware(mw.throttler, ratelimit.KeyByUserOrIP("team-create"), 10, time.Minute), h.CreateMember)
 	group.Patch("/members/:id", h.UpdateMember)

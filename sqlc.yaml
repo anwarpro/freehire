@@ -15,6 +15,12 @@ sql:
           # Go initialism: column "url" -> field URL (not Url). JSON tag stays "url".
           url: "URL"
         overrides:
+          - column: "curriculum_config.payload"
+            go_type: "encoding/json.RawMessage"
+          - column: "curriculum_config_events.payload"
+            go_type: "encoding/json.RawMessage"
+          - column: "curriculum_matches.evidence"
+            go_type: "encoding/json.RawMessage"
           # Read jobs.enrichment as json.RawMessage, not []byte. RawMessage keeps
           # the JSONB blob as raw bytes that marshal straight through to the API
           # response (an empty payload stays {}); a plain []byte would base64-encode.

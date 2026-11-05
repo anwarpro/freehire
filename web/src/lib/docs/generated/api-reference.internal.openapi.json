@@ -40,6 +40,10 @@
       "description": "Private, session-cookie-only workspace. Global moderators and administrators manage reviewers and assignments. Active reviewers can read/update only their current assignments. API keys are refused. Responses are private/no-store; notes never enter public job data or search."
     },
     {
+      "name": "Curriculum matching",
+      "description": "Private, session-cookie-only taught-skill matching. Managers configure mappings and browse all public postings; reviewers see only current assignments. Suggestions and evidence are deterministic and use no model calls. Reviewer labels take precedence and survive refreshes. Background matching is incremental; progress distinguishes an incomplete catalogue scan from no matches."
+    },
+    {
       "name": "Company career pages",
       "description": "Moderator-managed company collection. Preview verifies a public HTTPS source before enabling it in the board catalogue. Unsupported sites remain explicit manual fallbacks. Jobs are collected and indexed asynchronously by the existing workers."
     },
@@ -1250,6 +1254,321 @@
         ],
         "tags": [
           "Team job reviews"
+        ]
+      }
+    },
+    "/team/curriculum": {
+      "get": {
+        "operationId": "get_team_curriculum",
+        "summary": "Active staff: current curriculum rules and worker progress.",
+        "description": "Approved editable defaults: L1 frontend, L2 backend, Python/software engineering, AI/ML, data analysis and competitive programming. Each track has a stable id, label, enabled flag, minimum distinct skills and literal skill aliases. Progress reports initial scan state, checks processed, last run and sanitized error.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "{ \"data\": { \"version\": 1, \"config\": { \"tracks\": [] }, \"progress\": { \"mapping_version\": 1, \"complete\": false, \"processed\": 0, \"last_run_at\": null, \"last_error\": \"\" } } }"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "tags": [
+          "Curriculum matching"
+        ]
+      },
+      "put": {
+        "operationId": "put_team_curriculum",
+        "summary": "Managers only: save an editable mapping and queue a bounded catalogue rebuild.",
+        "description": "Choose 1–12 tracks, each with 1–30 distinct skills and 1–8 literal aliases per skill. IDs are stable and cannot be removed; disable retired tracks. Label limit 100 characters, skill name 80 and alias 64. Aliases cannot contain comma or pipe separators. Minimum is 1 through the skill count. Changes increment the mapping version and append an audit snapshot. Unchanged saves do not rebuild. A stale expected_version returns 409.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "expected_version": {
+                    "type": "integer",
+                    "description": "Loaded mapping version."
+                  },
+                  "config": {
+                    "type": "object",
+                    "description": "Full { tracks: [{ id, label, enabled, minimum, skills: [{ name, aliases: [...] }] }] } mapping; preserve all existing track IDs."
+                  }
+                },
+                "required": [
+                  "expected_version",
+                  "config"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "tags": [
+          "Curriculum matching"
+        ]
+      }
+    },
+    "/team/curriculum/history": {
+      "get": {
+        "operationId": "get_team_curriculum_history",
+        "summary": "Managers only: latest 30 mapping snapshots, including initial defaults.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "{ \"data\": [] }"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "tags": [
+          "Curriculum matching"
+        ]
+      }
+    },
+    "/team/curriculum/jobs": {
+      "get": {
+        "operationId": "get_team_curriculum_jobs",
+        "summary": "Filter projected jobs by effective course labels, review state, source and posting state.",
+        "description": "Fixed page size 50, newest job id first. Reviewer labels override automatic suggestions, including an explicitly reviewed empty set. Only projections for the current mapping are listed; jobs appear as background processing finishes. update_pending flags a source edit queued for reprocessing. No exact catalogue count is performed. Former assignees and deactivated staff cannot retain access.",
+        "parameters": [
+          {
+            "name": "track",
+            "in": "query",
+            "required": false,
+            "description": "Optional stable track ID.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "review",
+            "in": "query",
+            "required": false,
+            "description": "unreviewed, reviewed, or needs_review (reviewed input/mapping changed or update queued).",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "source",
+            "in": "query",
+            "required": false,
+            "description": "Optional source key, e.g. linkedin or bdjobs.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "state",
+            "in": "query",
+            "required": false,
+            "description": "active (default), closed, or all.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "description": "0–100000; meta.has_more indicates another page.",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "{ \"data\": [], \"meta\": { \"limit\": 50, \"offset\": 0, \"has_more\": false } }"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "tags": [
+          "Curriculum matching"
+        ]
+      }
+    },
+    "/team/curriculum/jobs/{slug}": {
+      "get": {
+        "operationId": "get_team_curriculum_jobs_slug",
+        "summary": "Managers/current assignee: refresh one job immediately and read suggested/reviewed labels with evidence.",
+        "description": "Returns mapping_version, input_hash, review_version, suggested_tracks, reviewed_tracks (null when unreviewed), effective_tracks, review_notes, reviewed, review_stale, tracks and evidence. Evidence is { matches: [{ track_id, evidence: [{ skill, alias, kind, text }] }], truncated }. Kinds are required, preferred, title and mentioned. Only standard explicit qualifiers/headings are inferred; unqualified mentions never become required. Matching is capped at the first 50000 description characters and reports truncation. Private pasted jobs return 404.",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "description": "Public job slug.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "tags": [
+          "Curriculum matching"
+        ]
+      },
+      "put": {
+        "operationId": "put_team_curriculum_jobs_slug",
+        "summary": "Managers/current assignee: confirm or correct course labels with an atomic audit snapshot.",
+        "description": "tracks=[] records reviewed no-fit; tracks=null restores automatic suggestions. Enabled tracks only. expected_version, mapping_version and input_hash must all match fresh evidence, otherwise 409 preserves the existing review. Refreshes retain manual labels and flag review_stale after requirement/mapping changes. Unchanged saves add no events. Notes and decisions never enter public job data or search.",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "description": "Public job slug.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "tracks": {
+                    "type": [
+                      "array",
+                      "null"
+                    ],
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Unique enabled track IDs; [] for reviewed no-fit, null to reset."
+                  },
+                  "notes": {
+                    "type": "string",
+                    "description": "Private rationale, maximum 2000 characters."
+                  },
+                  "expected_version": {
+                    "type": "integer",
+                    "description": "Loaded review_version, initially 0."
+                  },
+                  "mapping_version": {
+                    "type": "integer",
+                    "description": "Loaded mapping_version."
+                  },
+                  "input_hash": {
+                    "type": "string",
+                    "description": "Loaded input_hash; guards edits to job requirements."
+                  }
+                },
+                "required": [
+                  "tracks",
+                  "notes",
+                  "expected_version",
+                  "mapping_version",
+                  "input_hash"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "tags": [
+          "Curriculum matching"
+        ]
+      }
+    },
+    "/team/curriculum/jobs/{slug}/history": {
+      "get": {
+        "operationId": "get_team_curriculum_jobs_slug_history",
+        "summary": "Managers/current assignee: latest 100 curriculum review snapshots.",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "description": "Public job slug.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "{ \"data\": [] }"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "tags": [
+          "Curriculum matching"
         ]
       }
     },
