@@ -38,6 +38,35 @@ async function openEditor() {
 }
 
 describe('manual job editing', () => {
+  it('saves a deadline without changing job content', async () => {
+    render(ManualJobEditor, { job, onSaved: vi.fn() });
+    await openEditor();
+    await fireEvent.input(screen.getByLabelText('Application deadline'), { target: { value: '2026-12-31' } });
+    await fireEvent.click(screen.getByRole('button', { name: 'Save changes' }));
+    await waitFor(() => expect(updateManualJob).toHaveBeenCalledWith(job.public_slug, {
+      application_deadline: '2026-12-31T18:00:00.000Z',
+    }));
+  });
+
+  it('clears a saved deadline explicitly with null', async () => {
+    getJob.mockResolvedValue({ ...job, application_deadline: '2026-12-31T18:00:00Z' });
+    render(ManualJobEditor, { job, onSaved: vi.fn() });
+    await openEditor();
+    expect((screen.getByLabelText('Application deadline') as HTMLInputElement).value).toBe('2026-12-31');
+    await fireEvent.input(screen.getByLabelText('Application deadline'), { target: { value: '' } });
+    await fireEvent.click(screen.getByRole('button', { name: 'Save changes' }));
+    await waitFor(() => expect(updateManualJob).toHaveBeenCalledWith(job.public_slug, { application_deadline: null }));
+  });
+
+  it('preserves the exact saved deadline on an unrelated edit', async () => {
+    getJob.mockResolvedValue({ ...job, application_deadline: '2026-12-31T10:30:00Z' });
+    render(ManualJobEditor, { job, onSaved: vi.fn() });
+    await openEditor();
+    await fireEvent.input(screen.getByRole('textbox', { name: 'Title' }), { target: { value: 'Corrected title' } });
+    await fireEvent.click(screen.getByRole('button', { name: 'Save changes' }));
+    await waitFor(() => expect(updateManualJob).toHaveBeenCalledWith(job.public_slug, { title: 'Corrected title' }));
+  });
+
   it('corrects the posting date independently of the job text', async () => {
     const onSaved = vi.fn();
     render(ManualJobEditor, { job, onSaved });

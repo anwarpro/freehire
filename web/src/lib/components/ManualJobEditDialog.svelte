@@ -11,6 +11,8 @@
   import NoteEditor from './NoteEditor.svelte';
   import JobDescription from './JobDescription.svelte';
   import PostingDateField from './PostingDateField.svelte';
+  import ApplicationDeadlineField from './ApplicationDeadlineField.svelte';
+  import { applicationDeadlineDate, applicationDeadlineError, applicationDeadlineTimestamp } from '#lib/applicationDeadline.js';
 
   let { slug, onClose, onSaved }: {
     slug: string;
@@ -31,6 +33,9 @@
   let originalDescription = $state('');
   let preview = $state(false);
   let postingDate = $state('');
+  let deadline = $state('');
+  const deadlineError = $derived(applicationDeadlineError(deadline));
+  const deadlineChanged = $derived(current !== null && deadline !== (current.application_deadline ? applicationDeadlineDate(current.application_deadline) : ''));
   let alive = false;
   const allowed = $derived(currentUser()?.role === 'moderator');
   const dateError = $derived(postingDateError(postingDate));
@@ -40,9 +45,9 @@
   const changed = $derived(current !== null && (
     title.trim() !== current.title || company.trim() !== current.company ||
     location.trim() !== current.location || remote !== (current.work_mode === 'remote') ||
-    description !== originalDescription || dateChanged
+    description !== originalDescription || dateChanged || deadlineChanged
   ));
-  const canSave = $derived(allowed && changed && !dateError && title.trim() !== '' && company.trim() !== '' && !saving);
+  const canSave = $derived(allowed && changed && !dateError && !deadlineError && title.trim() !== '' && company.trim() !== '' && !saving);
 
   $effect(() => {
     if (!open) onClose();
@@ -58,6 +63,7 @@
           return;
         }
         current = job;
+        deadline = job.application_deadline ? applicationDeadlineDate(job.application_deadline) : '';
         title = job.title;
         company = job.company;
         location = job.location ?? '';
@@ -86,6 +92,7 @@
       if (location.trim() !== current.location) patch.location = location.trim();
       if (remote !== (current.work_mode === 'remote')) patch.remote = remote;
       if (dateChanged) patch.posted_at = selectedPostedAt;
+      if (deadlineChanged) patch.application_deadline = applicationDeadlineTimestamp(deadline) ?? null;
       if (description !== originalDescription) patch.description = await marked.parse(description);
       updated = await api.updateManualJob(current.public_slug, patch);
     } catch (err) {
@@ -140,6 +147,7 @@
           </p>
         {/if}
         <PostingDateField bind:value={postingDate} label="New posting date" help="Optional: select a replacement date, or leave blank to keep the current date." />
+        <ApplicationDeadlineField bind:value={deadline} />
         <label class="flex items-center gap-2 text-sm">
           <input type="checkbox" bind:checked={remote} /> Fully remote
         </label>

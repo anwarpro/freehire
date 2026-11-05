@@ -105,3 +105,28 @@ func TestQueriesRepository(t *testing.T) {
 		}
 	})
 }
+
+func TestVacancyDeadlineBeforeSweep(t *testing.T) {
+	pool := testdb.Pool(t)
+	ctx := context.Background()
+	var actor int64
+	if err := pool.QueryRow(ctx, `INSERT INTO users (email) VALUES ('deadline-hr@example.test') RETURNING id`).Scan(&actor); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := pool.Exec(ctx, `INSERT INTO jobs (source, external_id, url, title, public_slug, created_by, application_deadline)
+		VALUES ('employer', 'freehire:deadline', '', 'Engineer', 'direct-deadline', $1, now() - interval '1 second')`, actor); err != nil {
+		t.Fatal(err)
+	}
+	repo := directapply.NewQueriesRepository(db.New(pool))
+	v, err := repo.Vacancy(ctx, "direct-deadline")
+	if err != nil || v.Open {
+		t.Fatalf("elapsed deadline must be closed before the sweep: %+v, %v", v, err)
+	}
+	if _, err := pool.Exec(ctx, `UPDATE jobs SET application_deadline = now() + interval '1 hour' WHERE public_slug = 'direct-deadline'`); err != nil {
+		t.Fatal(err)
+	}
+	v, err = repo.Vacancy(ctx, "direct-deadline")
+	if err != nil || !v.Open {
+		t.Fatalf("future deadline must remain open: %+v, %v", v, err)
+	}
+}

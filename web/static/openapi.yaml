@@ -1847,6 +1847,10 @@ components:
             freehire's auto-apply feature can currently attempt to fill and
             submit for. Absent otherwise — a best-effort provider-eligibility
             signal, never a guarantee of successful submission.
+        application_deadline:
+          type: string
+          format: date-time
+          description: Exclusive end of the application window, when known.
         posted_at:
           type: string
           format: date-time

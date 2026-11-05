@@ -49,6 +49,14 @@ func run() int {
 	dcfg := config.LoadSearchDrain()
 	client := search.NewClient(cfg.MeiliURL, cfg.MeiliKey)
 	q := db.New(pool)
+	// Explicit deadlines need no HTTP probe. Closing here reuses the scheduled
+	// drain and its transactional removal outbox rather than a second scheduler.
+	closed, err := q.CloseDeadlineExpiredJobs(ctx)
+	if err != nil {
+		log.Printf("search-drain: expire deadlines: %v", err)
+		return 1
+	}
+	log.Printf("search-drain: deadline-expired=%d", closed)
 
 	runner := searchdrain.Runner{
 		Store:   newDBStore(pool),

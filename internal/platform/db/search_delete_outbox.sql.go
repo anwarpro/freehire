@@ -129,6 +129,18 @@ func (q *Queries) DeleteDeadSearchDeleteOutbox(ctx context.Context, cutoff pgtyp
 	return result.RowsAffected(), nil
 }
 
+const enqueueSearchDeleteOutbox = `-- name: EnqueueSearchDeleteOutbox :exec
+INSERT INTO search_delete_outbox (job_id)
+VALUES ($1)
+ON CONFLICT (job_id) DO NOTHING
+`
+
+// Called inside a manual-write transaction when that write closed the posting.
+func (q *Queries) EnqueueSearchDeleteOutbox(ctx context.Context, jobID int64) error {
+	_, err := q.db.Exec(ctx, enqueueSearchDeleteOutbox, jobID)
+	return err
+}
+
 const recordSearchDeleteOutboxFailure = `-- name: RecordSearchDeleteOutboxFailure :one
 UPDATE search_delete_outbox
 SET attempts   = attempts + 1,

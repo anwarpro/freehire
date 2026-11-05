@@ -50,6 +50,21 @@ beforeEach(() => {
 });
 
 describe('moderator job publishing', () => {
+  it('publishes an application deadline and resets it after success', async () => {
+    render(SubmitView, { mode: 'publish' });
+    await fillBasics();
+    await fireEvent.input(screen.getByLabelText('Application deadline'), { target: { value: '2026-12-31' } });
+    await fireEvent.click(screen.getByRole('button', { name: 'Publish job' }));
+    await screen.findByRole('link', { name: 'Open published job' });
+    expect(publishJob).toHaveBeenCalledWith(expect.objectContaining({ application_deadline: '2026-12-31T18:00:00.000Z' }));
+    expect((screen.getByLabelText('Application deadline') as HTMLInputElement).value).toBe('');
+  });
+
+  it('does not offer a deadline on the review queue form', () => {
+    render(SubmitView);
+    expect(screen.queryByLabelText('Application deadline')).toBeNull();
+  });
+
   it('publishes a selected posting date and clears the selection on success', async () => {
     render(SubmitView, { mode: 'publish' });
     await fillBasics();

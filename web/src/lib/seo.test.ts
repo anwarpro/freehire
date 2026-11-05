@@ -394,6 +394,11 @@ describe('jobPostingJsonLd', () => {
     expect(ld.validThrough).toBe('2026-02-01T00:00:00Z');
   });
 
+  it('uses the stated application deadline instead of a rolling estimate', () => {
+    const ld = jobPostingJsonLd(postingJob({ application_deadline: '2026-12-31T18:00:00Z', last_seen_at: '2026-01-01T00:00:00Z' }), ORIGIN);
+    expect(ld.validThrough).toBe('2026-12-31T18:00:00Z');
+  });
+
   it('estimates validThrough 30 days out from last_seen_at for an open posting', () => {
     const ld = jobPostingJsonLd(postingJob({ last_seen_at: '2026-01-01T00:00:00Z' }), ORIGIN);
     expect(ld.validThrough).toBe('2026-01-31T00:00:00.000Z');

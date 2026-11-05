@@ -36,7 +36,7 @@ SET claimed_at = now()
 FROM claimable c
 JOIN jobs j ON j.id = c.job_id
 WHERE q.id = c.id
-RETURNING q.id, q.user_id, q.job_id, q.tailored_cv_id, j.source, j.external_id, j.url;
+RETURNING q.id, q.user_id, q.job_id, q.tailored_cv_id, j.source, j.external_id, j.url, j.application_deadline;
 
 -- name: ClaimAutoApplyPreviewBatch :many
 -- Claim a batch of tailored entries that have no resolved answer preview yet, for

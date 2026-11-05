@@ -635,3 +635,26 @@ func TestFromRow_CarriesClosedAt(t *testing.T) {
 		t.Fatalf("open job ClosedAt = %v, want nil", *open.ClosedAt)
 	}
 }
+
+func TestDeadlineClosesProjectionBeforeSweep(t *testing.T) {
+	now := time.Now()
+	deadline := now.Add(-time.Hour)
+	view, err := FromRow(db.Job{ApplicationDeadline: pgtype.Timestamptz{Time: deadline, Valid: true}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if view.ApplicationDeadline == nil || view.ClosedAt == nil || *view.ClosedAt != deadline.UTC().Format(time.RFC3339) {
+		t.Fatalf("deadline not reflected: %+v", view)
+	}
+	future := now.Add(time.Hour)
+	if effectiveClosed(nil, &future, now) != nil {
+		t.Fatal("future deadline closed early")
+	}
+	if effectiveClosed(nil, &now, now) != &now {
+		t.Fatal("deadline boundary must be closed")
+	}
+	earlier := now.Add(-2 * time.Hour)
+	if effectiveClosed(&earlier, &deadline, now) != &earlier {
+		t.Fatal("lost earlier closure")
+	}
+}

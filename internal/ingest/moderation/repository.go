@@ -60,6 +60,11 @@ func (r *QueriesRepository) Create(ctx context.Context, f job.Fields, actorID in
 	}); err != nil {
 		return job.Job{}, job.Extras{}, fmt.Errorf("enqueue enrichment: %w", err)
 	}
+	if row.ClosedAt.Valid {
+		if err := qtx.EnqueueSearchDeleteOutbox(ctx, row.ID); err != nil {
+			return job.Job{}, job.Extras{}, fmt.Errorf("enqueue expired job removal: %w", err)
+		}
+	}
 	if err := qtx.EnqueueSearchOutbox(ctx, row.ID); err != nil {
 		return job.Job{}, job.Extras{}, fmt.Errorf("enqueue search outbox: %w", err)
 	}
@@ -118,6 +123,11 @@ func (r *QueriesRepository) Update(ctx context.Context, slug string, f job.Field
 	}
 	if err != nil {
 		return job.Job{}, job.Extras{}, err
+	}
+	if row.ClosedAt.Valid {
+		if err := qtx.EnqueueSearchDeleteOutbox(ctx, row.ID); err != nil {
+			return job.Job{}, job.Extras{}, fmt.Errorf("enqueue expired job removal: %w", err)
+		}
 	}
 	if err := qtx.EnqueueSearchOutbox(ctx, row.ID); err != nil {
 		return job.Job{}, job.Extras{}, fmt.Errorf("enqueue search outbox: %w", err)
