@@ -3227,3 +3227,20 @@ WITH closed AS (
     ON CONFLICT (job_id) DO NOTHING
 )
 SELECT count(*) FROM closed;
+
+-- name: ListClosedCatalogueJobs :many
+-- Public archive only. Fetch limit+1 for has_more, never COUNT the retained catalogue.
+SELECT * FROM jobs
+WHERE closed_at IS NOT NULL AND duplicate_of IS NULL AND NOT is_private
+  AND (sqlc.narg(before_closed_at)::timestamptz IS NULL
+       OR (closed_at, public_slug) < (sqlc.narg(before_closed_at)::timestamptz, sqlc.arg(before_slug)::text))
+  AND (COALESCE(cardinality(sqlc.arg(sources)::text[]), 0) = 0 OR source = ANY(sqlc.arg(sources)::text[]))
+  AND source <> ALL(COALESCE(sqlc.arg(excluded_sources)::text[], '{}'))
+  AND (COALESCE(cardinality(sqlc.arg(skills)::text[]), 0) = 0 OR
+       CASE WHEN sqlc.arg(all_skills)::boolean THEN skills @> sqlc.arg(skills)::text[]
+            ELSE skills && sqlc.arg(skills)::text[] END)
+  AND NOT (skills && COALESCE(sqlc.arg(excluded_skills)::text[], '{}'))
+  AND (COALESCE(cardinality(sqlc.arg(countries)::text[]), 0) = 0 OR countries && sqlc.arg(countries)::text[])
+  AND NOT (countries && COALESCE(sqlc.arg(excluded_countries)::text[], '{}'))
+ORDER BY closed_at DESC, public_slug DESC
+LIMIT sqlc.arg(page_limit);

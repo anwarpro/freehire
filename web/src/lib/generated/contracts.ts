@@ -291,8 +291,8 @@ export interface Job {
    */
   last_seen_at?: string;
   /**
-   * ClosedAt is non-null when the posting is no longer open. Lists and the
-   * search index never contain closed jobs; only the detail endpoint serves
+   * ClosedAt is non-null when the posting is no longer open. Active lists and
+   * search exclude closed jobs; the detail and closed archive endpoints serve
    * them, and the SPA renders the closed state from this field.
    */
   closed_at?: string;

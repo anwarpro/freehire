@@ -3718,6 +3718,8 @@ type Querier interface {
 	// makes the twin this query used to filter out impossible to create, rather than this
 	// query hiding it after the fact.
 	ListChronicBoards(ctx context.Context, arg ListChronicBoardsParams) ([]ListChronicBoardsRow, error)
+	// Public archive only. Fetch limit+1 for has_more, never COUNT the retained catalogue.
+	ListClosedCatalogueJobs(ctx context.Context, arg ListClosedCatalogueJobsParams) ([]Job, error)
 	// The company page's Closed tab: the postings this company has closed, most recently closed
 	// first. The same exclusions as ListJobsByCompany (reposts, private pasted JDs) with the
 	// closed_at predicate inverted.

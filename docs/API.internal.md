@@ -168,7 +168,7 @@ Every facet below supports repeat-OR, `_mode=and`, and `_exclude` as described a
 
 ## Jobs
 
-Public, unauthenticated reads. Jobs are returned in one wire shape (addressed by `public_slug`, never an internal id) shared by the list, detail, company, and search responses. Closed postings are excluded from lists and search and served only by the detail endpoint.
+Public, unauthenticated reads. Jobs are returned in one wire shape (addressed by `public_slug`, never an internal id) shared by the list, detail, company, and search responses. Closed postings are excluded from active lists and search. Retained closed postings are available through the archive and detail endpoints.
 
 ### `POST /jobs/{slug}/direct-apply`
 

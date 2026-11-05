@@ -45,6 +45,7 @@
   import FilterModal from './filters/FilterModal.svelte';
   import SourceFilterButton from './filters/SourceFilterButton.svelte';
   import ListToolbar from './ListToolbar.svelte';
+  import JobStatusTabs from './JobStatusTabs.svelte';
   import States from './States.svelte';
   import JobRow from './JobRow.svelte';
   import { Button } from '#lib/ui/index.js';
@@ -797,6 +798,8 @@
        so the guard could never be false. -->
   {@render sortSelect()}
 {/snippet}
+
+{#if standalone}<JobStatusTabs params={filters.params.toString()} />{/if}
 
 <div class="flex gap-6">
   <aside class="hidden w-72 shrink-0 md:block">

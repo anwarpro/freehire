@@ -247,3 +247,13 @@ describe('plan refusal telemetry', () => {
     spy.mockRestore();
   });
 });
+
+
+describe('closed job archive', () => {
+  it('reads cursor metadata without inventing a total count', async () => {
+    const fetcher = vi.fn().mockResolvedValue(new Response(JSON.stringify({data:[],meta:{next_cursor:'next'}})));
+    const result = await createApi(fetcher).closedJobs(new URLSearchParams('source=bdjobs&before=previous'),20);
+    expect(fetcher.mock.calls[0]?.[0]).toBe('/api/v1/jobs/closed?source=bdjobs&before=previous&limit=20');
+    expect(result).toEqual({items:[],nextCursor:'next'});
+  });
+});

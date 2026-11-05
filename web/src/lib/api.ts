@@ -741,6 +741,14 @@ export function createApi(
     return toSlice(await request<Page<Job>>(`/api/v1/me/tracking/swipe?${params}`), 0);
   }
 
+  /** Retained public closed jobs; pagination has no catalogue-wide total. */
+  async function closedJobs(params: URLSearchParams, limit = 20): Promise<{ items: Job[]; nextCursor: string | null }> {
+    const p = new URLSearchParams(params);
+    p.set('limit', String(limit));
+    const res = await request<{ data: Job[]; meta: { next_cursor: string } }>(`/api/v1/jobs/closed?${p}`);
+    return { items: res.data, nextCursor: res.meta.next_cursor || null };
+  }
+
   /** Facet-distribution counts for the analytics page. `params` carries the same
    *  query text and facet filters as `searchJobs` (built by the caller, e.g. via
    *  `filtersToParams`); the endpoint returns counts instead of a page of jobs.
@@ -3197,6 +3205,7 @@ export function createApi(
     interpretSearch,
     swipeDeck,
     facetCounts,
+    closedJobs,
     jobsActivity,
     userGrowth,
     engagementStats,
