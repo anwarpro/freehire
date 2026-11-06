@@ -27,6 +27,7 @@ import (
 	"github.com/strelov1/freehire/internal/candidate/resume"
 	"github.com/strelov1/freehire/internal/identity/auth"
 	"github.com/strelov1/freehire/internal/ingest/screeninganswers"
+	"github.com/strelov1/freehire/internal/ingest/teamreview"
 	"github.com/strelov1/freehire/internal/platform/db"
 	"github.com/strelov1/freehire/internal/platform/llm"
 	"github.com/strelov1/freehire/internal/platform/pgerr"
@@ -37,6 +38,8 @@ import (
 // call — the assistant is a facade over the same use cases the HTTP surface
 // exposes, so it must not grow a second copy of any of them.
 type assistantHandlers struct {
+	team   *teamreview.Service
+	origin string
 	store  *assistant.Store
 	runner *assistant.Runner
 
@@ -141,8 +144,9 @@ type assistantModels struct {
 func newAssistantHandlers(queries *db.Queries, models assistantModels, store *assistant.Store,
 	search *searchHandlers, resumeH *resumeHandlers, tracking *trackingHandlers, cvH *cvHandlers,
 	profileH *profileHandlers, browserTools *browsertools.Hub, mail *inboxHandlers,
-	bank experienceBankTools, screeningAnswers *screeninganswers.Store, plans *plan.Store, letter coverLetterDeps) *assistantHandlers {
+	bank experienceBankTools, screeningAnswers *screeninganswers.Store, plans *plan.Store, letter coverLetterDeps, team *teamreview.Service, origin string) *assistantHandlers {
 	h := &assistantHandlers{
+		team: team, origin: strings.TrimRight(origin, "/"),
 		experience:       bank,
 		letter:           letter,
 		screeningAnswers: screeningAnswers,
@@ -507,10 +511,11 @@ func (h *assistantHandlers) DeleteAssistantSession(c *fiber.Ctx) error {
 	if err != nil {
 		return err
 	}
-	id, err := assistantSessionID(c)
+	sess, err := h.ownedSession(c)
 	if err != nil {
 		return err
 	}
+	id := sess.ID
 	if err := h.store.DeleteSession(c.Context(), id, userID); err != nil {
 		return mapAssistantError(err)
 	}
@@ -528,7 +533,7 @@ func (h *assistantHandlers) DeleteAssistantSession(c *fiber.Ctx) error {
 // see; requiring it to first prove the turn is alive would ask it for the one fact it does not
 // have. The ownership check comes first either way, so an id cannot be probed for existence.
 func (h *assistantHandlers) CancelAssistantTurn(c *fiber.Ctx) error {
-	userID, err := requireUserID(c)
+	_, err := requireUserID(c)
 	if err != nil {
 		return err
 	}
@@ -536,8 +541,8 @@ func (h *assistantHandlers) CancelAssistantTurn(c *fiber.Ctx) error {
 	if err != nil {
 		return err
 	}
-	if _, err := h.store.Session(c.Context(), id, userID); err != nil {
-		return mapAssistantError(err)
+	if _, err := h.ownedSession(c); err != nil {
+		return err
 	}
 	h.turns.cancel(id)
 	return c.SendStatus(fiber.StatusNoContent)
@@ -705,6 +710,9 @@ func (h *assistantHandlers) streamSSE(
 	}
 
 	sseHeaders(c)
+	if sess.Preset == assistant.PresetTeamJobs {
+		c.Set("Cache-Control", "private, no-store")
+	}
 
 	// The server's write timeout would kill this long-lived stream mid-turn, so the SSE
 	// response carries its own, bounded deadline instead (captured while the request ctx
@@ -1144,6 +1152,14 @@ func (h *assistantHandlers) ownedSession(c *fiber.Ctx) (assistant.Session, error
 	sess, err := h.store.Session(c.Context(), id, userID)
 	if err != nil {
 		return assistant.Session{}, mapAssistantError(err)
+	}
+	if (sess.Preset == assistant.PresetTeamJobs) != isTeamBotRequest(c) {
+		return assistant.Session{}, fiber.NewError(404, "session not found")
+	}
+	if sess.Preset == assistant.PresetTeamJobs {
+		if err := h.teamBotAccess(c.UserContext(), userID); err != nil {
+			return assistant.Session{}, err
+		}
 	}
 	return sess, nil
 }

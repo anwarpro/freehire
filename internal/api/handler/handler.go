@@ -67,6 +67,7 @@ import (
 	"github.com/strelov1/freehire/internal/ingest/moderation"
 	"github.com/strelov1/freehire/internal/ingest/screeninganswers"
 	"github.com/strelov1/freehire/internal/ingest/sources"
+	"github.com/strelov1/freehire/internal/ingest/teamreview"
 	"github.com/strelov1/freehire/internal/job/privatejob"
 	"github.com/strelov1/freehire/internal/job/recentfeed"
 	"github.com/strelov1/freehire/internal/platform/blobstore"
@@ -814,6 +815,7 @@ func Register(app *fiber.App, cfg Config) {
 	// disagree. The tailoring bootstrap mints its conversations through the same
 	// store, which is why the CV handlers get it back. It also takes the browser-tool
 	// hub, which a browsing session reads the caller's open page through.
+	teamService := teamreview.New(cfg.Pool, queries, authHasher{})
 	assistantH := newAssistantHandlers(queries,
 		assistantModels{
 			// Its own per-call timeout for the same reason the fit analysis has one, and
@@ -822,7 +824,7 @@ func Register(app *fiber.App, cfg Config) {
 			Agent: cfg.AssistantLLM.WithTimeout(assistantLLMTimeout), Keys: llmKeys,
 			MaxSteps: cfg.AssistantMaxSteps, MaxPrompt: cfg.AssistantMaxPrompt,
 		},
-		assistantStore, searchH, resumeH, trackingH, cvH, profileH, a.browserTools, inboxH, bank, screeningAnswersSvc, plans, letterDeps)
+		assistantStore, searchH, resumeH, trackingH, cvH, profileH, a.browserTools, inboxH, bank, screeningAnswersSvc, plans, letterDeps, teamService, cfg.FrontendOrigin)
 	// Same nil-interface trap as stt above: only assign when cfg.Realtime is
 	// genuinely non-nil, or "no voice mode here" becomes a panic on the first mint.
 	if cfg.Realtime != nil {
@@ -1117,7 +1119,7 @@ func Register(app *fiber.App, cfg Config) {
 	// Link contributions (see contributionHandlers).
 	contributionsH.register(api, mw)
 	newCompanyCareerHandlers(queries).register(api, mw)
-	newTeamReviewHandlers(cfg.Pool, queries).register(api, mw)
+	(&teamReviewHandlers{service: teamService}).register(api, mw)
 	jdResolveH.register(api, mw)
 
 	// Employee referrals (see referralHandlers).
@@ -1178,6 +1180,7 @@ func Register(app *fiber.App, cfg Config) {
 	// Dictation for the assistant composer.
 	speechH.register(api, mw)
 	assistantH.register(api, mw)
+	assistantH.registerTeamBot(api, mw)
 
 	// Filter subscriptions (see subscriptionHandlers).
 	subscriptionH.register(api, mw)

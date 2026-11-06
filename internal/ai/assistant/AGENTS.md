@@ -106,7 +106,7 @@ refuses a bullet with no `evidence_id`. The run accounts for itself through
 `tailor_report`, which replaces the whole report on the CV and returns a receipt
 rather than an echo (a tool result is replayed into context on every later turn).
 
-**Presets.** A session records `chat`, `tailor`, `profile`, `browse`, `interview`, `debrief` or `apply`. The vocabulary
+**Presets.** A session records `chat`, `tailor`, `profile`, `browse`, `interview`, `debrief`, `apply` or `team_jobs`. The vocabulary
 is pinned by a CHECK constraint on `assistant_sessions.preset`, so adding one is a
 schema change and not just a Go constant. The preset selects the system prompt and the
 registered tools and nothing else, which is why one chat component serves
@@ -419,3 +419,9 @@ asserts it: swapping both would measure two models and attribute the result to o
   than compacting them.
 - One tool round runs its calls sequentially. Parallel execution would need
   per-call result ordering the transcript does not currently model.
+
+**Team jobs.** `team_jobs` is an English-only, read-only staff mode under
+`/team/bot`. Its five tools read public jobs and automatic course evidence; no
+student data, human reviewer notes or candidate editing tools enter the registry.
+Team sessions cannot be opened through candidate assistant endpoints. See
+[the workflow](../../../docs/team-job-discussion.md).

@@ -220,9 +220,9 @@ func (h *assistantHandlers) getJobTool() assistant.Tool {
 			if in.Slug == "" {
 				return nil, errors.New("slug is required")
 			}
-			job, err := h.queries.GetJobBySlug(ctx, in.Slug)
+			job, err := h.publicAssistantJob(ctx, in.Slug)
 			if err != nil {
-				return nil, fmt.Errorf("no vacancy with slug %q", in.Slug)
+				return nil, err
 			}
 			view, err := jobview.FromRow(job)
 			if err != nil {
@@ -384,6 +384,9 @@ func (h *assistantHandlers) registry(sess assistant.Session, batchID uuid.UUID) 
 	// chat prompt here while matching no branch below — instructions for tools the
 	// session was never given.
 	preset := assistant.NormalizePreset(sess.Preset)
+	if preset == assistant.PresetTeamJobs {
+		return h.teamJobRegistry()
+	}
 
 	tools := append(h.assistantDiscoveryTools(), h.assistantTrackingTools()...)
 	tools = append(tools, h.assistantExperienceTools(sess.ID)...)

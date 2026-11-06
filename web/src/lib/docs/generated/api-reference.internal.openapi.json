@@ -40,6 +40,10 @@
       "description": "Private, session-cookie-only workspace. Global moderators and administrators manage reviewers and assignments. Active reviewers can read/update only their current assignments. API keys are refused. Responses are private/no-store; notes never enter public job data or search."
     },
     {
+      "name": "Team job discussion",
+      "description": "English-only, read-only job discussion for active team members using session cookies. Conversations are owner-scoped and isolated from candidate assistant sessions. All responses, including streams, are private/no-store. Model turns retain Pro/Ultra entitlement and the existing assistant daily allowance. Tools read public jobs and automatic curriculum evidence; no student records or private reviewer data are exposed."
+    },
+    {
       "name": "Student job follow-ups",
       "description": "Private, session-cookie-only references to students in an existing school system. Managers and the current job assignee may use this workflow; ordinary/inactive accounts and API keys cannot. No student directory, account, automated message or inferred eligibility is created. Private pasted jobs are excluded. All responses are private/no-store."
     },
@@ -1258,6 +1262,259 @@
         ],
         "tags": [
           "Team job reviews"
+        ]
+      }
+    },
+    "/team/bot/status": {
+      "get": {
+        "operationId": "get_team_bot_status",
+        "summary": "Report model configuration, paid access and whether the caller can chat.",
+        "description": "model_configured means a client exists, not that the gateway key/model was verified. No secret or gateway credential is returned.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "{ \"data\": { \"model_configured\": false, \"paid_access\": false, \"can_chat\": false, \"language\": \"English\" } }"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "tags": [
+          "Team job discussion"
+        ]
+      }
+    },
+    "/team/bot/sessions": {
+      "get": {
+        "operationId": "get_team_bot_sessions",
+        "summary": "List the caller’s team job conversations, newest activity first.",
+        "parameters": [
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "description": "0–100000; 50 rows per page, meta.has_more indicates another page.",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "{ \"data\": [], \"meta\": { \"offset\": 0, \"limit\": 50, \"has_more\": false } }"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "tags": [
+          "Team job discussion"
+        ]
+      },
+      "post": {
+        "operationId": "post_team_bot_sessions",
+        "summary": "Explicitly create a team_jobs conversation. Returns 201.",
+        "description": "Preset and tools are fixed by the server. No model call is made when a conversation is created.",
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "tags": [
+          "Team job discussion"
+        ]
+      }
+    },
+    "/team/bot/sessions/{id}": {
+      "get": {
+        "operationId": "get_team_bot_sessions_id",
+        "summary": "Read an owned team conversation and its transcript.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Team conversation UUID; foreign, candidate and missing sessions return 404.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "tags": [
+          "Team job discussion"
+        ]
+      },
+      "delete": {
+        "operationId": "delete_team_bot_sessions_id",
+        "summary": "Delete the owned team conversation and transcript. Returns 204.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Team conversation UUID.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "tags": [
+          "Team job discussion"
+        ]
+      }
+    },
+    "/team/bot/sessions/{id}/messages": {
+      "post": {
+        "operationId": "post_team_bot_sessions_id_messages",
+        "summary": "Stream a bounded job discussion turn as SSE.",
+        "description": "Uses existing assistant user_prompt, assistant_text, tool_use, tool_result and terminal result events. Requires paid entitlement/allowance; unconfigured model returns 503. Every tool rechecks active team membership.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Owned team conversation UUID.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "text": {
+                    "type": "string",
+                    "description": "Question, maximum ASSISTANT_MAX_PROMPT characters (default 8000)."
+                  }
+                },
+                "required": [
+                  "text"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "tags": [
+          "Team job discussion"
+        ]
+      }
+    },
+    "/team/bot/sessions/{id}/retry": {
+      "post": {
+        "operationId": "post_team_bot_sessions_id_retry",
+        "summary": "Continue a failed team turn via SSE without duplicating its question.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Owned team conversation UUID.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "tags": [
+          "Team job discussion"
+        ]
+      }
+    },
+    "/team/bot/sessions/{id}/cancel": {
+      "post": {
+        "operationId": "post_team_bot_sessions_id_cancel",
+        "summary": "Explicitly stop the owned team turn. Returns 204.",
+        "description": "Dropping a stream reader does not cancel server work; this endpoint does. Safe when no turn is active.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Owned team conversation UUID.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        },
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "tags": [
+          "Team job discussion"
         ]
       }
     },

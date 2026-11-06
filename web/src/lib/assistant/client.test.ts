@@ -1,6 +1,6 @@
 import { describe, expect, it, vi, afterEach } from 'vitest';
 
-import { sendTurn, StreamInterrupted, syncApplication } from './client';
+import { sendTurn, StreamInterrupted, syncApplication, teamJobTurn } from './client';
 
 /** A response whose body streams the given chunks and then does whatever `end` says. */
 function streamingResponse(chunks: string[], end: 'close' | 'fail' = 'close'): Response {
@@ -85,5 +85,21 @@ describe('syncApplication', () => {
     await syncApplication('session-1', (e) => events.push(e)).done;
 
     expect(events.map((e) => e.type)).toContain('assistant_text');
+  });
+});
+
+
+describe('team job transport', () => {
+  it('uses team-only send, retry and cancellation endpoints', async () => {
+    const fetchMock = vi.fn().mockImplementation(() => Promise.resolve(streamingResponse([frame({ type: 'result' })])));
+    vi.stubGlobal('fetch', fetchMock);
+    const turn = teamJobTurn('team-session', 'Python roles?', () => {});
+    await turn.done; turn.cancel();
+    await teamJobTurn('team-session', '', () => {}, true).done;
+    expect(fetchMock.mock.calls.map(([url]) => String(url))).toEqual([
+      '/api/v1/team/bot/sessions/team-session/messages',
+      '/api/v1/team/bot/sessions/team-session/cancel',
+      '/api/v1/team/bot/sessions/team-session/retry',
+    ]);
   });
 });

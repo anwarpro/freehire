@@ -18,8 +18,9 @@ import (
 // vocabulary is also a CHECK on the column (0044, widened by 0048, 0049, 0062, 0069 and 0199), so
 // a new preset is a migration and not only a constant.
 const (
-	PresetChat   = "chat"
-	PresetTailor = "tailor"
+	PresetTeamJobs = "team_jobs"
+	PresetChat     = "chat"
+	PresetTailor   = "tailor"
 	// PresetProfile is the experience interviewer: the same tools as a chat session, and a
 	// prompt that goes looking for what the bank does not yet know.
 	PresetProfile = "profile"

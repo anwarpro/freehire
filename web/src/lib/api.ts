@@ -1,3 +1,4 @@
+import type { SessionSummary, StoredMessage } from './assistant/wire.js';
 import type { StudentFollowup, StudentFollowupCreate, StudentFollowupUpdate, StudentContactInput, StudentFollowupEvent, StudentFollowupQueue, StudentFollowupFilter } from './studentFollowups.js';
 import type { CurriculumSettings, CurriculumDetail, CurriculumReviewInput, CurriculumQueue, CurriculumFilter, CurriculumEvent, CurriculumConfigEvent } from './curriculum.js';
 import type { TeamAccess, TeamMember, TeamMemberInput, TeamMemberUpdate, TeamMemberEvent, TeamReview, TeamReviewInput, TeamReviewEvent, TeamQueue, TeamQueueFilter } from './teamReview.js';
@@ -3219,6 +3220,11 @@ export function createApi(
   async function updateStudentFollowup(slug: string, id: number, input: StudentFollowupUpdate): Promise<Pick<StudentFollowup, 'id' | 'version'>> { return requestData(`/api/v1/team/jobs/${encodeURIComponent(slug)}/students/${id}`, { method: 'PUT', body: JSON.stringify(input) }); }
   async function recordStudentContact(slug: string, id: number, input: StudentContactInput): Promise<Pick<StudentFollowup, 'id' | 'version'>> { return requestData(`/api/v1/team/jobs/${encodeURIComponent(slug)}/students/${id}/contacts`, { method: 'POST', body: JSON.stringify(input) }); }
   async function studentFollowupHistory(slug: string, id: number): Promise<StudentFollowupEvent[]> { return requestData(`/api/v1/team/jobs/${encodeURIComponent(slug)}/students/${id}/history`); }
+  async function teamBotStatus(): Promise<{ model_configured: boolean; paid_access: boolean; can_chat: boolean; access_policy: string; language: string; data_scope: string }> { return requestData('/api/v1/team/bot/status'); }
+  async function teamBotSessions(offset = 0): Promise<{ data: SessionSummary[]; meta: { has_more: boolean; offset: number; limit: number } }> { return request(`/api/v1/team/bot/sessions?offset=${offset}`); }
+  async function createTeamBotSession(): Promise<SessionSummary> { return requestData('/api/v1/team/bot/sessions', { method: 'POST', body: '{}' }); }
+  async function teamBotSession(id: string): Promise<{ session: SessionSummary; messages: StoredMessage[] }> { return requestData(`/api/v1/team/bot/sessions/${encodeURIComponent(id)}`); }
+  async function deleteTeamBotSession(id: string): Promise<void> { return request(`/api/v1/team/bot/sessions/${encodeURIComponent(id)}`, { method: 'DELETE' }); }
   async function teamAccess(): Promise<TeamAccess> { return requestData('/api/v1/team/me'); }
   async function teamMembers(): Promise<TeamMember[]> { return requestData('/api/v1/team/members'); }
   async function createTeamMember(input: TeamMemberInput): Promise<{ id: number }> { return requestData('/api/v1/team/members', { method: 'POST', body: JSON.stringify(input) }); }
@@ -3250,6 +3256,7 @@ export function createApi(
 
   return {
     studentFollowups, studentFollowup, createStudentFollowup, updateStudentFollowup, recordStudentContact, studentFollowupHistory,
+    teamBotStatus, teamBotSessions, createTeamBotSession, teamBotSession, deleteTeamBotSession,
     teamAccess,
     curriculumSettings, saveCurriculumSettings, curriculumConfigHistory, curriculumJobs, curriculumJob, reviewCurriculum, curriculumHistory, teamMembers, createTeamMember, updateTeamMember, teamMemberHistory, teamReviews, teamReview, saveTeamReview, teamReviewHistory,
     listJobs,

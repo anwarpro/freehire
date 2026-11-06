@@ -10,7 +10,7 @@
 // turn is a request of its own — which is what lets a phone background its tab
 // without throwing the work away.
 
-import { trackPlanRefusal } from '#lib/api.js';
+import { ApiError, trackPlanRefusal } from '#lib/api.js';
 import { readFrames } from './sse';
 import type { TurnEvent } from './wire';
 
@@ -40,9 +40,9 @@ export class StreamInterrupted extends Error {
 
 /** Ask the server to stop a session's running turn. Safe to call when nothing is
  *  running: the caller cannot know whether the turn it stopped watching has ended. */
-async function cancelTurn(sessionId: string): Promise<void> {
+async function cancelTurn(sessionId: string, base = BASE): Promise<void> {
   try {
-    await fetch(`${BASE}/sessions/${encodeURIComponent(sessionId)}/cancel`, {
+    await fetch(`${base}/sessions/${encodeURIComponent(sessionId)}/cancel`, {
       method: 'POST',
       credentials: 'include',
     });
@@ -206,7 +206,7 @@ export class TurnRefused extends Error {
  *  body is unreadable still has to surface as the refusal it is. */
 async function turnFailure(res: Response, sessionId: string, failure: string): Promise<Error> {
   if (res.status !== 402) {
-    return new Error(`${failure} (${res.status})`);
+    return new ApiError(res.status, `${failure} (${res.status})`);
   }
   try {
     const body = await res.json();
@@ -247,6 +247,7 @@ function streamTurn(
   body: unknown,
   failure: string,
   onEvent: (e: TurnEvent) => void,
+  base = BASE,
 ): Turn {
   const controller = new AbortController();
 
@@ -288,7 +289,7 @@ function streamTurn(
       // Both halves: tell the server to stop the work, and stop reading it here. The
       // server no longer infers the first from the second. cancelTurn swallows its own
       // failures, so this cannot reject.
-      void cancelTurn(sessionId);
+      void cancelTurn(sessionId, base);
       controller.abort();
     },
   };
@@ -303,4 +304,11 @@ function decodeEvent(data: string): TurnEvent | null {
     console.error('assistant: invalid event payload', e, data);
     return null;
   }
+}
+
+
+/** Team job discussion shares the existing SSE parser, retry and explicit cancellation. */
+export function teamJobTurn(sessionId: string, text: string, onEvent: (e: TurnEvent) => void, retry = false): Turn {
+  const base = '/api/v1/team/bot';
+  return streamTurn(sessionId, `${base}/sessions/${encodeURIComponent(sessionId)}/${retry ? 'retry' : 'messages'}`, retry ? {} : { text }, 'Could not run the job discussion', onEvent, base);
 }
