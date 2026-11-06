@@ -4882,6 +4882,9 @@ type Querier interface {
 	// two members sharing a timestamp would otherwise order arbitrarily, and an arbitrary
 	// order across pages silently drops some people and repeats others.
 	ListTalentNetworkMembers(ctx context.Context) ([]ListTalentNetworkMembersRow, error)
+	// Only automatic, non-private requirement evidence enters the bot. Human review data stays in team review.
+	ListTeamBotCourseJobs(ctx context.Context, arg ListTeamBotCourseJobsParams) ([]ListTeamBotCourseJobsRow, error)
+	ListTeamBotSessions(ctx context.Context, arg ListTeamBotSessionsParams) ([]ListTeamBotSessionsRow, error)
 	ListTeamMemberEvents(ctx context.Context, memberID pgtype.Int8) ([]ListTeamMemberEventsRow, error)
 	ListTeamMembers(ctx context.Context) ([]ListTeamMembersRow, error)
 	ListTeamReviewEvents(ctx context.Context, arg ListTeamReviewEventsParams) ([]ListTeamReviewEventsRow, error)

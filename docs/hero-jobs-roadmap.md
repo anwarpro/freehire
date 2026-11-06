@@ -262,3 +262,10 @@ The [student job follow-up workflow](student-job-followups.md) covers lightweigh
 job links, manual-contact audit and outcome tracking (T04–T06). It uses existing
 school IDs/profile links; full student profiles/import (T03) remain deferred.
 This feature requires migration 0217 and a separate deployment.
+
+## Team job discussion
+
+The [English team job bot](team-job-discussion.md) reuses existing assistant
+infrastructure for public job search/comparison and automatic course evidence.
+Model credentials/exact gateway model ID and live answer verification remain
+separate rollout requirements. Pro/Ultra usage rules remain in place.

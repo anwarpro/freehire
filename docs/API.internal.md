@@ -22,6 +22,7 @@ Base URL: `https://freehire.me/api/v1`
 - [In-app assistant](#in-app-assistant)
 - [Job submissions](#job-submissions)
 - [Team job reviews](#team-job-reviews)
+- [Team job discussion](#team-job-discussion)
 - [Student job follow-ups](#student-job-follow-ups)
 - [Curriculum matching](#curriculum-matching)
 - [Company career pages](#company-career-pages)
@@ -779,6 +780,148 @@ curl "https://freehire.me/api/v1/team/jobs/python-engineer/history" -b cookies.t
 
 ```json
 { "data": [] }
+```
+
+## Team job discussion
+
+English-only, read-only job discussion for active team members using session cookies. Conversations are owner-scoped and isolated from candidate assistant sessions. All responses, including streams, are private/no-store. Model turns retain Pro/Ultra entitlement and the existing assistant daily allowance. Tools read public jobs and automatic curriculum evidence; no student records or private reviewer data are exposed.
+
+### `GET /team/bot/status`
+
+**Auth:** Session only
+
+Report model configuration, paid access and whether the caller can chat.
+
+model_configured means a client exists, not that the gateway key/model was verified. No secret or gateway credential is returned.
+
+```bash
+curl "https://freehire.me/api/v1/team/bot/status" -b cookies.txt
+```
+
+```json
+{ "data": { "model_configured": false, "paid_access": false, "can_chat": false, "language": "English" } }
+```
+
+### `GET /team/bot/sessions`
+
+**Auth:** Session only
+
+List the caller’s team job conversations, newest activity first.
+
+**Query parameters**
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `offset` | integer | no | 0–100000; 50 rows per page, meta.has_more indicates another page. |
+
+```bash
+curl "https://freehire.me/api/v1/team/bot/sessions" -b cookies.txt
+```
+
+```json
+{ "data": [], "meta": { "offset": 0, "limit": 50, "has_more": false } }
+```
+
+### `POST /team/bot/sessions`
+
+**Auth:** Session only
+
+Explicitly create a team_jobs conversation. Returns 201.
+
+Preset and tools are fixed by the server. No model call is made when a conversation is created.
+
+```bash
+curl -X POST "https://freehire.me/api/v1/team/bot/sessions" -b cookies.txt -H 'Content-Type: application/json' -d '{}'
+```
+
+### `GET /team/bot/sessions/{id}`
+
+**Auth:** Session only
+
+Read an owned team conversation and its transcript.
+
+**Path parameters**
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `id` | string | yes | Team conversation UUID; foreign, candidate and missing sessions return 404. |
+
+```bash
+curl "https://freehire.me/api/v1/team/bot/sessions/UUID" -b cookies.txt
+```
+
+### `DELETE /team/bot/sessions/{id}`
+
+**Auth:** Session only
+
+Delete the owned team conversation and transcript. Returns 204.
+
+**Path parameters**
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `id` | string | yes | Team conversation UUID. |
+
+```bash
+curl -X DELETE "https://freehire.me/api/v1/team/bot/sessions/UUID" -b cookies.txt
+```
+
+### `POST /team/bot/sessions/{id}/messages`
+
+**Auth:** Session only
+
+Stream a bounded job discussion turn as SSE.
+
+Uses existing assistant user_prompt, assistant_text, tool_use, tool_result and terminal result events. Requires paid entitlement/allowance; unconfigured model returns 503. Every tool rechecks active team membership.
+
+**Path parameters**
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `id` | string | yes | Owned team conversation UUID. |
+
+**Body**
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `text` | string | yes | Question, maximum ASSISTANT_MAX_PROMPT characters (default 8000). |
+
+```bash
+curl -N -X POST "https://freehire.me/api/v1/team/bot/sessions/UUID/messages" -b cookies.txt -H 'Content-Type: application/json' -d '{"text":"Which Python jobs match our courses?"}'
+```
+
+### `POST /team/bot/sessions/{id}/retry`
+
+**Auth:** Session only
+
+Continue a failed team turn via SSE without duplicating its question.
+
+**Path parameters**
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `id` | string | yes | Owned team conversation UUID. |
+
+```bash
+curl -N -X POST "https://freehire.me/api/v1/team/bot/sessions/UUID/retry" -b cookies.txt
+```
+
+### `POST /team/bot/sessions/{id}/cancel`
+
+**Auth:** Session only
+
+Explicitly stop the owned team turn. Returns 204.
+
+Dropping a stream reader does not cancel server work; this endpoint does. Safe when no turn is active.
+
+**Path parameters**
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `id` | string | yes | Owned team conversation UUID. |
+
+```bash
+curl -X POST "https://freehire.me/api/v1/team/bot/sessions/UUID/cancel" -b cookies.txt
 ```
 
 ## Student job follow-ups

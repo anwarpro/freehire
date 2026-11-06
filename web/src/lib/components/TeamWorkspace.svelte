@@ -7,11 +7,12 @@
   import type { Job } from '#lib/types.js';
   import { Button } from '#lib/ui/index.js';
   import TeamMembersView from './TeamMembersView.svelte';
+  import TeamJobDiscussion from './TeamJobDiscussion.svelte';
   import StudentFollowups from './StudentFollowups.svelte';
   import CurriculumWorkspace from './CurriculumWorkspace.svelte';
   import TeamReviewButton from './TeamReviewButton.svelte';
   let access = $state.raw<TeamAccess | null>(null);
-  let view = $state<'assignments' | 'members' | 'curriculum' | 'students'>('assignments');
+  let view = $state<'assignments' | 'members' | 'curriculum' | 'students' | 'bot'>('assignments');
   let scope = $state<'all' | 'mine' | 'unassigned'>('mine');
   let status = $state('');
   let overdue = $state(false);
@@ -75,9 +76,11 @@
         <Button variant={view === 'assignments' ? 'primary' : 'outline'} onclick={() => (view = 'assignments')}>Assignments</Button>
         <Button variant={view === 'curriculum' ? 'primary' : 'outline'} onclick={() => (view = 'curriculum')}>Curriculum jobs</Button>
         <Button variant={view === 'students' ? 'primary' : 'outline'} onclick={() => (view = 'students')}>Student follow-ups</Button>
+        <Button variant={view === 'bot' ? 'primary' : 'outline'} onclick={() => (view = 'bot')}>Discuss jobs</Button>
         {#if access.role === 'admin'}<Button variant={view === 'members' ? 'primary' : 'outline'} onclick={() => (view = 'members')}>Team members</Button>{/if}
       </nav>
     {#if view === 'curriculum'}<CurriculumWorkspace role={access.role} />
+    {:else if view === 'bot'}<TeamJobDiscussion />
     {:else if view === 'students'}<StudentFollowups />
     {:else if view === 'members' && access.role === 'admin'}<TeamMembersView />
     {:else}
