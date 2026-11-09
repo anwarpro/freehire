@@ -3216,19 +3216,19 @@ export function createApi(
     return request(`${path}?${params}`);
   }
   async function studentFollowup(slug: string, id: number): Promise<StudentFollowup> { return requestData(`/api/v1/team/jobs/${encodeURIComponent(slug)}/students/${id}`); }
-  async function createStudentFollowup(slug: string, input: StudentFollowupCreate): Promise<Pick<StudentFollowup, 'id' | 'version'>> { return requestData(`/api/v1/team/jobs/${encodeURIComponent(slug)}/students`, { method: 'POST', body: JSON.stringify(input) }); }
-  async function updateStudentFollowup(slug: string, id: number, input: StudentFollowupUpdate): Promise<Pick<StudentFollowup, 'id' | 'version'>> { return requestData(`/api/v1/team/jobs/${encodeURIComponent(slug)}/students/${id}`, { method: 'PUT', body: JSON.stringify(input) }); }
-  async function recordStudentContact(slug: string, id: number, input: StudentContactInput): Promise<Pick<StudentFollowup, 'id' | 'version'>> { return requestData(`/api/v1/team/jobs/${encodeURIComponent(slug)}/students/${id}/contacts`, { method: 'POST', body: JSON.stringify(input) }); }
+  async function createStudentFollowup(slug: string, input: StudentFollowupCreate): Promise<Pick<StudentFollowup, 'id' | 'version'>> { return requestData(`/api/v1/team/jobs/${encodeURIComponent(slug)}/students`, jsonBody('POST', input)); }
+  async function updateStudentFollowup(slug: string, id: number, input: StudentFollowupUpdate): Promise<Pick<StudentFollowup, 'id' | 'version'>> { return requestData(`/api/v1/team/jobs/${encodeURIComponent(slug)}/students/${id}`, jsonBody('PUT', input)); }
+  async function recordStudentContact(slug: string, id: number, input: StudentContactInput): Promise<Pick<StudentFollowup, 'id' | 'version'>> { return requestData(`/api/v1/team/jobs/${encodeURIComponent(slug)}/students/${id}/contacts`, jsonBody('POST', input)); }
   async function studentFollowupHistory(slug: string, id: number): Promise<StudentFollowupEvent[]> { return requestData(`/api/v1/team/jobs/${encodeURIComponent(slug)}/students/${id}/history`); }
   async function teamBotStatus(): Promise<{ model_configured: boolean; paid_access: boolean; can_chat: boolean; access_policy: string; language: string; data_scope: string }> { return requestData('/api/v1/team/bot/status'); }
   async function teamBotSessions(offset = 0): Promise<{ data: SessionSummary[]; meta: { has_more: boolean; offset: number; limit: number } }> { return request(`/api/v1/team/bot/sessions?offset=${offset}`); }
-  async function createTeamBotSession(): Promise<SessionSummary> { return requestData('/api/v1/team/bot/sessions', { method: 'POST', body: '{}' }); }
+  async function createTeamBotSession(): Promise<SessionSummary> { return requestData('/api/v1/team/bot/sessions', jsonBody('POST', {})); }
   async function teamBotSession(id: string): Promise<{ session: SessionSummary; messages: StoredMessage[] }> { return requestData(`/api/v1/team/bot/sessions/${encodeURIComponent(id)}`); }
-  async function deleteTeamBotSession(id: string): Promise<void> { return request(`/api/v1/team/bot/sessions/${encodeURIComponent(id)}`, { method: 'DELETE' }); }
+  async function deleteTeamBotSession(id: string): Promise<void> { await call(`/api/v1/team/bot/sessions/${encodeURIComponent(id)}`, { method: 'DELETE' }); }
   async function teamAccess(): Promise<TeamAccess> { return requestData('/api/v1/team/me'); }
   async function teamMembers(): Promise<TeamMember[]> { return requestData('/api/v1/team/members'); }
-  async function createTeamMember(input: TeamMemberInput): Promise<{ id: number }> { return requestData('/api/v1/team/members', { method: 'POST', body: JSON.stringify(input) }); }
-  async function updateTeamMember(id: number, input: TeamMemberUpdate): Promise<void> { await request(`/api/v1/team/members/${id}`, { method: 'PATCH', body: JSON.stringify(input) }); }
+  async function createTeamMember(input: TeamMemberInput): Promise<{ id: number }> { return requestData('/api/v1/team/members', jsonBody('POST', input)); }
+  async function updateTeamMember(id: number, input: TeamMemberUpdate): Promise<void> { await call(`/api/v1/team/members/${id}`, jsonBody('PATCH', input)); }
   async function teamMemberHistory(id: number): Promise<TeamMemberEvent[]> { return requestData(`/api/v1/team/members/${id}/history`); }
   async function teamReviews(filter: TeamQueueFilter = {}): Promise<TeamQueue> {
     const params = new URLSearchParams();
@@ -3239,11 +3239,11 @@ export function createApi(
     return request(`/api/v1/team/reviews?${params}`);
   }
   async function teamReview(slug: string): Promise<TeamReview> { return requestData(`/api/v1/team/jobs/${encodeURIComponent(slug)}`); }
-  async function saveTeamReview(slug: string, input: TeamReviewInput): Promise<TeamReview> { return requestData(`/api/v1/team/jobs/${encodeURIComponent(slug)}`, { method: 'PUT', body: JSON.stringify(input) }); }
+  async function saveTeamReview(slug: string, input: TeamReviewInput): Promise<TeamReview> { return requestData(`/api/v1/team/jobs/${encodeURIComponent(slug)}`, jsonBody('PUT', input)); }
   async function teamReviewHistory(slug: string): Promise<TeamReviewEvent[]> { return requestData(`/api/v1/team/jobs/${encodeURIComponent(slug)}/history`); }
 
   async function curriculumSettings(): Promise<CurriculumSettings> { return requestData('/api/v1/team/curriculum'); }
-  async function saveCurriculumSettings(input: { expected_version: number; config: CurriculumSettings['config'] }): Promise<CurriculumSettings> { return requestData('/api/v1/team/curriculum', { method: 'PUT', body: JSON.stringify(input) }); }
+  async function saveCurriculumSettings(input: { expected_version: number; config: CurriculumSettings['config'] }): Promise<CurriculumSettings> { return requestData('/api/v1/team/curriculum', jsonBody('PUT', input)); }
   async function curriculumConfigHistory(): Promise<CurriculumConfigEvent[]> { return requestData('/api/v1/team/curriculum/history'); }
   async function curriculumJobs(filter: CurriculumFilter = {}): Promise<CurriculumQueue> {
     const params = new URLSearchParams();
@@ -3251,7 +3251,7 @@ export function createApi(
     return request(`/api/v1/team/curriculum/jobs?${params}`);
   }
   async function curriculumJob(slug: string): Promise<CurriculumDetail> { return requestData(`/api/v1/team/curriculum/jobs/${encodeURIComponent(slug)}`); }
-  async function reviewCurriculum(slug: string, input: CurriculumReviewInput): Promise<CurriculumDetail> { return requestData(`/api/v1/team/curriculum/jobs/${encodeURIComponent(slug)}`, { method: 'PUT', body: JSON.stringify(input) }); }
+  async function reviewCurriculum(slug: string, input: CurriculumReviewInput): Promise<CurriculumDetail> { return requestData(`/api/v1/team/curriculum/jobs/${encodeURIComponent(slug)}`, jsonBody('PUT', input)); }
   async function curriculumHistory(slug: string): Promise<CurriculumEvent[]> { return requestData(`/api/v1/team/curriculum/jobs/${encodeURIComponent(slug)}/history`); }
 
   return {
