@@ -31,6 +31,7 @@
   import { skillLabel } from '#lib/facets.js';
   import { formatCount, timeAgo } from '#lib/utils.js';
   import { cardFreshnessBadges } from '#lib/freshness.js';
+  import { fresherDescription, isFresherJob } from '#lib/fresher.js';
   import { hasViewed } from '#lib/viewedJobs.svelte.js';
   import { isSaved, markSaved, markUnsaved } from '#lib/savedJobs.svelte.js';
   import { markDismissed, markUndismissed } from '#lib/dismissedJobs.svelte.js';
@@ -139,6 +140,7 @@
   // thresholds, the wording, the closed-posting rule — is the shared rule's, so the card
   // and the job's own page cannot tell different stories about one posting.
   const freshness = $derived(cardFreshnessBadges(job.posted_at, reality, applied, job.closed_at));
+  const fresher = $derived('enrichment' in job && !!job.enrichment && isFresherJob(job.enrichment));
 
   const MAX_SKILLS = 5;
   const shownSkills = $derived(skills.slice(0, MAX_SKILLS));
@@ -386,8 +388,9 @@
   <!-- ai_interview_reports belongs in this guard on its own: a card can carry the
        label while having no reality verdict, no freshness, no tags, no countries and no
        credentials, and the row would then be suppressed with the badge inside it. -->
-  {#if reality || freshness.length > 0 || tags.length > 0 || job.countries?.length || credentials.length > 0 || job.ai_interview_reports || directApply}
+  {#if reality || freshness.length > 0 || tags.length > 0 || job.countries?.length || credentials.length > 0 || job.ai_interview_reports || directApply || fresher}
     <div class="mt-2 flex flex-wrap items-center gap-1.5">
+      {#if fresher}<span title={fresherDescription} class="inline-flex"><Badge variant="brand">Fresher</Badge></span>{/if}
       <!-- evergreen_posting IS the reality verdict, so showing both chips states one
            fact twice, the second time louder. The ghost chip carries it inside its
            checklist; where ghost is silent, reality renders exactly as before. -->
