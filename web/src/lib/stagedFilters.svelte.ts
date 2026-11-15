@@ -40,6 +40,11 @@ export class StagedFilters implements FacetStore {
     return this.#f;
   }
 
+  /** Skill keywords search the posting, replacing any title-only completion scope. */
+  setQuery(q: string): void {
+    this.#f = { ...this.#f, q, qFields: q.trim() ? ['title', 'description'] : null };
+  }
+
   /** Total staged filter values (drives the rail counts and the badge). */
   get active(): number {
     return activeFilterCount(this.#f);

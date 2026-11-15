@@ -32,6 +32,7 @@
   import FilterModalShell from './FilterModalShell.svelte';
   import AiFilterButton from './AiFilterButton.svelte';
   import SavedSearches from '../SavedSearches.svelte';
+  import SkillKeywordSearch from './SkillKeywordSearch.svelte';
 
   // The job-search filter modal: a thin wrapper over FilterModalShell that supplies the
   // job rail, the staged job filters, and the pane controls. The shell owns the chrome
@@ -558,7 +559,12 @@
   </p>
 {/snippet}
 {#snippet unrecognizedRole(term: string)}{@render unrecognized('specialization', 'specialization', term)}{/snippet}
-{#snippet unrecognizedSkill(term: string)}{@render unrecognized('skill', 'skill', term)}{/snippet}
+{#snippet unrecognizedSkill(term: string)}
+  {@render unrecognized('skill', 'skill', term)}
+  {#if !plain}
+    <button type="button" class="mt-2 text-sm font-medium underline underline-offset-4" onclick={() => staged.setQuery(term)}>Use “{term}” as the job-text search</button>
+  {/if}
+{/snippet}
 
 {#snippet recognizeLink(noun: string, query: string)}
   <!-- eslint-disable-next-line svelte/no-navigation-without-resolve -- resolve()d /dictionary plus a query string -->
@@ -604,6 +610,7 @@
         class="mb-6 h-6 w-full accent-primary"
       />
     {/if}
+    {#if entry.key === 'skills' && !plain}<SkillKeywordSearch value={staged.value.q} onChange={(q) => staged.setQuery(q)} />{/if}
     {#if def}<FacetSection {def} store={staged} counts={c} expand empty={entry.key === 'skills' ? unrecognizedSkill : undefined} />{/if}
     {#if entry.key === 'skills'}{@render recognizeLink('skill', '?tab=skill')}{/if}
   {:else if entry.kind === 'salary'}
