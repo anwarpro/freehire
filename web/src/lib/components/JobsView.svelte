@@ -30,6 +30,7 @@
     displayQuery,
   } from '#lib/filters.js';
   import { freshnessOptions } from '#lib/filterControls.js';
+  import { fresherDescription, fresherFilters, isFresherFilters } from '#lib/fresher.js';
   import { geoScopeOffered, loadJobFilters, markGeoScopeOffered } from '#lib/filterStorage.js';
   import { geoScopeQuery, shouldOfferGeoScope, WORLDWIDE_REGION } from '#lib/geoScope.js';
   import { bannerVisible, loadOnboardingState, markSeen, narrowestFacet, type OnboardingLifecycle } from '#lib/onboarding.js';
@@ -800,6 +801,19 @@
 {/snippet}
 
 {#if standalone}<JobStatusTabs params={filters.params.toString()} />{/if}
+
+{#if standalone}
+  <section class="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-brand/30 bg-brand-muted p-4" aria-label="Fresher jobs">
+    <div class="max-w-2xl">
+      <h2 class="font-semibold">Find your first job</h2>
+      <p class="mt-1 text-sm text-muted-foreground">{fresherDescription}</p>
+    </div>
+    <Button variant={isFresherFilters(filters.value) ? 'primary' : 'outline'} aria-pressed={isFresherFilters(filters.value)}
+      onclick={() => filters.apply(filtersToParams(fresherFilters(filters.value, !isFresherFilters(filters.value))).toString())}>
+      {isFresherFilters(filters.value) ? 'Show all experience levels' : 'Fresher jobs'}
+    </Button>
+  </section>
+{/if}
 
 <div class="flex gap-6">
   <aside class="hidden w-72 shrink-0 md:block">
