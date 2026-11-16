@@ -1,5 +1,6 @@
 <script lang="ts">
   import { Check, User } from '@lucide/svelte';
+  import { resolve } from '$app/paths';
   import { ApiError } from '#lib/api.js';
   import { filtersFromProfile, filtersToParams } from '#lib/filters.js';
   import { notifications } from '#lib/notifications.svelte.js';
@@ -111,6 +112,7 @@
       <p class="text-xs text-muted-foreground">
         Get notified when a new job matches your role, level, skills and location preferences.
       </p>
+      <a href={resolve('/my/notifications/settings')} class="mt-1 inline-block text-xs underline underline-offset-2">Choose daily digest and delivery time</a>
     </div>
 
     {#if saveState === 'saving'}

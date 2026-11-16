@@ -101,6 +101,9 @@ writer. Repeated initialization does not duplicate live entries.
 - Application-deadline closure and incremental search indexing: every two minutes.
 - [Curriculum matching](../../docs/curriculum-matching.md): every two minutes, up
   to 2,000 jobs / 75 seconds, with its own lock and resumable catalogue scan.
+- [Profile job alerts](../../docs/hero-daily-job-alerts.md): every five minutes,
+  at minutes 1, 6, 11, and so on. Delivery stays disabled until explicitly enabled
+  after email setup; the existing worker honors each user's daily time and timezone.
 - Supported board discovery: every two hours, one provider per run.
 - Statistics/company index: every six hours.
 - LinkedIn stale-job verification: every six hours at minute 47 UTC, up to 100
