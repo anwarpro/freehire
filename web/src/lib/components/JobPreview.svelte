@@ -95,7 +95,7 @@
     <p class="text-sm text-muted-foreground">{company || 'Your company'}</p>
   </div>
 
-  <h1 class="text-2xl font-semibold tracking-tight">{title || 'Job title'}</h1>
+  <h1 class="select-none text-2xl font-semibold tracking-tight">{title || 'Job title'}</h1>
 
   {#if salary}
     <p class="text-xl font-semibold tabular-nums tracking-tight">{salary}</p>

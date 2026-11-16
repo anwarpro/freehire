@@ -849,7 +849,7 @@
          400 chars server-side — the headline above the full description. -->
     <section class="flex flex-col gap-2">
       <h2 class="text-base font-semibold">Summary</h2>
-      <p class="text-sm leading-relaxed text-muted-foreground">{e.summary}</p>
+      <p class="select-none text-sm leading-relaxed text-muted-foreground">{e.summary}</p>
     </section>
   {:else}
     <!-- The description's own headings are demoted to h3 (descriptionHeadings.ts) to sit
@@ -1024,7 +1024,7 @@
 
   <header class="flex flex-col gap-3 lg:col-start-2 lg:row-start-2">
     <div class="flex flex-wrap items-center gap-2.5">
-      <h1 class="text-2xl font-semibold tracking-tight" lang={contentLang}>{job.title}</h1>
+      <h1 class="select-none text-2xl font-semibold tracking-tight" lang={contentLang}>{job.title}</h1>
       {#key job.public_slug}
         <ManualJobEditor {job} onSaved={(updated) => (job = updated)} />
         <JobTeamReview slug={job.public_slug} />
@@ -1237,7 +1237,7 @@
               <span class="text-muted-foreground">{job.company || 'Unknown company'}</span>
             {/if}
             <span class="px-1 text-muted-foreground" aria-hidden="true">·</span>
-            <span class="font-semibold" lang={contentLang}>{job.title}</span>
+            <span class="select-none font-semibold" lang={contentLang}>{job.title}</span>
           </p>
           <!-- Hidden below lg for the same reason as the action strip's own copy: on
                mobile the CTA is the sticky bottom bar, and two pinned buttons would

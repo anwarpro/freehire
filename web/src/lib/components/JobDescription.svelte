@@ -19,7 +19,7 @@
 {#if body}
   <!-- Description is server-sanitized HTML (see internal/sources), safe to render. -->
   <!-- eslint-disable-next-line svelte/no-at-html-tags -- server-sanitized; the rule flags every {@html} regardless -->
-  <div class="job-description text-sm leading-relaxed" {lang}>{@html body}</div>
+  <div class="job-description select-none text-sm leading-relaxed" {lang}>{@html body}</div>
 {/if}
 
 <style>
