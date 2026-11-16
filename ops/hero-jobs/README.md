@@ -151,6 +151,10 @@ CV uploads require persistent S3-compatible storage. LLM features, OAuth,
 mail, and credentialed collectors require their respective credentials.
 Website access protection remains deferred at the owner's request.
 
+For Google sign-in, follow the [PH Jobs setup and verification guide](../../docs/hero-google-login.md).
+The existing login provider needs its client credentials configured; no location
+collection or additional profile workflow is part of this setup.
+
 ## Preserve integrations when updating upstream
 
 Keep `origin` pointing to your fork and `upstream` pointing to `strelov1/freehire`.
