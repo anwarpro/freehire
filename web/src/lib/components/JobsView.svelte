@@ -788,6 +788,10 @@
      `reality` facet. The whole facet now sits in the modal's Posted pane, beside the age
      bound it belongs with. -->
 {#snippet listControls()}
+  {#if !excludeFacets.includes('skills') && !('skills' in scope)}
+    <Button type="button" variant="outline" size="sm" aria-label="Filter by skill" aria-haspopup="dialog"
+      aria-expanded={modalOpen && modalSection === 'skills'} onclick={() => openFilters('skills')}>Skills</Button>
+  {/if}
   {#if !excludeFacets.includes('source') && !('source' in scope) && !('source_exclude' in scope)}
     <SourceFilterButton selection={filters.facet('source')}
       open={modalOpen && modalSection === 'source'} onOpen={() => openFilters('source')} />
