@@ -376,7 +376,7 @@
   <h3
     lang={foreignContentLang(job)}
     class={[
-      'font-semibold leading-snug tracking-tight',
+      'select-none font-semibold leading-snug tracking-tight',
       compact ? 'mt-2 line-clamp-1 text-base' : 'mt-2.5 line-clamp-2 text-lg sm:text-[1.35rem]',
     ]}
   >
@@ -438,7 +438,7 @@
   {/if}
 
   {#if blurb && !compact}
-    <p class="mt-2 line-clamp-2 text-sm text-muted-foreground">{blurb}</p>
+    <p class="mt-2 line-clamp-2 select-none text-sm text-muted-foreground">{blurb}</p>
   {/if}
 
   <!-- No corner gutter here any more: Hide moved into the action row at the foot of the

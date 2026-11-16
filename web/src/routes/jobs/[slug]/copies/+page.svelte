@@ -26,11 +26,11 @@
 <div class="mx-auto w-full max-w-3xl px-4 py-6">
   <a
     href={resolve('/jobs/[slug]', { slug: data.job.public_slug })}
-    class="text-sm text-muted-foreground hover:text-foreground">← {data.job.title}</a
+    class="select-none text-sm text-muted-foreground hover:text-foreground">← {data.job.title}</a
   >
 
   <h1 class="mt-2 text-xl font-semibold">{data.total} openings across locations</h1>
-  <p class="mt-1 text-sm text-muted-foreground">{data.job.title}</p>
+  <p class="mt-1 select-none text-sm text-muted-foreground">{data.job.title}</p>
 
   <ul class="mt-5 divide-y divide-border overflow-hidden rounded-lg border border-border">
     {#each data.copies as copy (copy.public_slug)}

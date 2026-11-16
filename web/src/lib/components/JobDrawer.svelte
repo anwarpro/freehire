@@ -626,7 +626,7 @@
         </button>
       </div>
 
-      <h2 class="text-balance text-xl font-semibold leading-tight tracking-tight">{title}</h2>
+      <h2 class="select-none text-balance text-xl font-semibold leading-tight tracking-tight">{title}</h2>
 
       {#if tags.length || stageLabel}
         <div class="flex flex-wrap items-center gap-2">
